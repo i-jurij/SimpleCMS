@@ -1,0 +1,20 @@
+create adm pages
+
+Admins pages:
+1. add, del user (register, delete from lavarel)
+2. create, delete pages
+3. read and clear logs
+
+Moders pages:
+4. editors of pages (services, about, gallery, map)
+5. create, delete, change services for users pages
+6. price editor
+7. contacts editor (tlf, vk, tg and other)
+8. add, remove, change masters
+13. schedule editor
+
+Users pages:
+9. recall list
+10. recall log
+11. appointment by masters
+12. appointment by dates
