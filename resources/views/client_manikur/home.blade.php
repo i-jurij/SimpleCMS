@@ -4,10 +4,6 @@ $page_meta_description = 'GET FROM DB';
 $page_meta_keywords = 'GET FROM DB';
 $robots = 'INDEX, FOLLOW';
 $data['content'] = 'CONTENT FOR DEL IN FUTURE';
-$data['telegram'] = 'tg';
-$data['vk'] = 'vk';
-$data['tlf'] = '+7999 777 66 55';
-$data['adres'] = 'adres';
 ?>
 
 @extends('layouts/index')
@@ -19,11 +15,11 @@ $data['adres'] = 'adres';
 @endpush
 
 @section('content')
-{{$data['content']}}
-<br />
-This area for home page content
+   @if (!empty($content)) {{$content}}
+   @else {{$data['content']}}
+   @endif
 @stop
 
-@Push('js') // This is for internal js
+@Push('js')
 <script></script>
 @endpush

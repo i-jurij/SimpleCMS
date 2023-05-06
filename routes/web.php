@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,18 +24,19 @@ use Illuminate\Support\Facades\Route;
  */
 Route::get('/', function () {
     return view('client_manikur.home');
-})->name('home');
+})->name('main.home');
 
 /*
 * ADMIN PAGES ROUTES
 */
 Route::prefix('admin')->name('admin.')
-    ->middleware(['auth', 'verified'])
-    ->group(function () {
-        // Admins home route same for admin, moder, user
-        Route::get('/', [AdminHomeController::class, 'getview'])->name('home');
+->middleware(['auth', 'verified'])
+->group(function () {
+    // Admins home route same for admin, moder, user
+    Route::get('/', [AdminHomeController::class, 'getview'])->name('home');
 
-        // Admins routes
+    // ADMINS routes
+    Route::middleware('isadmin')->group(function () {
         Route::controller(UsersController::class)
             ->prefix('user')
             ->name('user.')
@@ -46,7 +48,7 @@ Route::prefix('admin')->name('admin.')
                 Route::post('/change', 'show')->name('show');
                 Route::post('/change/store', 'store')->name('store');
             });
-
+        /*
         Route::controller(PageController::class)
             ->prefix('page')
             ->name('page.')
@@ -55,32 +57,43 @@ Route::prefix('admin')->name('admin.')
                 Route::get('/remove', 'list')->name('remove');
                 Route::post('/remove', 'remove')->name('post_remove');
             });
-
+        */
         Route::get('/logs', function () {
             return view('admin_manikur.adm_pages.logs');
         })->name('logs');
     });
-
-/*
-* ADMIN AND MODER ROUTES
-*/
-/*
-    Route::name('moder.')->group(function () {
+    /*
+    * ADMIN AND MODER ROUTES
+    */
+    Route::middleware('ismoder')->group(function () {
+        Route::controller(ContactsController::class)
+        ->prefix('contacts')
+        ->name('contacts.')
+        ->group(function () {
+            Route::get('/', 'index')->name('list');
+            Route::get('/add', 'add')->name('add');
+            Route::get('/remove', 'list')->name('remove');
+            Route::post('/remove', 'remove')->name('post_remove');
+            Route::get('/change', 'list')->name('change');
+            Route::post('/change', 'show')->name('show');
+            Route::post('/change/store', 'store')->name('store');
+        });
         Route::get('/page_edit', function () {
             return view('admin_manikur.admin_moder_pages.page_edit');
-        })->name('page_del');
-*/
-/*
-* ADMIN AND MODER AND USER ROUTES
-*/
-/*
-        Route::prefix('user')->name('user.')->group(function () {
-            Route::get('/recall_list', function () {
-                return view('admin_manikur.admin_moder_user_pages.recall_list');
-            })->name('recall_list');
-        });
+        })->name('page_edit');
     });
- */
+    /*
+    * ADMIN AND MODER AND USER ROUTES
+    */
+    /*
+            Route::prefix('user')->name('user.')->group(function () {
+                Route::get('/recall_list', function () {
+                    return view('admin_manikur.admin_moder_user_pages.recall_list');
+                })->name('recall_list');
+            });
+
+    */
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

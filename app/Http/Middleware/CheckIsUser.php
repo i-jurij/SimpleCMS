@@ -15,10 +15,12 @@ class CheckIsUser
      */
     public function handle(Request $request, \Closure $next): Response
     {
-        if (!Auth::user()->isUser()) {
-            return redirect()->route('index');
+        if ((Auth::user()->status === 'Admin' || Auth::user()->status === 'admin')
+            || (Auth::user()->status === 'Moder' || Auth::user()->status === 'moder')
+            || (Auth::user()->status === 'User' || Auth::user()->status === 'user')) {
+            return $next($request);
         }
 
-        return $next($request);
+        return redirect()->route('home');
     }
 }

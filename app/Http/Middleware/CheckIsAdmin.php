@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckIsAdmin
@@ -15,10 +16,11 @@ class CheckIsAdmin
      */
     public function handle(Request $request, \Closure $next): Response
     {
-        if (!Auth::user()->isAdmin()) {
-            return redirect()->route('index');
+        if (Auth::user()->status === 'Admin' || Auth::user()->status === 'admin') {
+            return $next($request);
         }
 
-        return $next($request);
+        // return redirect()->route('home');
+        return Redirect::back()->withErrors(['msg' => 'You have no authority']);
     }
 }

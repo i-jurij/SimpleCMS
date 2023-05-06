@@ -294,7 +294,20 @@ input[type="text"], input[type="tel"], input[type="email"], input[type="password
 	-webkit-align-items: flex-start;
 	align-items: flex-start;
 }
-
+.flex_justify_between {
+	-webkit-box-pack: space-between;
+	-moz-box-pack: space-between;
+	-ms-flex-pack: space-between;
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+}
+.flex_align_normal {
+	-webkit-box-align: normal;
+	-moz-box-align: normal;
+	-ms-flex-align: normal;
+	-webkit-align-items: normal;
+	align-items: normal;
+}
 .horizont-center {
   text-align: center;
   margin: 0 auto;
@@ -738,6 +751,10 @@ float: right;
 
 .adm a:hover {
 	color: var(--fontcolor-light);
+}
+
+.adm_content {
+	width: 100%;
 }
 
 .adm_content a {

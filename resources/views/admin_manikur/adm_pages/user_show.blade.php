@@ -11,16 +11,6 @@ $robots = 'NOINDEX, NOFOLLOW';
         <div>
         @if (Auth::user()['status']==='admin')
 
-            @if ($errors->any())
-                <div class="alert alert-danger error">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <p class="margintb1">
                 Change the data only in the fields that you want to change.
             </p>

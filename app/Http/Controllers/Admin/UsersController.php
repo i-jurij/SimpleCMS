@@ -14,17 +14,11 @@ class UsersController extends Controller
     public function add()
     {
         return redirect()->route('register');
-        // return redirect('/register');
     }
 
     public function list()
     {
         $users = [];
-        /*
-        $users = DB::table('users')
-            ->select('id', 'name', 'email', 'status')
-            ->get();
-        */
         $users = User::paginate(12);
 
         return view('admin_manikur.adm_pages.user_list', ['content' => $users]);
@@ -55,12 +49,6 @@ class UsersController extends Controller
 
     public function show(Request $request)
     {
-        /*
-        $users = DB::table('users')
-            ->select('id', 'name', 'email', 'status')
-            ->where('id', $request->user_id)
-            ->get();
-        */
         $users = User::select('users.id', 'users.name', 'users.email', 'users.status')
             ->whereIn('users.id', $request->user_id)
             ->get();
