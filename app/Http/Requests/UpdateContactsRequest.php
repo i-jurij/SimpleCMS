@@ -2,16 +2,16 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateContactsRequest extends FormRequest
+class UpdateContactsRequest extends StoreContactsRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,11 @@ class UpdateContactsRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        return array_merge(parent::rules(), [
+            'data' => [
+                'required',
+                Rule::unique('contacts')->ignore($this->route('id')),
+            ],
+        ]);
     }
 }

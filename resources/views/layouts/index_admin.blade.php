@@ -23,11 +23,15 @@
         <div class="main ">
             <section class="main_section">
                 <div class="flex flex_top">
+                    <!--
                     <div class="content title">
                         <p class="nav">
                         @include('components/admin-pages-menu')
                         </p>
                     </div>
+                    -->
+                    <p class="content ">{{$title}}</p>
+
                     @if ($errors->any())
                         <div class="zapis_usluga back shad pad margin_rlb1 alert alert-danger error">
                             <ul>
@@ -39,7 +43,7 @@
                     @endif
                     @yield('content')
                     @if (url()->current() !== url()->route('admin.home'))
-                        @include('components/js_back_button')
+                        @include('components/back_button')
                     @endif
                 </div>
             </section>

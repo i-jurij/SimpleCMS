@@ -1,5 +1,5 @@
 <?php
-$title = 'Административная страница';
+$title = 'Admins page';
 $page_meta_description = 'admins page';
 $page_meta_keywords = 'admins page';
 $robots = 'NOINDEX, NOFOLLOW';

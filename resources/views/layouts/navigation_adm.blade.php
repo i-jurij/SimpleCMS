@@ -25,7 +25,6 @@
                         <x-nav-link :href="route('admin.user.change')" :active="request()->routeIs('admin.user.change')">
                             {{ __('User change') }}
                         </x-nav-link>
-                        <!--
                         <x-nav-link :href="route('admin.page.add')" :active="request()->routeIs('admin.page.add')">
                             {{ __('Page add') }}
                         </x-nav-link>
@@ -35,7 +34,6 @@
                         <x-nav-link :href="route('admin.logs')" :active="request()->routeIs('admin.logs')">
                             {{ __('Logs') }}
                         </x-nav-link>
-                        -->
                     @endif
                 </div>
             </div>
@@ -102,6 +100,7 @@
             <x-responsive-nav-link :href="route('admin.user.change')" :active="request()->routeIs('admin.user.change')">
                 {{ __('User change') }}
             </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('admin.page.add')" :active="request()->routeIs('admin.page.add')">
                 {{ __('Page add') }}
             </x-responsive-nav-link>
@@ -111,6 +110,7 @@
             <x-responsive-nav-link :href="route('admin.logs')" :active="request()->routeIs('admin.logs')">
                 {{ __('Logs') }}
             </x-responsive-nav-link>
+
             @endif
         </div>
 

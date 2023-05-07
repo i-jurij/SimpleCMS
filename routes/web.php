@@ -71,17 +71,20 @@ Route::prefix('admin')->name('admin.')
         ->name('contacts.')
         ->group(function () {
             Route::get('/', 'index')->name('list');
-            Route::get('/add', 'add')->name('add');
-            Route::get('/remove', 'list')->name('remove');
-            Route::post('/remove', 'remove')->name('post_remove');
-            Route::get('/change', 'list')->name('change');
-            Route::post('/change', 'show')->name('show');
-            Route::post('/change/store', 'store')->name('store');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/remove', 'index')->name('remove');
+            Route::post('/remove', 'destroy')->name('destroy');
+            Route::get('/edit', 'index')->name('edit');
+            Route::post('/edit', 'edit')->name('post_edit');
+            Route::post('/edit/update', 'update')->name('update');
         });
+
         Route::get('/page_edit', function () {
             return view('admin_manikur.admin_moder_pages.page_edit');
         })->name('page_edit');
     });
+
     /*
     * ADMIN AND MODER AND USER ROUTES
     */
