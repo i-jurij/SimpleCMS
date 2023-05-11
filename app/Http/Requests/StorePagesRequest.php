@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreContactsRequest extends FormRequest
+class StorePagesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,24 +22,27 @@ class StoreContactsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', 'max:100'],
-            'data' => 'required|max:100',
+            'alias' => ['required', 'unique:pages', 'max:100'],
+            'title' => 'required|max:100',
+            'description' => 'required|max:255',
         ];
     }
 
     public function messages()
     {
         return [
-            'type.required' => 'Warning! You have to fill in the :attribute field.',
-            'data.required' => 'Warning! You have to fill in the :attribute field.',
+            'alias.required' => 'Warning! You have to fill in the :attribute field.',
+            'title.required' => 'Warning! You have to fill in the :attribute field.',
+            'description.required' => 'Warning! You have to fill in the :attribute field.',
         ];
     }
 
     public function attributes()
     {
         return [
-            'type' => 'contacts type',
-            'data' => 'contacts data',
+            'alias' => 'pages alias',
+            'title' => 'pages title',
+            'description' => 'pages description',
         ];
     }
 }

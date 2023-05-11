@@ -16,6 +16,7 @@ function panel(array $variable)
             $res .= '</div>';
         }
         if (is_string($value) && !empty($value) && ($key !== 'admin' && $value !== 'admin.home')) {
+            // $res .= '<a href="'.url()->route($value, ['id' => $pages->id]).'" class="buttons">'.mb_ucfirst($key).'</a>';
             $res .= '<a href="'.url()->route($value).'" class="buttons">'.mb_ucfirst($key).'</a>';
         }
     }

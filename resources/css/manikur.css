@@ -55,6 +55,7 @@
 	:root {
 		--bgcolor: #BE4874;
 		--bgcolor-content: rgba(245,243,246,1);
+		--input_bgcolor: #3c4555;
 		--bgcolor-button-active: white;
 
 		--fontcolor-light: #BE4874;
@@ -88,7 +89,6 @@ body {
 	font-family: 'Liberation Sans', Arial, "Helvetica CY", Helvetica, "Nimbus Sans L", "Roboto", "Noto Sans", sans-serif;
 	font-size: var(--base-fontsize);
 	line-height: var(--base-lineheight);
-
 	text-align: center;
 	color: var(--fontcolor-light, red);
 }
@@ -104,8 +104,34 @@ a:link {
 
 a:visited, a:focus, a:hover,  a:active { text-decoration: underline; }
 
-input[type="text"], input[type="tel"], input[type="email"], input[type="password"], textarea {
-	background-color: #2F3849;
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="password"],
+textarea {
+	display: inline-block;
+	background: var(--input_bgcolor);
+	background-clip: padding-box;
+	font-family: inherit;
+	font-size: var(--base-fontsize);
+	border: 1px solid #999;
+	border-radius: var(--radius);
+}
+
+input[type="text"]:invalid,
+input[type="tel"]:invalid,
+input[type="email"]:invalid,
+input[type="password"]:invalid,
+textarea:invalid {
+	border-bottom: 2px solid red;
+}
+
+input[type="text"]:valid,
+input[type="tel"]:valid,
+input[type="email"]:valid,
+input[type="password"]:valid,
+textarea:valid {
+	border-bottom: 2px solid green;
 }
 
 .but_back {
@@ -551,9 +577,6 @@ a.gallery_a:hover img{
 
 .form-recall-main input,
 .form-recall-main textarea {
-	font-size: var(--base-fontsize);
-	border: 1px solid #999;
-	border-radius: var(--radius);
 	margin: 0.3rem 0;
 	padding: 0.7rem;
 	/* min-width: 17rem; */
@@ -1235,14 +1258,10 @@ a.gallery_a:hover img{
 	max-width: 45rem;
 }
 
-.form_page_add input,
 .form_page_add textarea {
-	font-size: var(--base-fontsize);
-	border: 1px solid #999;
-	border-radius: var(--radius);
-	width: 90%;
-	height:1.9rem;
-	display: inline;
+	background: var(--input_bgcolor);
+	width: 33rem;
+	height: auto;
 }
 
 .addServ{

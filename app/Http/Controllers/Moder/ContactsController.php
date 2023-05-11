@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Moder;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactsRequest;
 use App\Http\Requests\UpdateContactsRequest;
 use App\Models\Contacts;
@@ -38,7 +39,6 @@ class ContactsController extends Controller
      */
     public function store(StoreContactsRequest $request)
     {
-        $res = '';
         $create = Contacts::create(['type' => $request->type, 'data' => $request->data]);
 
         return view('admin_manikur.moder_pages.contacts_store', ['res' => $create->attributesToArray()]);
@@ -56,11 +56,15 @@ class ContactsController extends Controller
      */
     public function edit(Request $request)
     {
-        $contact_data = [
-            'id' => $request->input('contacts')['id'],
-            'type' => $request->input('contacts')['type'],
-            'data' => $request->input('contacts')['data'],
-        ];
+        $contacts_ids = [];
+        foreach ($request->contacts as $contact) {
+            list($id, $type, $data) = explode('plusplus', $contact);
+            $contact_data[] = [
+                'id' => $id,
+                'type' => $type,
+                'data' => $data,
+            ];
+        }
 
         return view('admin_manikur.moder_pages.contacts_edit_form', ['contact_data' => $contact_data]);
     }
@@ -70,6 +74,11 @@ class ContactsController extends Controller
      */
     public function update(UpdateContactsRequest $request, Contacts $contacts)
     {
+        if ($contacts::where('id', $request->id)->update(['type' => $request->type, 'data' => $request->data])) {
+            return $this->index('Contacts data have been updated!');
+        } else {
+            return $this->index('Contacts data have been NOT updated!');
+        }
     }
 
     /**
@@ -79,7 +88,7 @@ class ContactsController extends Controller
     {
         $contacts_ids = [];
         foreach ($request->contacts as $contact) {
-            $cd = explode('.', $contact);
+            $cd = explode('plusplus', $contact);
             $id = array_shift($cd);
             $contacts_ids[] = $id;
         }

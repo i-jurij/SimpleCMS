@@ -15,9 +15,15 @@ $data['content'] = 'CONTENT FOR DEL IN FUTURE';
 @endpush
 
 @section('content')
-   @if (!empty($content)) {{$content}}
-   @else {{$data['content']}}
-   @endif
+<div class="content">
+@if (!empty($content['pages_menu']))
+    @foreach ($content['pages_menu'] as $pages)
+        {{$pages['title']}}<br>
+    @endforeach
+@else
+    No routes (pages)
+@endif
+</div>
 @stop
 
 @Push('js')

@@ -56,7 +56,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                                         <td>{{$contact->type}}</td>
                                         <td>{{$contact->data}}</td>
                                         <td class="text_center" style="padding: 0;">
-                                            <input type="{{$type}}" name="contacts[]" value="{{$contact->id.'.'.$contact->type.'.'.$contact->data}}">
+                                            <input type="{{$type}}" name="contacts[]" value="{{$contact->id.'plusplus'.$contact->type.'plusplus'.$contact->data}}">
                                         </td>
                                     </tr>
 
@@ -100,47 +100,51 @@ $robots = 'NOINDEX, NOFOLLOW';
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    document.querySelector('#contacts_submit').disabled = true;
-    let table = document.querySelector('#ctable');
-    let edit = '<?php echo $buttonname; ?>';
+    let SUBM = document.querySelector('#contacts_submit');
+    if (SUBM) {
+        SUBM.disabled = true;
 
-    for(let i = 1; i < table.rows.length; i++)
-    {
-        table.rows[i].onclick = function()
+        let table = document.querySelector('#ctable');
+        let edit = '<?php echo $buttonname; ?>';
+
+        for(let i = 1; i < table.rows.length; i++)
         {
-            //rIndex = this.rowIndex;
-            /*
-            document.getElementById("fname").value = this.cells[0].innerHTML;
-            document.getElementById("lname").value = this.cells[1].innerHTML;
-            document.getElementById("age").value = this.cells[2].innerHTML;
-            */
-            if ( edit == 'Edit') {
-                for(let i = 1; i < table.rows.length; i++)
-                {
-                    table.rows[i].removeAttribute("style");
+            table.rows[i].onclick = function()
+            {
+                //rIndex = this.rowIndex;
+                /*
+                document.getElementById("fname").value = this.cells[0].innerHTML;
+                document.getElementById("lname").value = this.cells[1].innerHTML;
+                document.getElementById("age").value = this.cells[2].innerHTML;
+                */
+                if ( edit == 'Edit') {
+                    for(let i = 1; i < table.rows.length; i++)
+                    {
+                        table.rows[i].removeAttribute("style");
+                    }
                 }
-            }
 
-            let input = this.cells[3].children[0];
+                let input = this.cells[3].children[0];
 
-            if (this.style.color == 'red') {
+                if (this.style.color == 'red') {
+                    input.removeAttribute('checked');
+                    this.removeAttribute("style");
+                } else {
+                    this.style.color = 'red';
+                    input.setAttribute('checked', 'checked');
+                }
+
+                SUBM.disabled = false;
+            };
+        }
+
+        document.querySelector('#contacts_reset').onclick = function () {
+            for (let i = 1; i < table.rows.length; i++)
+            {
+                let input = table.rows[i].cells[3].children[0];
                 input.removeAttribute('checked');
-                this.removeAttribute("style");
-            } else {
-                this.style.color = 'red';
-                input.setAttribute('checked', 'checked');
+                table.rows[i].removeAttribute("style");
             }
-
-            document.querySelector('#contacts_submit').disabled = false;
-        };
-    }
-
-    document.querySelector('#contacts_reset').onclick = function () {
-        for (let i = 1; i < table.rows.length; i++)
-        {
-            let input = table.rows[i].cells[3].children[0];
-            input.removeAttribute('checked');
-            table.rows[i].removeAttribute("style");
         }
     }
 });

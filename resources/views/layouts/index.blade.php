@@ -26,6 +26,15 @@
                     <div class="content title">
                         <h2>{{ $title }}</h2>
                     </div>
+                    @if ($errors->any())
+                        <div class="zapis_usluga back shad pad margin_rlb1 alert alert-danger error">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     @yield('content')
                 </div>
             </section>

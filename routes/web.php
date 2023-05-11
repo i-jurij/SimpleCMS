@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminHomeController;
-use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\ContactsController;
+use App\Http\Controllers\Client\ClientHomeController;
+use App\Http\Controllers\Moder\ContactsController;
+use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,10 +23,11 @@ use Illuminate\Support\Facades\Route;
 /*
  * HOME PAGES ROUTES
  */
-Route::get('/', function () {
-    return view('client_manikur.home');
-})->name('main.home');
-
+Route::name('client.')
+->group(function () {
+    // Client home route
+    Route::get('/', [ClientHomeController::class, 'index'])->name('home');
+});
 /*
 * ADMIN PAGES ROUTES
 */
@@ -48,16 +50,20 @@ Route::prefix('admin')->name('admin.')
                 Route::post('/change', 'show')->name('show');
                 Route::post('/change/store', 'store')->name('store');
             });
-        /*
-        Route::controller(PageController::class)
-            ->prefix('page')
-            ->name('page.')
-            ->group(function () {
-                Route::get('/add', 'add')->name('add');
-                Route::get('/remove', 'list')->name('remove');
-                Route::post('/remove', 'remove')->name('post_remove');
-            });
-        */
+
+        // Route::resource('pages', PagesController::class);
+        Route::controller(PagesController::class)
+        ->prefix('pages')
+        ->name('pages.')
+        ->group(function () {
+            Route::get('/', 'index')->name('edit');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::post('/remove', 'destroy')->name('remove');
+            Route::post('/edit', 'edit')->name('post_edit');
+            Route::patch('/edit/{id}', 'update')->name('update');
+        });
+
         Route::get('/logs', function () {
             return view('admin_manikur.adm_pages.logs');
         })->name('logs');
@@ -80,9 +86,9 @@ Route::prefix('admin')->name('admin.')
             Route::post('/edit/update', 'update')->name('update');
         });
 
-        Route::get('/page_edit', function () {
+        Route::get('/service_edit', function () {
             return view('admin_manikur.admin_moder_pages.page_edit');
-        })->name('page_edit');
+        })->name('service_edit');
     });
 
     /*
