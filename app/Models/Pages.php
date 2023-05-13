@@ -15,7 +15,7 @@ class Pages extends Model
         'keywords',
         'robots',
         'content',
-        'service',
+        'single_page',
         'img',
         'publish',
     ];

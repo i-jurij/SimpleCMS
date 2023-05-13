@@ -7,33 +7,47 @@ $robots = 'NOINDEX, NOFOLLOW';
 
 @extends('layouts/index_admin')
 @section('content')
-    @if (!empty($res)) <p class="content">MESSAGE: {{$res}}</p> @endif
+    @if (!empty($res)) <p class="content">MESSAGE: {!! $res !!}</p> @endif
 
     @if (!empty($pages))
-    <form method="post" action="{{ url()->route('admin.pages.remove') }}" id="pages_remove_form" class="pad">
-        @csrf
-
-        @foreach ($pages as $key => $page)
-            {{$key+1}}<br>
-            <input type="submit" value="{{$page['id']}}" name="id" /><br>
-            {{$page['alias']}}<br>
-            {{$page['title']}}<br>
-            {{$page['description']}}<br>
-            {{$page['keywords']}}<br>
-            {{$page['robots']}}<br>
-            {{$page['content']}}<br>
-            {{$page['single_page']}}<br>
-            {{$page['img']}}<br>
-            {{$page['publish']}}<br>
-            {{$page['created_at']}}<br>
-            {{$page['updated_at']}}<br>
-
-        @endforeach
-
-        <div class="form-element mar">
-            <!-- <button type="submit" form="contacts_form" class="buttons" id="contacts_submit">Remove</button> -->
-            <button type="reset" form="contacts_form" class="buttons" id="contacts_reset">Reset</button>
+        @if (is_array($pages))
+        <div class="content margintb1 ">
+        <div class="">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>N</th>
+                        <th>Alias</th>
+                        <th>Title</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text_left">
+                        @foreach ($pages as $key => $page)
+                        <tr>
+                            <td>{{$key + 1}}</td>
+                            <td>{{$page['alias']}}</td>
+                            <td>{{$page['title']}}</td>
+                            <td>
+                            <form method="post" action="{{ url()->route('admin.pages.edit.form') }}" class="display_inline_block">
+                            @csrf
+                                <button type="submit" class="buttons" value="{{$page['id']}}" name="id">Edit</button>
+                            </form>
+                            <form method="post" action="{{ url()->route('admin.pages.remove') }}" class="display_inline_block">
+                            @csrf
+                                <button type="submit" class="buttons" value="{{$page['id']}}plusplus{{$page['alias']}}plusplus{{$page['img']}}" name="id">Remove</button>
+                            </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </form>
+        @else
+            <p class="content">MESSAGE: {{$pages}}</p>
+        @endif
+    @else
+        <p class="content">MESSAGE: No data</p>
     @endif
 @stop

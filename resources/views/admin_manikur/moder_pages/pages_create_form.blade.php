@@ -28,6 +28,7 @@ $robots = 'NOINDEX, NOFOLLOW';
 </div>
 
 <div class=" ">
+@if (!empty($img_res)) <p class="content">MESSAGE: {!! $img_res !!}</p> @endif
     <div class="margin_bottom_1rem" style="max-width:55rem;">
                 <form action="{{url()->route('admin.pages.store')}}" method="post" enctype="multipart/form-data" name="create_page" id="create_page" class="form_page_add">
                 @csrf
@@ -47,6 +48,11 @@ if (!empty($fields)) {
             $required = ($key === 'alias' || $key === 'title' || $key === 'description') ? 'required' : '';
             $star = ($key === 'alias' || $key === 'title' || $key === 'description') ? '*' : '';
             $value = '';
+            $pattern = '';
+            $placeholder = '';
+            if ($key === 'alias') {
+                $pattern = 'pattern="^[a-zA-Zа-яА-ЯёЁ0-9-_]{1,100}$"  placeholder="Letter, numbers, dash, underline"';
+            }
             if ($key === 'content' || $key === 'description') {
                 if ($key === 'content') {
                     $placeholder = 'Pages text or html, php, js content';
@@ -73,7 +79,7 @@ if (!empty($fields)) {
                 $value = 'yes';
             }
             echo $br.'<label class="display_inline_block margin_bottom_1rem">'.$key.' '.$star.' ('.$val->getLength().')<br />'
-                        .$input_start.' name="'.$key.'" maxlength="'.$val->getLength().'" value="'.$value.'" '.$required.$input_end.
+                        .$input_start.' name="'.$key.'" maxlength="'.$val->getLength().'" value="'.$value.'" '.$pattern.' '.$required.$input_end.
                     '</label>'.$br.PHP_EOL;
 
             unset($value, $length, $type);

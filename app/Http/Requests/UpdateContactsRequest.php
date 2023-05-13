@@ -24,7 +24,7 @@ class UpdateContactsRequest extends StoreContactsRequest
         return array_merge(parent::rules(), [
             'data' => [
                 'required',
-                Rule::unique('contacts')->ignore($this->route('id')),
+                Rule::unique('contacts')->ignore($this->id),
             ],
         ]);
     }

@@ -56,12 +56,13 @@ Route::prefix('admin')->name('admin.')
         ->prefix('pages')
         ->name('pages.')
         ->group(function () {
-            Route::get('/', 'index')->name('edit');
             Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
+            Route::post('/create', 'store')->name('store');
+            Route::get('/remove', 'index')->name('edit');
             Route::post('/remove', 'destroy')->name('remove');
-            Route::post('/edit', 'edit')->name('post_edit');
-            Route::patch('/edit/{id}', 'update')->name('update');
+            Route::get('/edit', 'index')->name('edit');
+            Route::post('/edit', 'edit')->name('edit.form');
+            Route::post('/update', 'update')->name('update');
         });
 
         Route::get('/logs', function () {

@@ -22,7 +22,7 @@ class StorePagesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'alias' => ['required', 'unique:pages', 'max:100'],
+            'alias' => ['required', 'unique:pages,alias', 'regex:/^[a-zA-Zа-яА-ЯёЁ0-9-_]{1,100}$/', 'max:100'],
             'title' => 'required|max:100',
             'description' => 'required|max:255',
         ];

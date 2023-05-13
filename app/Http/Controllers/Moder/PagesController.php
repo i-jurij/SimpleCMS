@@ -11,12 +11,14 @@ use Illuminate\Support\Facades\Schema;
 
 class PagesController extends Controller
 {
+    use \App\Traits\Upload;
+
     /**
      * Display a listing of the resource.
      */
     public function index(string $res = null)
     {
-        $pages = (Pages::all()->toArray()) ? Pages::all()->toArray() : ['No pages in DB'];
+        $pages = (Pages::all()->toArray()) ? Pages::all()->toArray() : 'No pages in DB';
 
         return view('admin_manikur.moder_pages.pages', ['res' => $res, 'pages' => $pages]);
     }
@@ -37,9 +39,17 @@ class PagesController extends Controller
     public function store(StorePagesRequest $request)
     {
         // upload image
-        //
-        // get image name
-        $img = $request->alias;
+        $this->disk = 'public';
+        $this->folder = 'images/pages';
+        $this->filename = $request->alias;
+
+        $img_valid = $request->validate([
+            'picture' => 'mimes:jpg,png,webp|max:1024000',
+            ]);
+        if ($request->hasFile('picture') && $img_valid) {
+            $img = $this->UploadFile($request->file('picture'));
+            $img_res = 'The page image has been uploaded.';
+        }
 
         // if single_page no or false - create models, controllers, views etc
 
@@ -51,11 +61,12 @@ class PagesController extends Controller
             'robots' => $request->robots,
             'content' => ($request->content) ? $request->content : '',
             'single_page' => $request->single_page,
-            'img' => $img,
+            'img' => ($img) ? $img : '',
             'publish' => $request->publish,
         ]);
+        $res = $create->attributesToArray();
 
-        return view('admin_manikur.moder_pages.pages_store', ['res' => $create->attributesToArray()]);
+        return view('admin_manikur.moder_pages.pages_store', ['res' => $res, 'img_res' => $img_res]);
     }
 
     /**
@@ -68,11 +79,11 @@ class PagesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pages $pages)
+    public function edit(Request $request, Pages $pages)
     {
-        $data = $pages->all()->toArray();
+        $data = $pages->where('id', $request->id)->get()->toArray();
 
-        return view('admin_manikur.moder_pages.pages_edit_form', ['fields' => $data]);
+        return view('admin_manikur.moder_pages.page_edit_form', ['fields' => $data]);
     }
 
     /**
@@ -80,6 +91,24 @@ class PagesController extends Controller
      */
     public function update(UpdatePagesRequest $request, Pages $pages)
     {
+        $array = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'keywords' => ($request->keywords) ? $request->keywords : '',
+            'robots' => $request->robots,
+            'content' => ($request->content) ? $request->content : '',
+            'single_page' => $request->single_page,
+            'img' => $request->img,
+            'publish' => $request->publish,
+        ];
+        if ($pages->alias !== $request->alias) {
+            $array['alias'] = $request->alias;
+        }
+        if ($pages::where('id', $request->id)->update($array)) {
+            return $this->index('Data of pages <b>"'.$request->alias.'"</b> have been updated!');
+        } else {
+            return $this->index('Data of pages <b>"'.$request->alias.'"</b> have been NOT updated!');
+        }
     }
 
     /**
@@ -87,12 +116,16 @@ class PagesController extends Controller
      */
     public function destroy(Request $request, Pages $pages)
     {
-        $page_id = ($request->id) ? $request->id : false;
+        list($page_id, $alias, $img) = explode('plusplus', $request->id);
+        if ($pages->destroy($page_id)) {
+            $res = 'Data of page <b>'.$alias.'</b> have been removed!<br>';
+            if ($this->deleteFile($img, 'public')) {
+                $res .= 'Image of page <b>'.$alias.'</b> have been removed!';
+            }
 
-        if ((bool) $page_id && $pages->destroy($page_id)) {
-            return $this->index('Pages data have been removed!');
+            return $this->index($res);
         } else {
-            return $this->index('WARNING! Pages data have been NOT removed!');
+            return $this->index('WARNING! The page <b>'.$alias.'</b> was deleted earlier or NOT removed!');
         }
     }
 }
