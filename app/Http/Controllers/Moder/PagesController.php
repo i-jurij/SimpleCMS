@@ -51,7 +51,10 @@ class PagesController extends Controller
             $img_res = 'The page image has been uploaded.';
         }
 
-        // if single_page no or false - create models, controllers, views etc
+        // if single_page no or false - create models, controllers etc
+        if ($request->single_page === 'no' || $request->single_page == false) {
+            // code...
+        }
 
         $create = Pages::create([
             'alias' => $request->alias,

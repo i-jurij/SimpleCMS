@@ -12,7 +12,7 @@ class ClientHomeController extends Controller
     public function index()
     {
         $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
-        $content['pages_menu'] = (Pages::all()->toArray()) ? Pages::all()->toArray() : ['No pages in DB'];
+        $content['pages_menu'] = Pages::where('publish', '=', 'yes')->get()->toArray() ?? ['No pages in DB'];
 
         return view('client_manikur.home', ['content' => $content]);
     }

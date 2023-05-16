@@ -17,10 +17,12 @@ trait Upload
         $name_of_file = !is_null($this->filename) ? $this->filename : Str::random(10);
         $folder = !is_null($this->folder) ? $this->folder : null;
         $disk = !is_null($this->disk) ? $this->disk : 'public';
+        // $extension = $file->getClientOriginalExtension();
+        $extension = $file->extension(); // Determine the file's extension based on the file's MIME type...
 
         return $file->storeAs(
             $folder,
-            $name_of_file.'.'.$file->getClientOriginalExtension(),
+            $name_of_file.'.'.$extension,
             $disk
         );
     }

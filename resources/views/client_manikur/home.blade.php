@@ -20,15 +20,15 @@ $data['content'] = 'CONTENT FOR DEL IN FUTURE';
     @foreach ($content['pages_menu'] as $pages)
         @if (is_array($pages) && !empty($pages))
             <article class="main_section_article ">
-                <a class="main_section_article_content_a" href="" >
+                <a class="main_section_article_content_a" href="{{url('/'.$pages['alias'])}}" >
                     <div class="main_section_article_imgdiv">
                     <img src="{{asset('storage/'.$pages['img'])}}" alt="{{$pages['title']}}" class="main_section_article_imgdiv_img" />
                     </div>
 
                     <div class="main_section_article_content margin_top_1rem">
-                        <h3>{{$pages['title']}}</h3>
+                        <h3>{{mb_ucfirst($pages['title'])}}</h3>
                         <span>
-                            {{$pages['description']}}
+                            {{mb_ucfirst($pages['description'])}}
                         </span>
                     </div>
                 </a>

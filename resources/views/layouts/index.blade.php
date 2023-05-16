@@ -24,7 +24,7 @@
             <section class="main_section">
                 <div class="flex flex_top">
                     <div class="content title">
-                        <h2>{{ $title }}</h2>
+                        <h1>{{ $title }}</h1>
                     </div>
                     @if ($errors->any())
                         <div class="zapis_usluga back shad pad margin_rlb1 alert alert-danger error">
@@ -36,6 +36,14 @@
                         </div>
                     @endif
                     @yield('content')
+                    @if (url()->current() !== url()->route('client.home'))
+                        @php $pieces = explode('/', Request::path()); @endphp
+                        @if (count($pieces) > 2)
+                            @include('components/back_button')
+                        @else
+                            @include('components/button_client_home')
+                        @endif
+                    @endif
                 </div>
             </section>
         </div>
