@@ -37,7 +37,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                         if ($key === 'content') {
                             $length = '65535';
                         }
-                    } elseif ($key === 'id') {
+                    } elseif ($key === 'id' || $key === 'single_page' || $key === 'service_page') {
                         $input_start = '<input type="hidden" style="width:100%;"';
                         $input_end = ' />'.$value;
                     } else {
@@ -49,7 +49,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                         $length = '500';
                     }
 
-                    if ($key === 'single_page' || $key === 'publish') {
+                    if ($key === 'publish') {
                         $length = '10';
                     }
 

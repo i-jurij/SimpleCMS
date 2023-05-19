@@ -1,0 +1,183 @@
+<?php
+
+namespace App\Traits;
+
+use Illuminate\Support\Facades\Artisan;
+
+trait CreateDeleteClientPage
+{
+    use CreateFile;
+    use FileFind;
+    use DeleteFile;
+
+    protected function createFile($path, $content)
+    {
+        if ($this->checkAndCreateFile($path, $content)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function delContrModMigrView($page_alias): string
+    {
+        $mes = '';
+        if (function_exists('mb_ucfirst')) {
+            $classname = mb_ucfirst($page_alias);
+        }
+        $migrations_dir = app_path().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'migrations';
+        // $controller = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
+        $controller = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Client'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
+        $model = app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$classname.'.php';
+        $migration = $this->migrationFind($migrations_dir, $page_alias).'';
+        $view = realpath(app_path().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'client_manikur'.DIRECTORY_SEPARATOR.'client_pages'.DIRECTORY_SEPARATOR.$page_alias.'.blade.php');
+
+        $path_array = [
+            'controller' => $controller,
+            'model' => $model,
+            'migration' => $migration,
+            'view' => $view,
+        ];
+        foreach ($path_array as $key => $path) {
+            if ($this->deleteFile($path)) {
+                $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been deleted.<br>';
+            } else {
+                $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been NOT deleted.<br>'.(string) $this->delFile($path);
+            }
+        }
+
+        return $mes;
+    }
+
+    protected function createNoSingleController($classname)
+    {
+        $path = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Client'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
+        $content = '<?php'
+            .PHP_EOL.'namespace App\Http\Controllers\Client;'
+            .PHP_EOL.'use App\Http\Controllers\Controller;'
+            .PHP_EOL.'use App\Models\Contacts;'
+            .PHP_EOL.'use App\Models\Pages;'
+            .PHP_EOL.'class '.$classname.'Controller extends Controller'
+            .PHP_EOL.'{'
+                .PHP_EOL.'public function index($content, $page_data)'
+                .PHP_EOL.'{'
+                    .PHP_EOL.'$res = ["Empty page."];'
+                    .PHP_EOL.'return view("client_manikur.client_pages.'.mb_strtolower($classname).'", ["page_data" => $page_data, "content" => $content, "res" => $res]);'
+                    .PHP_EOL.'}'
+                .PHP_EOL.'}
+        ';
+
+        return $this->createFile($path, $content);
+    }
+
+    protected function createNoSingleView($page_alias)
+    {
+        $path = app_path().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'client_manikur'.DIRECTORY_SEPARATOR.'client_pages'.DIRECTORY_SEPARATOR.$page_alias.'.blade.php';
+        $content = '@php'.PHP_EOL.'
+            if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {'.PHP_EOL.'
+                $title = $page_data[0]["title"];'.PHP_EOL.'
+                $page_meta_description = $page_data[0]["description"];'.PHP_EOL.'
+                $page_meta_keywords = $page_data[0]["keywords"];'.PHP_EOL.'
+                $robots = $page_data[0]["robots"];'.PHP_EOL.'
+                $content["page_content"] = $page_data[0]["content"];'.PHP_EOL.'
+            } else {'.PHP_EOL.'
+                $title = "Title";'.PHP_EOL.'
+                $page_meta_description = "description";'.PHP_EOL.'
+                $page_meta_keywords = "keywords";'.PHP_EOL.'
+                $robots = "INDEX, FOLLOW";'.PHP_EOL.'
+                $content = "CONTENT FOR DEL IN FUTURE";'.PHP_EOL.'
+            }'.PHP_EOL.'
+            @endphp'.PHP_EOL.'
+            @extends("layouts/index")'.PHP_EOL.'
+
+            @section("content")'.PHP_EOL.'
+                @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif'.PHP_EOL.'
+
+                <div class="content">'.PHP_EOL.'
+                @if (!empty($res) && is_array($res))'.PHP_EOL.'
+                    @foreach ($res as $re)'.PHP_EOL.'
+                        {{$re}}'.PHP_EOL.'
+                    @endforeach'.PHP_EOL.'
+                @endif'.PHP_EOL.'
+                @if (!empty($content["page_content"]))'.PHP_EOL.'
+                    {!! $content["page_content"] !!}'.PHP_EOL.'
+                @endif'.PHP_EOL.'
+                </div>'.PHP_EOL.'
+            @stop
+        ';
+
+        return $this->createFile($path, $content);
+    }
+
+    public function createNoSinglePage($page_alias): bool
+    {
+        if (function_exists('mb_ucfirst')) {
+            $classname = mb_ucfirst($page_alias);
+        }
+        // $artisan = Artisan::call('make:model', ['name' => $classname, '--controller' => true, '--migration' => true]);
+        $artisan = Artisan::call('make:model', ['name' => $classname, '--migration' => true]);
+
+        if ($artisan === 0 && $this->createNoSingleController($classname) && $this->createNoSingleView($page_alias)) {
+            // put controller, model, migration code into files
+            return true;
+        } else {
+            // delete created files
+            $this->delContrModMigrView($page_alias);
+
+            return false;
+        }
+    }
+
+// ////////////////////////////////////////////////////////////////////////////
+// for services pages
+// ///////////////////////////////////////////////////////////////////////////
+    public function createServicePage($page_alias): bool
+    {
+        // create controller, model, migrate, view
+        if (function_exists('mb_ucfirst')) {
+            $classname = mb_ucfirst($page_alias);
+        }
+        if ($this->createController($classname)) {
+            return true;
+        } else {
+            // delete created files
+            /* code */
+            return false;
+        }
+    }
+
+    protected function createController($classname)
+    {
+        $path = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Client'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
+        $content = '<?php'
+            .PHP_EOL.'namespace App\Http\Controllers\Client;'
+            .PHP_EOL.'use App\Http\Controllers\Controller;'
+            .PHP_EOL.'use App\Models\Contacts;'
+            .PHP_EOL.'use App\Models\Pages;'
+            .PHP_EOL.'class '.$classname.'Controller extends Controller'
+            .PHP_EOL.'{'
+                .PHP_EOL.'public function index($content, $page_data)'
+                .PHP_EOL.'{'
+                    .PHP_EOL.'$res = [];'
+                    .PHP_EOL.'return view("client_manikur.client_pages.'.$classname.'", ["page_data" => $page_data, "content" => $content, "res" => $res]);'
+                    .PHP_EOL.'}'
+                .PHP_EOL.'}
+        ';
+    }
+
+    protected function createModel($classname)
+    {
+        $path = app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$classname.'.php';
+        $content = '<?php'.PHP_EOL.'
+            namespace App\Models;'.PHP_EOL.'
+            use Illuminate\Database\Eloquent\Factories\HasFactory;'.PHP_EOL.'
+            use Illuminate\Database\Eloquent\Model;'.PHP_EOL.'
+            class '.$classname.' extends Model'.PHP_EOL.'
+            {'.PHP_EOL.'
+                use HasFactory;'.PHP_EOL.'
+                protected $fillable = ['.PHP_EOL.'
+                ];'.PHP_EOL.'
+            }
+        ';
+    }
+}

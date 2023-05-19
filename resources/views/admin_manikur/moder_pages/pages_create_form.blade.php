@@ -72,11 +72,11 @@ if (!empty($fields)) {
             if ($key === 'robots') {
                 $value = 'INDEX,FOLLOW';
             }
-            if ($key === 'single_page') {
+            if ($key === 'single_page' || $key === 'publish') {
                 $value = 'yes';
             }
-            if ($key === 'publish') {
-                $value = 'yes';
+            if ($key === 'service_page') {
+                $value = 'no';
             }
             echo $br.'<label class="display_inline_block margin_bottom_1rem">'.$key.' '.$star.' ('.$val->getLength().')<br />'
                         .$input_start.' name="'.$key.'" maxlength="'.$val->getLength().'" value="'.$value.'" '.$pattern.' '.$required.$input_end.

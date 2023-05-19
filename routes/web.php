@@ -3,11 +3,11 @@
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Client\AboutController;
 use App\Http\Controllers\Client\ClientHomeController;
 use App\Http\Controllers\Moder\ContactsController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Contacts;
 use App\Models\Pages;
 use Illuminate\Support\Facades\Route;
 
@@ -30,15 +30,8 @@ Route::name('client.')
     // Client home route
     Route::get('/', [ClientHomeController::class, 'index'])->name('home');
 
-    Route::get('/{page_alias?}', function (Pages $pages, $page_alias) {
-        $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
-        $page_data = ($pages->where('alias', $page_alias)->get()) ? $pages->where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
-        if (view()->exists('client_manikur.client_pages.'.$page_alias)) {
-            return view('client_manikur.client_pages.'.$page_alias, ['page_data' => $page_data, 'content' => $content]);
-        } else {
-            return view('client_manikur.page_template', ['page_data' => $page_data, 'content' => $content]);
-        }
-    })->where('page_alias', '^((?!login|register|admin|api).)*$');
+    Route::get('/{page_alias?}', [ClientHomeController::class, 'page'])
+    ->where('page_alias', '^((?!login|register|dashboard|admin|api).)*$');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');
 });
@@ -92,6 +85,19 @@ Route::prefix('admin')->name('admin.')
         ->name('contacts.')
         ->group(function () {
             Route::get('/', 'index')->name('list');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/remove', 'index')->name('remove');
+            Route::post('/remove', 'destroy')->name('destroy');
+            Route::get('/edit', 'index')->name('edit');
+            Route::post('/edit', 'edit')->name('post_edit');
+            Route::post('/edit/update', 'update')->name('update');
+        });
+
+        Route::controller(AboutController::class)
+        ->prefix('about_editor')
+        ->name('about_editor.')
+        ->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
             Route::get('/remove', 'index')->name('remove');

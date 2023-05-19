@@ -1,5 +1,5 @@
 @php
-if (isset($page_data) && !empty($page_data[0])) {
+if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $title = $page_data[0]['title'];
     $page_meta_description = $page_data[0]['description'];
     $page_meta_keywords = $page_data[0]['keywords'];

@@ -10,8 +10,8 @@ return new class() extends Migration {
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('status')->default('user');
+        Schema::table('pages', function (Blueprint $table) {
+            $table->char('service_page', 10)->default('no');
         });
     }
 
@@ -20,8 +20,8 @@ return new class() extends Migration {
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('pages', function (Blueprint $table) {
+            $table->dropColumn('service_page');
         });
     }
 };

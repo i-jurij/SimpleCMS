@@ -12,7 +12,7 @@ trait Upload
     public string $folder;
     public string $filename;
 
-    public function UploadFile(UploadedFile $file)
+    public function uploadFile(UploadedFile $file)
     {
         $name_of_file = !is_null($this->filename) ? $this->filename : Str::random(10);
         $folder = !is_null($this->folder) ? $this->folder : null;
@@ -27,7 +27,7 @@ trait Upload
         );
     }
 
-    public function deleteFile($path, $disk = 'public')
+    public function removeFile($path, $disk = 'public')
     {
         if (Storage::disk($disk)->delete($path)) {
             return true;

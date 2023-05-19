@@ -26,7 +26,7 @@ $data['content'] = 'CONTENT FOR DEL IN FUTURE';
                     </div>
 
                     <div class="main_section_article_content margin_top_1rem">
-                        <h3>{{mb_ucfirst($pages['title'])}}</h3>
+                        <h2>{{mb_ucfirst($pages['title'])}}</h2>
                         <span>
                             {{mb_ucfirst($pages['description'])}}
                         </span>

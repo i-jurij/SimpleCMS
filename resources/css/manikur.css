@@ -538,7 +538,9 @@ textarea:valid {
   .main_section_article_content span {
     padding: 0 0 0 0;
   }
-
+  .main_section_article_content h2 {
+    font-size: var(--big-fontsize);
+  }
   .main_section_article_content_a {
     font-family: var(--family);
   }
@@ -754,6 +756,11 @@ a.gallery_a:hover img{
 	padding: 1rem 3rem 2rem 3rem;
 	text-align: justify;
 	max-width: 60rem;
+}
+
+.persinfo h3 {
+	margin: 0 auto 1rem auto;
+	font-size: var(--big-fontsize);
 }
 
 .persinfo ul {

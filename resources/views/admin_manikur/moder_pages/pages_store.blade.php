@@ -11,7 +11,7 @@ $robots = 'NOINDEX, NOFOLLOW';
 
     <div class="content margintb1 ">
         <div class="price">
-            @if (!empty($img_res)) {{$img_res}} @endif
+            @if (!empty($img_res)) {!!$img_res!!} @endif
             <p class="margin_bottom_1rem ">Pages data has been stored!</p>
                 <table class="table">
                     <thead>

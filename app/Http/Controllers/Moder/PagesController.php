@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Schema;
 class PagesController extends Controller
 {
     use \App\Traits\Upload;
+    use \App\Traits\CreateDeleteClientPage;
 
     /**
      * Display a listing of the resource.
@@ -47,13 +48,18 @@ class PagesController extends Controller
             'picture' => 'mimes:jpg,png,webp|max:1024000',
             ]);
         if ($request->hasFile('picture') && $img_valid) {
-            $img = $this->UploadFile($request->file('picture'));
-            $img_res = 'The page image has been uploaded.';
+            // $this->uploadFile($request->file('picture')) from trait Upload
+            $img = $this->uploadFile($request->file('picture'));
+            $img_res = 'The page image has been uploaded.<br>';
         }
 
-        // if single_page no or false - create models, controllers etc
-        if ($request->single_page === 'no' || $request->single_page == false) {
-            // code...
+        // if single_page === no - create models, controllers etc
+        if ($request->single_page === 'no') {
+            if ($this->createNoSinglePage($request->alias)) {
+                $img_res .= 'Controller, model, migration, view has been created.';
+            } else {
+                $img_res .= 'WARNING! Controller, model, migration, view has been NOT created.';
+            }
         }
 
         $create = Pages::create([
@@ -64,6 +70,7 @@ class PagesController extends Controller
             'robots' => $request->robots,
             'content' => ($request->content) ? $request->content : '',
             'single_page' => $request->single_page,
+            'service_page' => $request->service_page,
             'img' => ($img) ? $img : '',
             'publish' => $request->publish,
         ]);
@@ -101,6 +108,7 @@ class PagesController extends Controller
             'robots' => $request->robots,
             'content' => ($request->content) ? $request->content : '',
             'single_page' => $request->single_page,
+            'service_page' => $request->service_page,
             'img' => $request->img,
             'publish' => $request->publish,
         ];
@@ -119,10 +127,16 @@ class PagesController extends Controller
      */
     public function destroy(Request $request, Pages $pages)
     {
-        list($page_id, $alias, $img) = explode('plusplus', $request->id);
+        $res = '';
+        list($page_id, $alias, $img, $single_page) = explode('plusplus', $request->id);
+        if ($single_page === 'no') {
+            // delete created files
+            $res .= $this->delContrModMigrView($alias);
+        }
         if ($pages->destroy($page_id)) {
-            $res = 'Data of page <b>'.$alias.'</b> have been removed!<br>';
-            if ($this->deleteFile($img, 'public')) {
+            $res .= 'Data of page in DB <b>'.$alias.'</b> have been removed!<br>';
+            /* $this->deleteFile($img, 'public') from trait Upload */
+            if ($this->removeFile($img, 'public')) {
                 $res .= 'Image of page <b>'.$alias.'</b> have been removed!';
             }
 

@@ -7,7 +7,7 @@ $robots = 'NOINDEX, NOFOLLOW';
 
 @extends('layouts/index_admin')
 @section('content')
-    @if (!empty($res)) <p class="content">MESSAGE: {!! $res !!}</p> @endif
+    @if (!empty($res)) <p class="content">MESSAGE:<br> {!! $res !!}</p> @endif
 
     @if (!empty($pages))
         @if (is_array($pages))
@@ -35,7 +35,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                             </form>
                             <form method="post" action="{{ url()->route('admin.pages.remove') }}" class="display_inline_block">
                             @csrf
-                                <button type="submit" class="buttons" value="{{$page['id']}}plusplus{{$page['alias']}}plusplus{{$page['img']}}" name="id">Remove</button>
+                                <button type="submit" class="buttons" value="{{$page['id']}}plusplus{{$page['alias']}}plusplus{{$page['img']}}plusplus{{$page['single_page']}}" name="id">Remove</button>
                             </form>
                             </td>
                         </tr>
@@ -45,9 +45,9 @@ $robots = 'NOINDEX, NOFOLLOW';
             </div>
         </div>
         @else
-            <p class="content">MESSAGE: {{$pages}}</p>
+            <p class="content">MESSAGE:<br> {{$pages}}</p>
         @endif
     @else
-        <p class="content">MESSAGE: No data</p>
+        <p class="content">MESSAGE:<br> No data</p>
     @endif
 @stop
