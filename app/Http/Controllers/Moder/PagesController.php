@@ -130,9 +130,10 @@ class PagesController extends Controller
         $res = '';
         list($page_id, $alias, $img, $single_page) = explode('plusplus', $request->id);
         if ($single_page === 'no') {
-            // delete created files
+            // delete created files, tables
             $res .= $this->delContrModMigrView($alias);
         }
+
         if ($pages->destroy($page_id)) {
             $res .= 'Data of page in DB <b>'.$alias.'</b> have been removed!<br>';
             /* $this->deleteFile($img, 'public') from trait Upload */

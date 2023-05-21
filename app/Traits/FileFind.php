@@ -10,21 +10,22 @@
 
 namespace App\Traits;
 
-use Illuminate\Support\Facades\Storage;
-
 trait FileFind
 {
     use FilesInDir;
-    public function migrationFind($dir, $page_alias) : string
+
+    public function migrationFind($dir, $page_alias): array
     {
+        $res = [];
         // list all filenames in given path
         $allFiles = $this->filesindir($dir);
         // iterate through files and echo their content
         foreach ($allFiles as $file) {
-            if (mb_strpos($file, '_create_'.$page_alias.'_table') || mb_strpos($file, '_create_'.$page_alias.'s_table')) {
-                $res = realpath($dir.DIRECTORY_SEPARATOR.$file);
+            if (mb_strpos($file, $page_alias.'_table') || mb_strpos($file, $page_alias.'s_table')) {
+                $res[] = realpath($dir.DIRECTORY_SEPARATOR.$file);
             }
         }
+
         return $res;
     }
 

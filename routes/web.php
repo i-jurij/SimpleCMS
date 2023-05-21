@@ -100,9 +100,9 @@ Route::prefix('admin')->name('admin.')
         ->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
-            Route::get('/remove', 'index')->name('remove');
+            Route::get('/remove', 'admin_index')->name('remove');
             Route::post('/remove', 'destroy')->name('destroy');
-            Route::get('/edit', 'index')->name('edit');
+            Route::get('/edit', 'admin_index')->name('edit');
             Route::post('/edit', 'edit')->name('post_edit');
             Route::post('/edit/update', 'update')->name('update');
         });

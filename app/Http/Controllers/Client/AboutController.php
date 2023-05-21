@@ -4,27 +4,58 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\About;
-use App\Models\Pages;
-use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Schema;
+use App\Models\Masters;
+use Illuminate\Database\Eloquent\Factories\Sequence;
+use Illuminate\Http\Request;
 
 class AboutController extends Controller
 {
-    use \App\Traits\Upload;
-
-    // index for client about page
-    public function index($content, $page_data)
+    public function index($page_data = '')
     {
-        $res = ['Empty page.'];
+        if (About::exists()) {
+            $abouts = About::all()->toArray();
+        } else {
+            $abouts = [];
+            /*
+            About::factory()
+            ->count(5)
+            ->create();
+            $abouts = About::all()->toArray();
+            */
+        }
 
-        return view('client_manikur.client_pages.about', ['page_data' => $page_data, 'content' => $content, 'res' => $res]);
+        if (Masters::exists()) {
+            $masters = Masters::whereNull('data_uvoln')->get()->toArray();
+        } else {
+            $masters = [];
+            /*
+            Masters::factory()
+            ->count(6)
+            ->state(new Sequence(
+                ['data_uvoln' => null],
+                ['data_uvoln' => date('Y-m-d H:i:s', time())],
+            ))
+            ->create();
+            $masters = Masters::all()->toArray();
+            */
+        }
+
+        return view('client_manikur.client_pages.about', ['page_data' => $page_data, 'masters' => $masters, 'abouts' => $abouts]);
     }
 
-    public function create(About $about)
+    public function admin_index(About $abouts)
     {
-        $columns = Schema::getConnection()->getDoctrineSchemaManager()->listTableColumns($about->getTable());
+        $abouts = About::all()->toArray();
+        $status = request()->segment(count(request()->segments()));
 
-        return view('admin_manikur.moder_pages.pages_create_form', ['fields' => $columns]);
+        return view('admin_manikur.moder_pages.about', ['abouts' => $abouts, 'status' => $status]);
+    }
+
+    public function create(About $abouts)
+    {
+        $status = 'create';
+
+        return view('admin_manikur.moder_pages.about', ['abouts' => $abouts, 'status' => $status]);
     }
 
     /**
@@ -32,57 +63,53 @@ class AboutController extends Controller
      */
     public function store(Request $request)
     {
-        // upload image
-        $this->disk = 'public';
-        $this->folder = 'images/pages';
-
-        $img_valid = $request->validate([
-            'picture' => 'mimes:jpg,png,webp|max:1024000',
-            ]);
-        if ($request->hasFile('picture') && $img_valid) {
-            // $this->uploadFile($request->file('picture')) from trait Upload
-            $img = $this->uploadFile($request->file('picture'));
-            $img_res = 'The page image has been uploaded.<br>';
-        }
-
-        $create = About::create([
-            'title' => $request->input('title'),
-            'content' => $request->input('content'),
-            'image' => $request->input('image'),
-        ]);
-        $res = $create->attributesToArray();
-
-        return view('admin_manikur.moder_pages.pages_store', ['res' => $res, 'img_res' => $img_res]);
+        return view('admin_manikur.moder_pages.about', ['res' => '']);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Pages $pages)
+    public function show(About $abouts)
     {
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, About $about)
+    public function edit(Request $request)
     {
-        $data = $about->where('id', $request->input('id'))->get()->toArray();
-
-        return view('admin_manikur.moder_pages.about_edit_form', ['fields' => $data]);
+        return view('admin_manikur.moder_pages.about', ['res' => '']);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(About $about)
+    public function update(Request $request, About $abouts)
     {
+        return view('admin_manikur.moder_pages.about', ['res' => '']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, About $about)
+    public function destroy(Request $request, About $abouts)
     {
+        $res = '';
+        if ($abouts->destroy($request->id)) {
+            $res .= 'About data have been removed!<br>';
+        } else {
+            $res .= 'WARNING! About data have been NOT removed!<br>';
+        }
+        if (!empty($request->input['image']) && is_array($request->image)) {
+            foreach ($request->image as $image) {
+                if (delete_file($image) !== 'true') {
+                    $res .= delete_file($image);
+                } else {
+                    $res .= 'Image(s) for about(s) have been deleted.<br>';
+                }
+            }
+        }
+
+        return view('admin_manikur.moder_pages.about', ['res' => $res]);
     }
 }

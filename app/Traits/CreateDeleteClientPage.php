@@ -3,6 +3,8 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 trait CreateDeleteClientPage
 {
@@ -29,7 +31,7 @@ trait CreateDeleteClientPage
         // $controller = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
         $controller = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Client'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
         $model = app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$classname.'.php';
-        $migration = $this->migrationFind($migrations_dir, $page_alias).'';
+        $migration = [$this->migrationFind($migrations_dir, $page_alias)];
         $view = realpath(app_path().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'client_manikur'.DIRECTORY_SEPARATOR.'client_pages'.DIRECTORY_SEPARATOR.$page_alias.'.blade.php');
 
         $path_array = [
@@ -38,11 +40,31 @@ trait CreateDeleteClientPage
             'migration' => $migration,
             'view' => $view,
         ];
+
+        // delete row with table name from table migrations
+        foreach ($migration[0] as $value) {
+            DB::table('migrations')->where('migration', pathinfo($value, PATHINFO_FILENAME))->delete();
+        }
+        $mes .= 'Entries from table  <b>mirations</b> in DB have been removed!<br>';
+
+        // delete table of page from db
+        Schema::dropIfExists($page_alias);
+        Schema::dropIfExists($page_alias.'s');
+        $mes .= 'Table  <b>'.$page_alias.'</b> in DB have been removed!<br>';
+
         foreach ($path_array as $key => $path) {
-            if ($this->deleteFile($path)) {
+            if ($key === 'migration' && is_array($path[0])) {
+                foreach ($path[0] as $v) {
+                    if ($this->deleteFile($v)) {
+                        $mes .= 'Migration "'.pathinfo($value, PATHINFO_FILENAME).'" for page <b>"'.$page_alias.'"</b> has been deleted.<br>';
+                    } else {
+                        $mes .= 'Migration "'.pathinfo($value, PATHINFO_FILENAME).'" for page <b>"'.$page_alias.'"</b> has been NOT deleted.<br>'.(string) $this->delFile($path).'<br>';
+                    }
+                }
+            } elseif ($this->deleteFile($path)) {
                 $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been deleted.<br>';
             } else {
-                $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been NOT deleted.<br>'.(string) $this->delFile($path);
+                $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been NOT deleted.<br>'.(string) $this->delFile($path).'<br>';
             }
         }
 

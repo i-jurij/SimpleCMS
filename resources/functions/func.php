@@ -6,6 +6,41 @@ function mb_ucfirst($str)
 
     return $fc.mb_substr($str, 1);
 }
+
+function sanitize($filename)
+{
+    // remove HTML tags
+    $filename = strip_tags($filename);
+    // remove non-breaking spaces
+    $filename = preg_replace("#\x{00a0}#siu", ' ', $filename);
+    // remove illegal file system characters
+    $filename = str_replace(array_map('chr', range(0, 31)), '', $filename);
+    // remove dangerous characters for file names
+    $chars = ['?', '[', ']', '/', '\\', '=', '<', '>', ':', ';', ',', "'", '"', '&', '’', '%20',
+                   '+', '$', '#', '*', '(', ')', '|', '~', '`', '!', '{', '}', '%', '+', '^', chr(0)];
+    $filename = str_replace($chars, '_', $filename);
+    // remove break/tabs/return carriage
+    $filename = preg_replace('/[\r\n\t -]+/', '_', $filename);
+    // convert some special letters
+    $convert = ['Þ' => 'TH', 'þ' => 'th', 'Ð' => 'DH', 'ð' => 'dh', 'ß' => 'ss',
+                     'Œ' => 'OE', 'œ' => 'oe', 'Æ' => 'AE', 'æ' => 'ae', 'µ' => 'u'];
+    $filename = strtr($filename, $convert);
+    // remove foreign accents by converting to HTML entities, and then remove the code
+    $filename = html_entity_decode($filename, ENT_QUOTES, 'utf-8');
+    $filename = htmlentities($filename, ENT_QUOTES, 'utf-8');
+    $filename = preg_replace('/(&)([a-z])([a-z]+;)/i', '$2', $filename);
+    // clean up, and remove repetitions
+    $filename = preg_replace('/_+/', '_', $filename);
+    $filename = preg_replace(['/ +/', '/-+/'], '_', $filename);
+    $filename = preg_replace(['/-*\.-*/', '/\.{2,}/'], '.', $filename);
+    // cut to 255 characters
+    // $filename = substr($data, 0, 255);
+    // remove bad characters at start and end
+    $filename = trim($filename, '.-_');
+
+    return $filename;
+}
+
 /**
  * глубина вложенности массива
  * dimension of array.
@@ -75,4 +110,48 @@ function menu()
         }
         return (isset($nav)) ? $nav : '';
         */
+}
+
+function imageFor($path_after_public_path_with_basename): string
+{
+    if (!file_exists(public_path().$path_after_public_path_with_basename)) {
+        $img = 'images'.DIRECTORY_SEPARATOR.'ddd.jpg';
+    } else {
+        $img = $path_after_public_path_with_basename;
+    }
+
+    return $img;
+}
+
+function delete_file(string $path2file): string
+{
+    $mes = '';
+    if (is_string($path2file)) {
+        // $path2file = realpath($path2file);
+        if (file_exists($path2file)) {
+            if (is_writable($path2file)) {
+                if (unlink($path2file)) {
+                    $mes .= 'true';
+
+                    return $mes;
+                } else {
+                    $mes .= 'ERROR! Not unlink "'.$path2file.'".';
+
+                    return $mes;
+                }
+            } else {
+                $mes .= 'ERROR! File "'.$path2file.'" is not writable.';
+
+                return $mes;
+            }
+        } else {
+            $mes .= 'WARNING! File "'.$path2file.'" is not exists.';
+
+            return $mes;
+        }
+    } else {
+        $mes .= 'ERROR! Input for delete_file(string $path2file) must be sring.';
+
+        return $mes;
+    }
 }
