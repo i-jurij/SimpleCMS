@@ -4,7 +4,7 @@ if (!empty($status)) {
     if (trim($status) === 'remove') {
         $action_form = url()->route('admin.about_editor.remove');
     } elseif (trim($status) === 'edit') {
-        $action_form = url()->route('admin.about_editor.edit');
+        $action_form = url()->route('admin.about_editor.post_edit');
     } elseif (trim($status) === 'create') {
         $action_form = url()->route('admin.about_editor.store');
     } else {
@@ -56,19 +56,19 @@ $robots = 'NOINDEX, NOFOLLOW';
                                 <p class="back shad rad pad mar">Выберите изображение, название и текст для новой карточки страницы</p>
                                 <div class="about_form back shad rad pad mar display_inline_block" id="inp0">
                                     <label class="input-file">
-                                        <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />
-                                        <input type="file" id="f0" name="about_img[]" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" required />
-                                        <span >Выберите фото весом до 3Мб</span>
+                                        <input type="hidden" name="MAX_FILE_SIZE" value="1024000" />
+                                        <input type="file" id="f0" name="image_file[]" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" required />
+                                        <span >Выберите фото весом до 1Мб</span>
                                         <p id="fileSizef0" ></p>
                                     </label>
                                     <label ><p>Введите название (до 50 символов)</p>
                                         <p>
-                                        <input type="text" name="about_title[]" placeholder="Название" maxlength="50" required />
+                                        <input type="text" name="title[]" placeholder="Название" maxlength="50" required />
                                         </p>
                                     </label>
                                     <label ><p>Введите текст (до 500 символов)</p>
                                         <p>
-                                        <textarea name="about_text[]" placeholder="Текст" maxlength="500" required ></textarea>
+                                        <textarea name="content[]" placeholder="Текст" maxlength="500" required ></textarea>
                                         </p>
                                     </label>
                                 </div>
@@ -86,7 +86,15 @@ $robots = 'NOINDEX, NOFOLLOW';
 
                     </form>
                 @else
-                    @if (!empty($res)) {!!$res!!} @endif
+                    @if (!empty($res) && is_array($res))
+                        @foreach ($res as $key => $value)
+                            @if (!empty($value['img'])) {{$value['img']}}<br> @endif
+                            {{$value['db']}}<br>
+                            @if ($key > 0 ) <br> @endif
+                        @endforeach
+                    @elseif (!empty($res) && is_string($res))
+                        {!!$res!!}
+                    @endif
                 @endif
                 </div>
             @stop
@@ -130,19 +138,19 @@ document.addEventListener('DOMContentLoaded', function () {
     var id = parseInt($("div#inputs").find(".about_form:last").attr("id").slice(3))+1;
     $("div#inputs").append('<div class="about_form back shad rad pad mar display_inline_block display_none" id="inp'+id+'">\
             <label class="input-file">\
-              <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />\
-              <input type="file" id="f'+id+'" name="about_img[]" accept=".jpg,.jpeg,.png, .webp, image/jpeg, image/pjpeg, image/png, image/webp" required />\
-              <span>Выберите фото весом до 3Мб</span>\
+              <input type="hidden" name="MAX_FILE_SIZE" value="1024000" />\
+              <input type="file" id="f'+id+'" name="image_file[]" accept=".jpg,.jpeg,.png, .webp, image/jpeg, image/pjpeg, image/png, image/webp" required />\
+              <span>Выберите фото весом до 1Мб</span>\
               <p id="fileSizef'+id+'" ></p>\
             </label>\
             <label ><p>Введите название (до 50 символов)</p>\
               <p>\
-              <input type="text" name="about_title[]" placeholder="Название карточки" maxlength="50" required />\
+              <input type="text" name="title[]" placeholder="Название карточки" maxlength="50" required />\
               </p>\
             </label>\
             <label ><p>Введите текст (до 500 символов)</p>\
               <p>\
-              <textarea name="about_text[]" placeholder="Текст карточки" maxlength="500" required ></textarea>\
+              <textarea name="content[]" placeholder="Текст карточки" maxlength="500" required ></textarea>\
               </p>\
             </label>\
         </div>');
