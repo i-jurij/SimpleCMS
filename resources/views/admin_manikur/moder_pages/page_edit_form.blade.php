@@ -3,6 +3,7 @@ $title = 'Page edit form';
 $page_meta_description = 'admins page, Page editing form';
 $page_meta_keywords = 'Pages, edit, form';
 $robots = 'NOINDEX, NOFOLLOW';
+$filesize = 1;
 ?>
 
 @extends('layouts/index_admin')
@@ -11,8 +12,14 @@ $robots = 'NOINDEX, NOFOLLOW';
     @foreach ($fields as $page)
         @if (is_array($page) && !empty($page))
         <div class="price">
-            <form method="post" action="{{ url()->route('admin.pages.update') }}" id="page_update"  class="form_page_add">
+            <form method="post" action="{{ url()->route('admin.pages.update') }}" enctype="multipart/form-data" id="page_update"  class="form_page_add">
             @csrf
+            <label class="input-file">
+                <input type="hidden" name="MAX_FILE_SIZE" value="{{$filesize*1024000}}" />
+                <input type="file" id="f0" name="image_file" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" />
+                <span >Изображение весом до {{$filesize}}Мб</span>
+                <p id="fileSizef0" ></p>
+            </label>
             <table class="table">
                 <thead>
                 <tr>
@@ -53,7 +60,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                         $length = '10';
                     }
 
-                    if ($key !== 'created_at' && $key !== 'updated_at') {
+                    if ($key !== 'created_at' && $key !== 'updated_at' && $key !== 'img') {
                         echo '  <tr>
                                     <td>'.$key.'</td>
                                     <td>'.$input_start.' name="'.$key.'" maxlength="'.$length.'" value="'.$value.'" '.$pattern.' '.$input_end.'</td>
@@ -73,3 +80,36 @@ $robots = 'NOINDEX, NOFOLLOW';
         @endif
     @endforeach
 @stop
+<script type="module">
+document.addEventListener('DOMContentLoaded', function () {
+    $('form#page_update').on('change', function(){
+    let f = $("[type='file']");
+    if (f.length > 0) {
+        f.each(function(){
+            let file = this.files[0];
+            let size = <?php echo $filesize; ?>*1024*1024; //1MB
+            if (file) {
+                $(this).next().html(file.name);
+            }
+
+            $('#fileSize'+this.id).html('');
+            if (file && file.size > size) {
+                $('#fileSize'+this.id).css("color","red").html('ERROR! Image size > <?php echo $filesize; ?>MB');
+            } else {
+                //$('#fileSize').html(file.name+' - '+file.size/1024+' KB');
+            }
+        });
+    }
+  });
+
+  $('#page_update').on('reset', function(e) {
+        setTimeout(function() {
+            $("[type='file']").each(function(){
+                let file = 'Изображение весом до {{$filesize}}Мб';
+                $(this).next().html(file);
+                $('#fileSize'+this.id).html('');
+            });
+        },200);
+    });
+}, false);
+</script>

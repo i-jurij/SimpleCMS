@@ -43,8 +43,8 @@ $filesize = 1;
                         @endforeach
 
                         <div class="mar">
-                            <input class="buttons" for="about_edit" type="submit" value="Submit">
-                            <input class="buttons" for="about_edit" type="reset" value="Reset">
+                            <input class="buttons" form="about_update" type="submit" value="Submit">
+                            <input class="buttons" form="about_update" type="reset" value="Reset">
                         </div>
 
                     </form>

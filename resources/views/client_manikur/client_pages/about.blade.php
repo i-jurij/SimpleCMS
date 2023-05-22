@@ -56,9 +56,13 @@
 
                     @if (!empty($masters) && is_array($masters))
                         @foreach ($masters as $master)
-                            @php
-                                $img = imageFor('images'.DIRECTORY_SEPARATOR.'masters'.DIRECTORY_SEPARATOR.'master_photo_'.$master['id']);
-                            @endphp
+                            @php $img = 'images'.DIRECTORY_SEPARATOR.'ddd.jpg' @endphp
+                            @php $img = 'images'.DIRECTORY_SEPARATOR.'ddd.jpg' @endphp
+                            @if (!empty($master['master_photo']) && file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.$master['master_photo'])))
+                                @php $img = $master['master_photo'] @endphp
+                            @elseif (empty($master['master_photo']) && file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'masters'.DIRECTORY_SEPARATOR.mb_strtolower(sanitize(translit_to_lat($master['master_phone_number']))).'.jpg')))
+                                @php $img = 'images'.DIRECTORY_SEPARATOR.'masters'.DIRECTORY_SEPARATOR.mb_strtolower(sanitize(translit_to_lat($master['master_phone_number']))).'.jpg' @endphp
+                            @endif
 
                             <article class="main_section_article ">
                                 <div class="main_section_article_imgdiv margin_bottom_1rem" style="background-color: var(--bgcolor-content);">

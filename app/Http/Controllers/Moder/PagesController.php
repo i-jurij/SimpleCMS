@@ -41,7 +41,7 @@ class PagesController extends Controller
     {
         // upload image
         $this->disk = 'public';
-        $this->folder = 'images/pages';
+        $this->folder = 'images'.DIRECTORY_SEPARATOR.'pages';
         $this->filename = $request->alias;
 
         $img_valid = $request->validate([
@@ -109,11 +109,22 @@ class PagesController extends Controller
             'content' => ($request->content) ? $request->content : '',
             'single_page' => $request->single_page,
             'service_page' => $request->service_page,
-            'img' => $request->img,
             'publish' => $request->publish,
         ];
-        if ($pages->alias !== $request->alias) {
-            $array['alias'] = $request->alias;
+        // upload image
+        $this->disk = 'public';
+        $this->folder = 'images'.DIRECTORY_SEPARATOR.'pages';
+
+        if ($request->hasfile('image_file') && $request->file('image_file')->isValid()) {
+            $request->validate([
+                'image_file.*' => 'mimes:jpg,png,webp|max:1024000',
+            ]);
+
+            $this->filename = mb_strtolower(sanitize(translit_to_lat($request->alias)));
+            $img = $this->uploadFile($request->file('image_file'));
+            if (!empty($img)) {
+                $array['img'] = $img;
+            }
         }
         if ($pages::where('id', $request->id)->update($array)) {
             return $this->index('Data of pages <b>"'.$request->alias.'"</b> have been updated!');

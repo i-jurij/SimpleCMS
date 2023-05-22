@@ -12,13 +12,14 @@ return new class() extends Migration {
     {
         Schema::create('masters', function (Blueprint $table) {
             $table->id();
+            $table->string('master_photo', 1500)->nullable();
             $table->string('master_name', 100);
-            $table->string('sec_name', 100)->default(null);
+            $table->string('sec_name', 100)->nullable();
             $table->string('master_fam', 100);
             $table->string('master_phone_number', 100);
-            $table->string('spec', 100)->default(null);
-            $table->dateTimeTz('data_priema', $precision = 0)->nullable();
-            $table->dateTimeTz('data_uvoln', $precision = 0)->nullable();
+            $table->string('spec', 100);
+            $table->date('data_priema')->nullable();
+            $table->date('data_uvoln')->nullable();
         });
     }
 

@@ -101,7 +101,15 @@ a, h1, h2, h3, h4 {
 	font-family: var(--family_title);
 	color: var(--fontcolor-light, red);
 }
-
+h1 {
+	font-size: var(--bigg-fontsize);
+}
+h2 {
+	font-size: var(--big-fontsize);
+}
+h3 {
+	font-size: var(--base-fontsize);
+}
 a:link {
 	text-decoration: none;
 }
@@ -1223,6 +1231,16 @@ a.gallery_a:hover img{
 	background: var(--table-bgcolor2);
 }
 
+.masters_edit img {
+	object-fit:scale-down;
+	height: auto;
+	max-width: 10rem;
+}
+
+.master_create input[type=date]{
+	background-color: var(--bgcolor-content);
+	font-size: var(--base-fontsize);
+}
 /* style for input file */
 .example-2 .btn-tertiary{
 	color:var(--fontcolor);

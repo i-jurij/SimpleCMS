@@ -3,8 +3,9 @@
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Client\AboutController;
 use App\Http\Controllers\Client\ClientHomeController;
+use App\Http\Controllers\MastersController;
+use App\Http\Controllers\Moder\AboutController as AboutEditController;
 use App\Http\Controllers\Moder\ContactsController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
@@ -94,19 +95,31 @@ Route::prefix('admin')->name('admin.')
             Route::post('/edit/update', 'update')->name('update');
         });
 
-        Route::controller(AboutController::class)
+        Route::controller(AboutEditController::class)
         ->prefix('about_editor')
         ->name('about_editor.')
         ->group(function () {
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
-            Route::get('/remove', 'admin_index')->name('remove');
+            Route::get('/remove', 'index')->name('remove');
             Route::post('/remove', 'destroy')->name('destroy');
-            Route::get('/edit', 'admin_index')->name('edit');
+            Route::get('/edit', 'index')->name('edit');
             Route::post('/edit', 'edit')->name('post_edit');
             Route::post('/edit/update', 'update')->name('update');
         });
 
+        Route::controller(MastersController::class)
+        ->prefix('masters')
+        ->name('masters.')
+        ->group(function () {
+            Route::get('/', 'index')->name('edit');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::post('/remove', 'destroy')->name('remove');
+            Route::get('/edit', 'index')->name('edit');
+            Route::post('/edit', 'edit')->name('edit.form');
+            Route::post('/edit/update', 'update')->name('update');
+        });
         Route::get('/service_edit', function () {
             return view('admin_manikur.admin_moder_pages.page_edit');
         })->name('service_edit');

@@ -10,6 +10,7 @@ class Masters extends Model
     use HasFactory;
     public $timestamps = false;
     protected $fillable = [
+        'master_photo',
         'master_name',
         'sec_name',
         'master_fam',
