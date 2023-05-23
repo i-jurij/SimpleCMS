@@ -25,10 +25,12 @@
 
             }
 @endphp
+
+
 @extends("layouts/index")
 
 @section("content")
-
+<link rel="stylesheet" type="text/css" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'fancybox.css') }}" >
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
         <div class="content">
 
@@ -76,5 +78,5 @@
         @endphp
     </div>
     </div>
+    <script  src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'fancybox.umd.js') }}"></script>
 @stop
-<script  src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'/fancybox.umd.js') }}"></script>
