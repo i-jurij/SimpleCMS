@@ -562,6 +562,11 @@ textarea:valid {
 	justify-content: space-around;
 }
 
+.gallery a {
+	display: inline-flex;
+	justify-content: space-around;
+}
+
 .gallery_a img {
 	height: 15rem;
 /*	width: 26rem; */

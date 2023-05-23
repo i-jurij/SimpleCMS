@@ -44,6 +44,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                         @elseif (empty($master['master_photo']) && file_exists(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'masters'.DIRECTORY_SEPARATOR.mb_strtolower(sanitize(translit_to_lat($master['master_phone_number']))).'.jpg')))
                             @php $img = 'images'.DIRECTORY_SEPARATOR.'masters'.DIRECTORY_SEPARATOR.mb_strtolower(sanitize(translit_to_lat($master['master_phone_number']))).'.jpg' @endphp
                         @endif
+
                     <tr>
                         <td>{{$key + 1}}</td>
                         <td><img src="{{asset('storage'.DIRECTORY_SEPARATOR.$img)}}" alt="Photo  {{$master['master_fam']}}" /></td>
