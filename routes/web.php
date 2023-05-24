@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\ClientHomeController;
 use App\Http\Controllers\MastersController;
 use App\Http\Controllers\Moder\AboutController as AboutEditController;
 use App\Http\Controllers\Moder\ContactsController;
+use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Pages;
@@ -120,6 +121,23 @@ Route::prefix('admin')->name('admin.')
             Route::post('/edit', 'edit')->name('edit.form');
             Route::post('/edit/update', 'update')->name('update');
         });
+
+        Route::controller(GalleryController::class)
+        ->prefix('gallery')
+        ->name('gallery.')
+        ->group(function () {
+            Route::get('/', 'index')->name('edit');
+            Route::post('/', 'go')->name('go');
+            /*
+            Route::get('/', 'index')->name('upload');
+            Route::post('/', 'upload')->name('upload');
+            Route::get('/remove', 'list')->name('remove');
+            Route::post('/remove', 'remove')->name('remove');
+            Route::get('/web_gallery_link', 'wgl')->name('web_gallery_link');
+            Route::post('/web_gallery_link', 'wgl_update')->name('web_gallery_link');
+            */
+        });
+
         Route::get('/service_edit', function () {
             return view('admin_manikur.admin_moder_pages.page_edit');
         })->name('service_edit');
@@ -157,3 +175,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.DIRECTORY_SEPARATOR.'auth.php';
 require __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'func.php';
+require __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'sanitize_functions.php';

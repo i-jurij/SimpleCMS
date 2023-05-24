@@ -217,6 +217,10 @@ textarea:valid {
 	border: 2px solid var(--bgcolor);
 }
 
+.selected_shad{
+	box-shadow: rgba(255, 0, 0, 0.9) 0px 0px 4px 4px;
+}
+
 .bgcolor {
 	background-color: var(--bgcolor);
 }
@@ -723,16 +727,19 @@ a.gallery_a:hover img{
 .buttons {
   	font-size: var(--base-fontsize);
 	font-family: "Liberation Sans", sans-serif;
-	border: 0px solid black;
     padding: 1rem;
     margin: 0.5rem auto;
     text-align: center;
 	text-decoration: none;
     color: inherit;
     cursor: pointer;
-    border-radius: var(--radius);;
+	border: none;
+	outline: none;
+    border-radius: var(--radius);
     background-color: var(--bgcolor-content);
+	background-repeat: no-repeat;
 	box-shadow: var(--boxshadow);
+	overflow: hidden;
 }
 
 .buttons:hover,

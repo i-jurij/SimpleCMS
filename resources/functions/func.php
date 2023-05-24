@@ -184,3 +184,93 @@ function translit_to_lat($text)
 
     return $res;
 }
+
+/**
+ * @param string $file       - - path to txt file
+ * @param string $new_string
+ * @param int    $num_string - number of string for replace
+ */
+function replace_string($file, $new_string, int $num_string = 0)
+{
+    $array = file($file);
+    if ($array) {
+        $array[$num_string] = $new_string."\n";
+    }
+    if (!is_writable($file)) {
+        return false;
+    }
+    if (file_put_contents($file, $array, LOCK_EX) === false) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/**
+ * @param string $path - dir for scan
+ * @param string $ext  - extension of files eg 'png' or 'png, webp, jpg'
+ *
+ * @return array path to files
+ */
+function files_in_dir($path, $ext = '')
+{
+    $files = [];
+    if (file_exists($path)) {
+        $f = scandir($path);
+        foreach ($f as $file) {
+            if (is_dir($file)) {
+                continue;
+            }
+            if (empty($ext)) {
+                $files[] = $file;
+            } else {
+                $arr = explode(',', $ext);
+                foreach ($arr as $value) {
+                    $extt = mb_strtolower(trim($value));
+                    // $extt = mb_strtolower(ltrim(trim($value), '.'));
+                    /*
+                    if(preg_match("/\.($extt)/", $file)) {
+                      $files[] = $file;
+                    }
+                    */
+                    if ($extt === mb_strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
+                        $files[] = $file;
+                    }
+                }
+            }
+        }
+    }
+
+    return $files;
+}
+
+/**
+ * function for url validation.
+ *
+ * @param string $url
+ *
+ * @return bool
+ */
+function getResponseCode($url)
+{
+    $header = '';
+    $options = [
+        CURLOPT_URL => trim($url),
+        CURLOPT_HEADER => false,
+        CURLOPT_RETURNTRANSFER => true,
+    ];
+
+    $ch = curl_init();
+    curl_setopt_array($ch, $options);
+    curl_exec($ch);
+    if (!curl_errno($ch)) {
+        $header = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    }
+    curl_close($ch);
+
+    if ($header > 0 && $header < 400) {
+        return true;
+    } else {
+        return false;
+    }
+}

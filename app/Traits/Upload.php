@@ -10,8 +10,14 @@ trait Upload
 {
     public string $disk;
     public string $folder;
+    /**
+     * @param $filename - name of file without extension
+     */
     public string $filename;
 
+    /**
+     * @return string or false
+     */
     public function uploadFile(UploadedFile $file)
     {
         $name_of_file = !is_null($this->filename) ? $this->filename : Str::random(10);

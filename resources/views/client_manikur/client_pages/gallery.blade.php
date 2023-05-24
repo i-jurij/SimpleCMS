@@ -1,29 +1,18 @@
 @php
-    if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
-
-                $title = $page_data[0]["title"];
-
-                $page_meta_description = $page_data[0]["description"];
-
-                $page_meta_keywords = $page_data[0]["keywords"];
-
-                $robots = $page_data[0]["robots"];
-
-                $content["page_content"] = $page_data[0]["content"];
-
-            } else {
-
-                $title = "Title";
-
-                $page_meta_description = "description";
-
-                $page_meta_keywords = "keywords";
-
-                $robots = "INDEX, FOLLOW";
-
-                $content = "CONTENT FOR DEL IN FUTURE";
-
-            }
+$photo_link = 'https://disk.yandex.ru/d/PldT5ChpcRCVRg';
+if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
+    $title = $page_data[0]["title"];
+    $page_meta_description = $page_data[0]["description"];
+    $page_meta_keywords = $page_data[0]["keywords"];
+    $robots = $page_data[0]["robots"];
+    $content["page_content"] = $page_data[0]["content"];
+} else {
+    $title = "Title";
+    $page_meta_description = "description";
+    $page_meta_keywords = "keywords";
+    $robots = "INDEX, FOLLOW";
+    $content = "CONTENT FOR DEL IN FUTURE";
+}
 @endphp
 
 
@@ -70,13 +59,15 @@
             // $height = 320;
             echo simpleGallery_fancybox($directory, $pattern, $width = '', $height = '');
 
-            $photo_link = 'https://disk.yandex.ru/d/PldT5ChpcRCVRg';
-
             if (!empty($photo_link)) {
                 $photo_link_name = explode('.', parse_url($photo_link, PHP_URL_HOST));
             }
         @endphp
     </div>
     </div>
+    <p class="zapis_usluga back shad pad margin_rlb1">
+        Больше снимков можно посмотреть в
+        <a href="@if (isset($photo_link)) {{$photo_link}} @endif" > @if (isset($photo_link_name)) {{ strtoupper($photo_link_name[0])}} @endif </a>
+     </p>
     <script  src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'fancybox.umd.js') }}"></script>
 @stop

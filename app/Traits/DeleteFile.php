@@ -32,7 +32,7 @@ trait DeleteFile
     /**
      * delete a file or files.
      *
-     * @return true or string (check if $this === true)
+     * @return string (check if $this === 'true')
      */
     public static function deleteFile(string $path2file): string
     {
@@ -42,7 +42,7 @@ trait DeleteFile
             if (file_exists($path2file)) {
                 if (is_writable($path2file)) {
                     if (unlink($path2file)) {
-                        $mes .= 'true';
+                        $mes .= 'File '.$path2file.' was removed.';
 
                         return $mes;
                     } else {
