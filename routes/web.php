@@ -128,14 +128,6 @@ Route::prefix('admin')->name('admin.')
         ->group(function () {
             Route::get('/', 'index')->name('edit');
             Route::post('/', 'go')->name('go');
-            /*
-            Route::get('/', 'index')->name('upload');
-            Route::post('/', 'upload')->name('upload');
-            Route::get('/remove', 'list')->name('remove');
-            Route::post('/remove', 'remove')->name('remove');
-            Route::get('/web_gallery_link', 'wgl')->name('web_gallery_link');
-            Route::post('/web_gallery_link', 'wgl_update')->name('web_gallery_link');
-            */
         });
 
         Route::get('/service_edit', function () {
