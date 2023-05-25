@@ -8,14 +8,28 @@ use Illuminate\Support\Str;
 
 trait Upload
 {
+    /**
+     * @param $this->disk - from laravel filesystem
+     */
     public string $disk;
+    /**
+     * @param $this->folder - path to directory into laravel disk
+     */
     public string $folder;
     /**
-     * @param $filename - name of file without extension
+     * @param $this->filename - name of file without extension
      */
     public string $filename;
 
     /**
+     * can be set:
+     * $this->disk (from laravel filesystem),
+     * $this->folder (path to directory into laravel disk),
+     * $this->filename (without extension);
+     * default $disk = 'public';
+     * default $folder = '';
+     * default $filename = random string (length 10 symbols).
+     *
      * @return string or false
      */
     public function uploadFile(UploadedFile $file)
@@ -23,8 +37,8 @@ trait Upload
         $name_of_file = !is_null($this->filename) ? $this->filename : Str::random(10);
         $folder = !is_null($this->folder) ? $this->folder : null;
         $disk = !is_null($this->disk) ? $this->disk : 'public';
-        // $extension = $file->getClientOriginalExtension();
-        $extension = $file->extension(); // Determine the file's extension based on the file's MIME type...
+        // Determine the file's extension based on the file's MIME type...
+        $extension = $file->extension();
 
         return $file->storeAs(
             $folder,

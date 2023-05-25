@@ -173,7 +173,9 @@ textarea:valid {
 .margint0b1rl05{
 	margin: 0 0.5rem 1rem 0.5rem;
 }
-
+.margint0b0rlauto{
+	margin: 0 auto 0 auto;
+}
 .margintb1 {
 	margin: 1rem auto;
 }
@@ -510,6 +512,7 @@ textarea:valid {
   	min-height: 480px;
 	height: 100%;
 	border-radius: var(--radius);
+	margin: auto;
 }
 
   .main_section_article {

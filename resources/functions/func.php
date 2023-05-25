@@ -274,3 +274,56 @@ function getResponseCode($url)
         return false;
     }
 }
+
+// возвращает true, если домен доступен, false если нет
+function isDomainAvailible($domain)
+{
+    // проверка на валидность урла
+    if (!filter_var($domain, FILTER_VALIDATE_URL)) {
+        return false;
+    }
+    // инициализация curl
+    $curlInit = curl_init($domain);
+    curl_setopt($curlInit, CURLOPT_CONNECTTIMEOUT, 10);
+    curl_setopt($curlInit, CURLOPT_HEADER, true);
+    curl_setopt($curlInit, CURLOPT_NOBODY, true);
+    curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, true);
+    // получение ответа
+    $response = curl_exec($curlInit);
+    curl_close($curlInit);
+    if ($response) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * $url = 'http://ya.ru/';
+ * $answer = check_http_status($url);
+ * echo 'Код статуса HTTP: '.$answer.'. Ответ на запрос URL: '.$url;.
+ */
+function check_http_status($url)
+{
+    $user_agent = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)';
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_VERBOSE, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSLVERSION, 3);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $page = curl_exec($ch);
+
+    $err = curl_error($ch);
+    if (!empty($err)) {
+        return $err;
+    }
+
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    return $httpcode;
+}

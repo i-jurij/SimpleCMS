@@ -8,6 +8,7 @@ use App\Http\Controllers\MastersController;
 use App\Http\Controllers\Moder\AboutController as AboutEditController;
 use App\Http\Controllers\Moder\ContactsController;
 use App\Http\Controllers\Moder\GalleryController;
+use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Pages;
@@ -125,6 +126,14 @@ Route::prefix('admin')->name('admin.')
         Route::controller(GalleryController::class)
         ->prefix('gallery')
         ->name('gallery.')
+        ->group(function () {
+            Route::get('/', 'index')->name('edit');
+            Route::post('/', 'go')->name('go');
+        });
+
+        Route::controller(MapController::class)
+        ->prefix('map')
+        ->name('map.')
         ->group(function () {
             Route::get('/', 'index')->name('edit');
             Route::post('/', 'go')->name('go');
