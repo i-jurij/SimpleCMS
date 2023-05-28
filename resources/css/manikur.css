@@ -592,6 +592,7 @@ a.gallery_a:hover img{
 	height:1px;
 }
 
+
 .form-recall {
 	background-color: var(--bgcolor);
 	border-radius: var(--radius);
@@ -602,7 +603,7 @@ a.gallery_a:hover img{
 }
 
 .form-recall-main {
-  max-width: 50rem;
+  	max-width: 50rem;
 	box-sizing: border-box;
 	text-align: center;
 	/* margin: 1rem auto; */
@@ -621,8 +622,9 @@ a.gallery_a:hover img{
 	margin: 0.3rem 0;
 	padding: 0.7rem;
 	/* min-width: 17rem; */
-	width: 100%;
-	max-width: 48%;
+	/* width: 100%;
+	max-width: 48%; */
+	width: 25rem;
 }
 
 .form-recall-main input {
@@ -632,8 +634,9 @@ a.gallery_a:hover img{
 .form-recall-main textarea {
 	vertical-align: top;
 	height: 5rem;
-	width: 100%;
+	/* width: 100%; */
 	background-image: url(@/../imgs/send.png);
+	background-color: var(--bgcolor-content);
 	background-position: 0.5rem 0.5rem;
 	background-repeat: no-repeat;
 	text-indent: 2.5rem;

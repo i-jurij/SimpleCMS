@@ -36,6 +36,7 @@
                         </div>
                     @endif
                     @yield('content')
+                    <script src="{{asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'form-recall-mask.js')}}"></script>
                     @if (url()->current() !== url()->route('client.home'))
                         @php $pieces = explode('/', Request::path()); @endphp
                         @if (count($pieces) > 2)
@@ -50,8 +51,8 @@
 
         @include('layouts/footer')
     </div>
+    @stack('js)
 
-    @stack('js')
 </body>
 
 </html>

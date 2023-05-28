@@ -60,6 +60,8 @@
     </div>
 
     @stack('js')
+
+    <script type="module" src="{{asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'form-recall-mask.js')}}"></script>
 </body>
 
 </html>

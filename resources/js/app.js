@@ -1,6 +1,6 @@
 import '@/core/jquery-3.6.0.min.js';
-import '@/other/jquery.maskedinput.min.js';
-import '@/other/form-recall-mask.js';
+import '@/other/jquery.inputmask.min.js';
+/* import '@/other/form-recall-mask.js'; */
 /* import '@/other/fancybox.umd.js'; */
 import '@/adm/adm.js';
 

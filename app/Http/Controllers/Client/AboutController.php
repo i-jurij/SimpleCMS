@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 
 class AboutController extends Controller
 {
-    public function index($page_data = '')
+    public function index($content, $page_data = '')
     {
         if (About::exists()) {
             $abouts = About::all()->toArray();
@@ -39,6 +39,6 @@ class AboutController extends Controller
             */
         }
 
-        return view('client_manikur.client_pages.about', ['page_data' => $page_data, 'masters' => $masters, 'abouts' => $abouts]);
+        return view('client_manikur.client_pages.about', ['page_data' => $page_data, 'content' => $content, 'masters' => $masters, 'abouts' => $abouts]);
     }
 }

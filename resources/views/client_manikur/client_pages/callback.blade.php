@@ -16,18 +16,70 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 @extends("layouts/index")
 @section("content")
 @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
-<div class="content">
     @if (!empty($res) && is_array($res))
-        @foreach ($res as $re)
-            {{$re}}
-        @endforeach
+        <p class="content">
+            @foreach ($res as $re)
+                {{$re}}<br>
+            @endforeach
+        </p>
     @elseif (!empty($res) && is_string($res)) {{$res}}
     @else
         <p class="back shad pad margin_rlb1 zapis_usluga">
             Не обещаем перезвонить вам сразу же. У нас нет колл-центра.<br />
             Перезвоним как только сможем.
         </p>
-        <script type="text/javascript">
+        <div class="content form_recall_div">
+            <form action="javascript:void(0)" method="post" class="form-recall-main" id="recall_one">
+                @csrf
+                <div class="">
+                    <div class="">
+                    <div class="">
+                        <div id="error"><small></small></div>
+                        <label class="zapis_usluga">Ваше имя:
+                            <br>
+                            <input type="text" placeholder="Ваше имя" name="name" id="name" maxlength="50" />
+                        </label>
+                        <br>
+                        <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
+                        <label class="zapis_usluga">Номер мобильной связи:
+                            <br>
+                            <input type="tel" name="phone_number"  id="number" class="number"
+                            title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"
+                            minlength="6" maxlength="17"
+                            pattern="^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?"
+                            required />
+                        </label>
+                        <br>
+                        <label class="zapis_usluga">Вопрос:
+                            <br>
+                            <textarea placeholder="Что вас интересует?" name="send"  id="send" maxlength="300"></textarea>
+                        </label>
+                    </div>
+                    </div>
+
+                    <div class="margin_bottom_1rem capcha">
+                    <div class="imgs div_center" style="width:21rem;"></div>
+                    </div>
+
+                    <div class="">
+                        <button type="submit" class="buttons" >Отправить</button>
+                        <button class="buttons" type="reset">Очистить</button>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="margin_top_1rem">
+                    <p class="pers">
+                    Отправляя данную форму, вы даете согласие на
+                    <br>
+                    <a href="{{url('/persinfo')}}">
+                        обработку персональных данных
+                    </a>
+                    </p>
+                </div>
+            </form>
+
+        <script type="module">
         function guidGenerator() {
             var S4 = function() {
             return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -36,47 +88,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
         }
         document.addEventListener('DOMContentLoaded', function () {
             $(function() {
-            //create form
-            $('.flex_top').append(
-                '<form action="{{url()->route(\'client\.callback\')}}" method="post" class="form-recall" id="recall_one">\
-                @csrf\
-                <div class="form-recall-main">\
-                    <div class="form-recall-main-section">\
-                    <div class="flex">\
-                        <input type="text" placeholder="Ваше имя" name="name" id="name" maxlength="50" />\
-                        <input name="last_name" type="text" placeholder="Ваша фамилия" id="last_name" maxlength="50">\
-                        <input type="tel" name="phone_number"  id="number" class="number"\
-                        title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"\
-                        minlength="6" maxlength="17"\
-                        pattern="(\\+?7|8)?\\s?[\(]{0,1}?\\d{3}[\\)]{0,1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?\\d{1}\\s?[-]{0,1}?"\
-                        required />\
-                        <div id="error"><small></small></div>\
-                        <textarea placeholder="Что вас интересует?" name="send"  id="send" maxlength="300"></textarea>\
-                    </div>\
-                    </div>\
-            \
-                    <div class="back shad pad margin_bottom_1rem capcha">\
-                    <div class="imgs div_center" style="width:21rem;"></div>\
-                    </div>\
-            \
-                    <div class="form-recall-main-section">\
-                        <button class="buttons form-recall-submit">Отправить</button>\
-                        <button class="buttons form-recall-reset" type="reset">Очистить</button>\
-                    </div>\
-                    <div class="clear"></div>\
-                </div>\
-            \
-                <div class="form-recall-main">\
-                    <p class="pers back shad">\
-                    Отправляя данную форму, вы даете согласие на\
-                    <br>\
-                    <a href="url()->route(\'client\.persinfo\')">\
-                        обработку персональных данных\
-                    </a>\
-                    </p>\
-                </div>\
-            </form>');
-
+            /*
             var uniqids = [];
             for (var i = 0; i < 6; i++)
             {
@@ -91,12 +103,12 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
             for (var i = 0; i < uniqids.length; i++)
             {
                 let ii = i+1;
-                let imgpath = '{{storage_path(\'images\'\.DIRECTORY_SEPARATOR\.\'captcha_imgs\'\.DIRECTORY_SEPARATOR)}}';
-                imgs[uniqids[i]] = '<img src="'+imgpath+ii+'.jpg" style="width:5rem;" />';
+                let imgpath = '<?php // echo asset('storage'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'captcha_imgs'.DIRECTORY_SEPARATOR);?>';
+                imgs[uniqids[i]] = '<img src="'+imgpath+'<?php // echo DIRECTORY_SEPARATOR;?>'+ii+'.jpg" style="width:5rem;" />';
                 //console.log(imgs[uniqids[i]]);
                 strings[i] = '<input id="captcha_'+uniqids[i]+'" class="captcha" name="dada" value="'+ii+'" type="radio" />\
                 <label class="captcha_img" for="captcha_'+uniqids[i]+'">\
-                <img src="'+imgpath+ii+'.jpg" id="img_'+uniqids[i]+'"/>\
+                <img src="'+imgpath+'<?php // echo DIRECTORY_SEPARATOR;?>'+ii+'.jpg" id="img_'+uniqids[i]+'"/>\
                 </label>';
             }
 
@@ -128,22 +140,29 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
             $("form#recall_one").on("submit", function(event){
                 //event.preventDefault();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    }
+                });
+
                 var dataar = $("form#recall_one").serialize();
                 $.ajax({
-                url: '<?php echo URLROOT.DS.'app'.DS.'lib'.DS.'mail_send.php'; ?>',
+                url: '<?php // echo url()->route('client.callback.send_mail');?>',
                 method: 'post',
                 dataType: 'html',
                 data: dataar,
                 success: function(data){
                     //$(".flex_top").append(data);
-                    //console.log(data);
+                    console.log(data);
                 }
                 });
             });
+            */
             });
+
         }, false);
         </script>
+        </div>
     @endif
-    @endif
-</div>
 @stop

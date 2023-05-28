@@ -20,6 +20,8 @@ class ClientHomeController extends Controller
     public function page(Pages $pages, $page_alias)
     {
         $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
+        $page_data = (Pages::where('alias', $page_alias)->get()) ? Pages::where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
+
         $page_data = ($pages->where('alias', $page_alias)->get()) ? $pages->where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
         if (!empty($page_data) && !empty($page_data[0]) && !empty($page_data[0]['alias'])) {
             if ($page_data[0]['single_page'] === 'no' || $page_data[0]['service_page'] === 'yes') {

@@ -19,7 +19,8 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 @extends("layouts/index")
 
 @section("content")
-<link rel="stylesheet" type="text/css" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'fancybox.css') }}" >
+<link rel="stylesheet" type="text/css" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'gallery'.DIRECTORY_SEPARATOR.'fancybox.css') }}" >
+<link rel="stylesheet" type="text/css" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'gallery'.DIRECTORY_SEPARATOR.'panzoom.css') }}" >
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
         <div class="content">
 
@@ -69,5 +70,5 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
         Больше снимков можно посмотреть в
         <a href="@if (isset($photo_link)) {{$photo_link}} @endif" > @if (isset($photo_link_name)) {{ strtoupper($photo_link_name[0])}} @endif </a>
      </p>
-    <script  src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'fancybox.umd.js') }}"></script>
+    <script  src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'gallery'.DIRECTORY_SEPARATOR.'fancybox.umd.js') }}"></script>
 @stop
