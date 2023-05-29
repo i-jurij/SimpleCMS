@@ -35,7 +35,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
             <form action="{{$action}}" method="post" class="form-recall-main" id="recall_one">
                 @csrf
                 <div class="">
-                    <div class="form-group ">
+                    <div class="form-group padt1">
                         <div class="">
                             <div id="error"><small></small></div>
                             <label class="zapis_usluga">Ваше имя:
@@ -44,6 +44,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                             </label>
                             <br>
                             <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
+                            <p class="error" id="tel_mes"></p>
                             <label class="zapis_usluga">Номер мобильной связи:
                                 <br>
                                 <input type="tel" name="phone_number"  id="number" class="number"
@@ -90,10 +91,40 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+
+            var myGlobals = { isWin: false, isOsX:false, isNix:false };
+            var appVer = navigator.appVersion;
+            if      (appVer.indexOf("Win")!=-1)   myGlobals.isWin = true;
+            else if (appVer.indexOf("Mac")!=-1)   myGlobals.isOsX = true;
+            else if (appVer.indexOf("X11")!=-1)   myGlobals.isNix = true;
+            else if (appVer.indexOf("Linux")!=-1) myGlobals.isNix = true;
+
+            function getPathSeparator(){
+                if(myGlobals.isWin){
+                    return '\\';
+                }
+                else if(myGlobals.isOsx  || myGlobals.isNix){
+                    return '/';
+                }
+                // default to *nix system.
+                return '/';
+            }
+
+            function getDir(filePath){
+                if(filePath !== '' && filePath != null){
+                // this will fail on Windows, and work on Others
+                return filePath.substring(0, filePath.lastIndexOf(getPathSeparator()) + 1);
+                }
+            }
+
+
             $(function() {
             var strings = [];
             let cimgs = <?php echo json_encode($captcha_imgs); ?>;
-            var imgs = (cimgs) ? cimgs : [];
+            // to turn off image captcha
+            // var imgs = (cimgs.length < 0) ? cimgs : [];
+            // to turn on image captcha
+            var imgs = (cimgs.length > 0) ? cimgs : [];
 
             if (imgs.length > 0) {
                 var uniqids = [];
@@ -108,58 +139,62 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
                 for (var i = 0; i < uniqids.length; i++)
                 {
-                    /*
-                    let ii = i+1;
-                    let imgpath = '<?php echo asset('storage'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'captcha_imgs'.DIRECTORY_SEPARATOR); ?>';
-                    imgs[uniqids[i]] = '<img src="'+imgpath+'<?php echo DIRECTORY_SEPARATOR; ?>'+ii+'.jpg" style="width:5rem;" />';
-                    //console.log(imgs[uniqids[i]]);
-                    */
-
-
-                    strings[i] = '<input id="captcha_'+uniqids[i]+'" class="captcha" name="dada" value="'+ii+'" type="radio" />\
+                    let imgpath = '{{asset("storage")}}';
+                    imgs[uniqids[i]] = '<img src="'+imgpath+getPathSeparator()+imgs[i]+'" style="width:5rem;" />';
+                    strings[i] = '<input id="captcha_'+uniqids[i]+'" class="captcha" name="dada" value="'+i+'" type="radio" />\
                     <label class="captcha_img  display_inline_block" for="captcha_'+uniqids[i]+'">\
-                        <img src="'+imgpath+'<?php echo DIRECTORY_SEPARATOR; ?>'+ii+'.jpg" id="img_'+uniqids[i]+'"/>\
+                        <img src="'+imgpath+getPathSeparator()+imgs[i]+'" id="img_'+uniqids[i]+'"/>\
                     </label>';
                 }
 
-                $('#captcha_div').before('<div><p>Выберите, пожалуйста, среди других этот рисунок:</p>\
-                                    <p class="div_center pad">'+imgs[truee]+'</p></div>');
+                if (strings.length) {
+                    $('#captcha_div').before('<div class="margin_top_1rem mes"><p>Выберите, пожалуйста, среди других этот рисунок:</p>\
+                                    <p class="div_center padt1">'+imgs[truee]+'</p></div>');
 
-                $('#captcha_div').addClass('pad');
-                $('#captcha_div').append('<div class="imgs div_center" style="width:21rem;"></div>');
-                for (var i = 0; i < strings.length; i++)
-                {
-                    $('#captcha_div .imgs').append(strings[i]);
+                    $('#captcha_div').addClass('pad');
+                    $('#captcha_div').append('<div class="imgs div_center" style="width:21rem;"></div>');
+                    for (var i = 0; i < strings.length; i++)
+                    {
+                        $('#captcha_div .imgs').append(strings[i]);
+                    }
+
+                    $("#img_"+truee).addClass('access');
+
+                    $('#captcha_div').append('<p><small>После выбора рисунка нажмите Отправить.</small></p>');
                 }
-
-                $("#img_"+truee).addClass('access');
-
-                $('#captcha_div').after('<p><small>После выбора рисунка нажмите Отправить.</small></p>');
 
                 $('button.form-recall-submit').click(function(){
                     event.preventDefault();
                     let check = $("#captcha_"+truee).is(':checked');
                     if ($('#number').val()) {
-                    if ( check == true ) {
-                        $('form#recall_one').submit();
+                        if ( check == true ) {
+                            $('form#recall_one').submit();
+                        } else {
+                            //alert('Выберите, пожалуйста, соответствующий рисунок :)');
+                            $('.mes').addClass('error');
+                            $('html, body').animate({
+                                scrollTop: $(".mes").offset().top - 90
+                            }, 1000);
+                        }
                     } else {
-                        alert('Выберите, пожалуйста, соответствующий рисунок :)');
-                    }
-                    } else {
-                    alert('Вы забыли ввести номер телефона :)');
+                        //alert('Вы забыли ввести номер телефона :)');
+                        $('#tel_mes').html('Вы забыли ввести номер телефона :)');
+                        $('html, body').animate({
+                            //scrollTop: $(".mes").offset().top - 90
+                            scrollTop: $(this).height() / 2
+                        }, 1000);
                     }
                 });
             } else {
                 // laravel captcha
-                $('#sr_but').before('\
-                    <div class="form-group{{ $errors->has('captcha') ? ' has-error' : '' }}">\
-                        <label class="col-md-4 control-label" id="mes"></label>\
-                        <div class="">\
-                            <div class="capcha2">\
-                                <span class="display_inline_block div_center" style="vertical-align: middle;">{!! captcha_img() !!}</span>\
-                                <button type="button" class="buttons" id="reload">&#x21bb;</button>\
+                $('#sr_but').before('<div class="form-group{{ $errors->has("captcha") ? " has-error" : "" }} margin_bottom_1rem">\
+                        <p id=\"mes\"></p>\
+                        <div>\
+                            <div class=\"capcha2\">\
+                                <span class=\"display_inline_block div_center\" style=\"vertical-align: middle;\">{!! captcha_img() !!}</span>\
+                                <button type=\"button\" class=\"buttons\" id=\"reload\">&#x21bb;</button>\
                             </div>\
-                            <input id="captcha" type="text" class="form-control" placeholder="Введите текст" name="captcha">\
+                            <input id=\"captcha\" type=\"text\" placeholder=\"Введите текст\" name=\"captcha\" />\
                         </div>\
                     </div>\
                 ');
@@ -168,7 +203,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                 $('#reload').click(function () {
                     $.ajax({
                         type: 'GET',
-                        url: "{{url()->route('captcha.reload')}}",
+                        url: '{{url()->route("captcha.reload")}}',
                         success: function (data) {
                             $(".capcha2 span").html(data.captcha);
                         }
@@ -177,14 +212,25 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
                 $('button.form-recall-submit').click(function(){
                     event.preventDefault();
-                    if ($('#captcha').val()) {
+                    if ($('#number').val() && $('#captcha').val()) {
                         $('form#recall_one').submit();
                     } else {
-                        //alert('Заполните поле для ввода текста с картинки :)');
-                        $('#mes').html('Заполните поле для ввода текста с картинки :)');
-                        $('html, body').animate({
-                                scrollTop: $("#mes").offset().top
-                        }, 2000);
+                        if (!$('#number').val()) {
+                            //alert('Вы забыли ввести номер телефона :)');
+                            $('#tel_mes').html('Вы забыли ввести номер телефона :)');
+                            $('html, body').animate({
+                                //scrollTop: $(".mes").offset().top - 90
+                                scrollTop: $(this).height() / 2
+                            }, 1000);
+                        }
+                        if (!$('#captcha').val()) {
+                            //alert('Заполните поле для ввода текста с картинки :)');
+                            $('#mes').html('Заполните поле для ввода текста с картинки :)');
+                            $('html, body').animate({
+                                    scrollTop: $("#mes").offset().top
+                            }, 2000);
+                        }
+
                     }
                 });
             }
@@ -200,7 +246,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                 var dataar = $("form#recall_one").serialize();
                 $.ajax({
                     type: 'POST',
-                    url: "{{url()->route('client.callback.send_mail')}}",
+                    url: '{{url()->route("client.callback.send_mail")}}',
                     method: 'post',
                     dataType: 'json',
                     data: dataar,
