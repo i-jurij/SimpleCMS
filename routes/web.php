@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\CaptchaServiceController;
+use App\Http\Controllers\Client\CallbackController;
 use App\Http\Controllers\Client\ClientHomeController;
 use App\Http\Controllers\MastersController;
 use App\Http\Controllers\Moder\AboutController as AboutEditController;
@@ -11,7 +13,6 @@ use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Pages;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/reload_captcha', [CaptchaServiceController::class, 'reloadCaptcha'])->name('captcha.reload');
 /*
  * HOME PAGES ROUTES
  */
@@ -34,7 +36,7 @@ Route::name('client.')
     Route::get('/', [ClientHomeController::class, 'index'])->name('home');
 
     Route::get('/{page_alias?}', [ClientHomeController::class, 'page'])
-    ->where('page_alias', '^((?!login|register|dashboard|admin|api).)*$');
+    ->where('page_alias', '^((?!login|register|dashboard|admin|api|reload_captcha).)*$');
     Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');

@@ -248,6 +248,10 @@ textarea:valid {
 	padding: 1rem 0;
 }
 
+.padt1 {
+	padding: 1rem 0 0 0;
+}
+
 .padrl1{
 	padding: 0 1rem;
 }
@@ -364,6 +368,14 @@ textarea:valid {
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
 }
+
+.absolute_center_image img {
+	width: 50%;
+	height: auto;
+	margin: auto;
+	position: absolute;
+	top: 0; left: 0; bottom: 0; right: 0;
+  }
 
 .wrapper {
 	height: 100%;
@@ -603,7 +615,7 @@ a.gallery_a:hover img{
 }
 
 .form-recall-main {
-  	max-width: 50rem;
+  	max-width: 40rem;
 	box-sizing: border-box;
 	text-align: center;
 	/* margin: 1rem auto; */
@@ -667,6 +679,9 @@ a.gallery_a:hover img{
 	text-shadow: -1px -1px 0 black;
 }
 
+#captcha_div input {
+	display: none;
+}
 .captcha {
 	display: none;
 }
