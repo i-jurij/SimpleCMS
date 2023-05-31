@@ -37,6 +37,8 @@ Route::name('client.')
 
     Route::get('/{page_alias?}', [ClientHomeController::class, 'page'])
     ->where('page_alias', '^((?!login|register|dashboard|admin|api|reload_captcha).)*$');
+
+    Route::post('/callback/store', [CallbackController::class, 'store'])->name('callback.store');
     Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');

@@ -9,11 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Client extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'contacts'];
-
-    protected $casts = [
-        'contacts' => 'array',
-    ];
+    protected $fillable = ['name', 'phone', 'email'];
 
     public function orders(): HasMany
     {

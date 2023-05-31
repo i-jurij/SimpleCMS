@@ -8,5 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class Callback extends Model
 {
     use HasFactory;
-    protected $fillable = [ 'name', 'email', 'address' ];
+    protected $fillable = ['client_id', 'order_id', 'send', 'response'];
 }

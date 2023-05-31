@@ -30,7 +30,13 @@
                         <div class="zapis_usluga back shad pad margin_rlb1 alert alert-danger error">
                             <ul>
                                 @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
+                                    @if (is_array($error))
+                                        @foreach ($error as $mes)
+                                            <li>{{ $mes }}</li>
+                                        @endforeach
+                                    @else
+                                        <li>{{ $error }}</li>
+                                    @endif
                                 @endforeach
                             </ul>
                         </div>
