@@ -14,13 +14,15 @@ class CallBackMail extends Mailable
 {
     use Queueable;
     use SerializesModels;
+    public array $data;
 
     /**
      * Create a new message instance.
      */
     // public function __construct(public Callback $callback)
-    public function __construct(public string $phone, public string $name = '', public string $send = '')
+    public function __construct(array $data)
     {
+        $this->data = $data;
     }
 
     /**
@@ -42,6 +44,11 @@ class CallBackMail extends Mailable
     {
         return new Content(
             view: 'client_manikur.mail_callback',
+            with: [
+                'phone' => $this->data['phone'],
+                'name' => $this->data['name'],
+                'send' => $this->data['send'],
+            ]
             // text: 'emails.mail_callback-text'
         );
     }

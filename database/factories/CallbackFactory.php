@@ -17,9 +17,8 @@ class CallbackFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->text(20),
-            'content' => $this->faker->text(50),
-            'image' => $this->faker->text(20),
+            'client_id' => $this->faker->text(20),
+            'send' => $this->faker->text(50),
         ];
     }
 }

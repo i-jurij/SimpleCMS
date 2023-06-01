@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Mail\CallBackMail;
+use App\Jobs\JobCallbackMail;
 use App\Models\Callback;
 use App\Models\Client;
 use App\Models\Contacts;
@@ -130,6 +130,14 @@ class CallbackController extends Controller
             if (empty($callback_2_hours)) {
                 $callback = new Callback();
                 $callback->create($callback_insert);
+
+                // $this->send_mail($request);
+                $data = [
+                    'name' => ($request->name) ? $request->name : 'no name',
+                    'phone' => $request->phone_number,
+                    'send' => ($request->send) ? $request->send : 'no send',
+                ];
+                JobCallbackMail::dispatch($data);
             }
 
             $res = ['Ваша заявка принята. Ожидайте звонка...'];
@@ -138,22 +146,5 @@ class CallbackController extends Controller
         } else {
             return response($res, 200)->header('Content-Type', 'text/plain');
         }
-    }
-
-    public function send_mail(Request $request)
-    {
-        // SEND EMAIL
-        /*
-        $callback = Callback::findOrFail($client->id);
-        Mail::to('yjurij&gmail.com')->send(new CallbackMail($callback));
-        */
-        $name = ($request->name) ? $request->name : null;
-        $phone = $request->phone_number;
-        $send = ($request->send) ? $request->send : null;
-
-        Mail::to('yjurij@gmail.com')->send(new CallbackMail($phone, $name, $send));
-        $res = ['Mail send.'];
-        // for ajax
-        return response()->json($res);
     }
 }

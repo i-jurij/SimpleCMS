@@ -68,7 +68,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                     <div class="margin_bottom_1rem capcha" id="captcha_div"></div>
 
                     <div class="form-group" id="sr_but">
-                        <button type="submit" class="buttons form-recall-submit" >Отправить</button>
+                        <button class="buttons form-recall-submit" >Отправить</button>
                         <button class="buttons form-recall-reset" type="reset">Очистить</button>
                     </div>
                     <div class="clear"></div>
@@ -92,6 +92,25 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
             return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
             };
             return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+        }
+
+        function ajax_mail() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                }
+            });
+            var dataar = $("form#recall_one").serialize();
+            $.ajax({
+                type: 'POST',
+                url: '{{url()->route("client.callback.send_mail")}}',
+                method: 'post',
+                dataType: 'json',
+                data: dataar,
+                success: function(data){
+                    $(".form_recall_div").html(data);
+                }
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -172,6 +191,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                         let check = $("#captcha_"+truee).is(':checked');
                         if ($('#number').val()) {
                             if ( check == true ) {
+                                //ajax_mail();
                                 $('form#recall_one').submit();
                             } else {
                                 //alert('Выберите, пожалуйста, соответствующий рисунок :)');
@@ -217,6 +237,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                     $('button.form-recall-submit').click(function(){
                         event.preventDefault();
                         if ($('#number').val() && $('#captcha').val()) {
+                            //ajax_mail();
                             $('form#recall_one').submit();
                         } else {
                             if (!$('#number').val()) {
@@ -238,28 +259,6 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                         }
                     });
                 }
-
-                $("form#recall_one").on("submit", function(event){
-                    //event.preventDefault();
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                        }
-                    });
-
-                    var dataar = $("form#recall_one").serialize();
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{url()->route("client.callback.send_mail")}}',
-                        method: 'post',
-                        dataType: 'json',
-                        data: dataar,
-                        success: function(data){
-                            //$(".form_recall_div").html(data);
-                        }
-                    });
-                });
-
             });
 
         }, false);
