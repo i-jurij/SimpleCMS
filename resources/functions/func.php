@@ -1,5 +1,31 @@
 <?php
 
+function createRandomAGTNO()
+{
+    do {
+        $agt_no = mt_rand(100000000, 900000000);
+        $valid = true;
+        if (preg_match('/(\d)\1\1/', $agt_no)) {
+            $valid = false;
+        } // Same digit three times consecutively
+        elseif (preg_match('/(\d).*?\1.*?\1.*?\1/', $agt_no)) {
+            $valid = false;
+        } // Same digit four times in string
+    } while ($valid === false);
+
+    return $agt_no;
+}
+
+function getOutput($file)
+{
+    ob_start();
+    include $file;
+    $output = ob_get_contents();
+    ob_end_clean();
+
+    return $output;
+}
+
 function mb_ucfirst($str)
 {
     $fc = mb_strtoupper(mb_substr($str, 0, 1));
@@ -7,6 +33,13 @@ function mb_ucfirst($str)
     return $fc.mb_substr($str, 1);
 }
 
+function mb_ucfirst2($string, $encoding)
+{
+    $firstChar = mb_substr($string, 0, 1, $encoding);
+    $then = mb_substr($string, 1, null, $encoding);
+
+    return mb_strtoupper($firstChar, $encoding).$then;
+}
 function sanitize($filename)
 {
     // remove HTML tags
@@ -243,6 +276,38 @@ function files_in_dir($path, $ext = '')
 
     return $files;
 }
+/**
+ * @param string $dir - dir for scan
+ * @param string $ext - extension of files eg 'png' or 'png, webp, jpg'
+ *
+ * @return array basename  of files
+ */
+function filesindir($dir, $ext = '')
+{
+    $files = [];
+    if (file_exists($dir) && is_dir($dir) && is_readable($dir)) {
+        foreach (new DirectoryIterator($dir) as $fileInfo) {
+            if ($fileInfo->isDot()) {
+                continue;
+            }
+            if (empty($ext)) {
+                // $files[] = $fileInfo->getBasename();
+                $files[] = $fileInfo->getPathname();
+            } else {
+                $arr = explode(',', $ext);
+                foreach ($arr as $value) {
+                    $extt = mb_strtolower(ltrim(trim($value), '.'));
+                    if ($extt === $fileInfo->getExtension()) {
+                        // $files[] = $fileInfo->getBasename();
+                        $files[] = $fileInfo->getPathname();
+                    }
+                }
+            }
+        }
+    }
+
+    return $files;
+}
 
 /**
  * function for url validation.
@@ -326,4 +391,139 @@ function check_http_status($url)
     curl_close($ch);
 
     return $httpcode;
+}
+function test_input($data)
+{
+    // obrezka do 300 znakov na vsak slu4aj
+    $data = mb_substr($data, 0, 300);
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+
+    return $data;
+}
+
+function phone_number_to_db($sPhone)
+{
+    $sPhone = preg_replace('![^0-9]+!', '', $sPhone);
+
+    return $sPhone;
+}
+
+function phone_number_view($sPhone)
+{
+    $sPhone = preg_replace('![^0-9]+!', '', $sPhone);
+    // if(strlen($sPhone) != 11) return(False);
+    if (strlen($sPhone) > 10 && strlen($sPhone) < 12) {
+        $sArea = mb_substr($sPhone, 0, 1);
+        $sPrefix = mb_substr($sPhone, 1, 3);
+        $sNumber1 = mb_substr($sPhone, 4, 3);
+        $sNumber2 = mb_substr($sPhone, 7, 2);
+        $sNumber3 = mb_substr($sPhone, 9, 2);
+        $sPhone = '+'.$sArea.' ('.$sPrefix.') '.$sNumber1.' '.$sNumber2.' '.$sNumber3;
+
+        return $sPhone;
+    } else {
+        return $sPhone;
+    }
+}
+
+/**
+ * find file in dir by only filename without extension.
+ *
+ * @param string $path     to dir
+ * @param string $filename only filename without extension
+ *
+ * @return string or false
+ */
+function find_by_filename($path, $filename)
+{
+    if (is_readable($path)) {
+        $files = scandir($path);
+        if (!empty($files)) {
+            foreach ($files as $k => $v) {
+                $fname = pathinfo($v, PATHINFO_FILENAME);
+                $only_name[$k] = $fname;
+            }
+            $name_key_name = array_search($filename, $only_name);
+            if (!empty($name_key_name)) {
+                // return $path.DS.$files[$name_key_name];
+                return $files[$name_key_name];
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
+function del_empty_dir($dir)
+{
+    if ([] === array_diff(scandir($dir), ['.', '..'])) {
+        if (rmdir($dir)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+function human_filesize($bytes, $decimals = 2)
+{
+    $sz = 'BKMGTP';
+    $factor = floor((strlen($bytes) - 1) / 3);
+
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)).@$sz[$factor];
+}
+
+function en_dayweek_to_rus($dayweek)
+{
+    $cyr = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    $lat = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    $dayrus = str_replace($lat, $cyr, $dayweek);
+
+    return $dayrus;
+}
+
+function en_month_to_rus($month)
+{
+    $lat = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec'];
+    $cyr = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',  'янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'сент', 'окт', 'ноя', 'дек'];
+    $ru_month = str_replace($lat, $cyr, $month);
+
+    return $ru_month;
+}
+
+function mb_lcfirst($str)
+{
+    $fc = mb_strtolower(mb_substr($str, 0, 1));
+
+    return $fc.mb_substr($str, 1);
+}
+
+function searchLine($filename, $string)
+{
+    $line = false;
+    $fh = fopen($filename, 'rb');
+    for ($i = 1; ($t = fgets($fh)) !== false; ++$i) {
+        if (strpos($t, $string) !== false) {
+            $line = $i;
+            break;
+        }
+    }
+    fclose($fh);
+
+    return $line;
+}
+function in_array_recursive($needle, array $haystack, $strict = false)
+{
+    foreach ($haystack as $item) {
+        if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_recursive($needle, $item, $strict))) {
+            return true;
+        }
+    }
+
+    return false;
 }
