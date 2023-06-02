@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckIsUser
@@ -21,6 +22,7 @@ class CheckIsUser
             return $next($request);
         }
 
-        return redirect()->route('home');
+        // return redirect()->route('home');
+        return Redirect::back()->withErrors(['msg' => 'You have no authority']);
     }
 }

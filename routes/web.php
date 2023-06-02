@@ -13,6 +13,7 @@ use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserStatus\CallbacksEditController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -152,14 +153,17 @@ Route::prefix('admin')->name('admin.')
     /*
     * ADMIN AND MODER AND USER ROUTES
     */
-    /*
-            Route::prefix('user')->name('user.')->group(function () {
-                Route::get('/recall_list', function () {
-                    return view('admin_manikur.admin_moder_user_pages.recall_list');
-                })->name('recall_list');
-            });
-
-    */
+    Route::middleware('isuser')->group(function () {
+        Route::controller(CallbacksEditController::class)
+        ->prefix('callbacks')
+        ->name('callbacks.')
+        ->group(function () {
+            Route::get('/need', 'need')->name('need');
+            Route::post('/need', 'update')->name('update');
+            Route::get('/completed', 'completed')->name('completed');
+            Route::post('/completed', 'destroy')->name('remove');
+        });
+    });
 });
 
 Route::get('/dashboard', function () {

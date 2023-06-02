@@ -17,4 +17,20 @@ class Order extends Model
         'created',
         'end_dt',
     ];
+
+    public function clients()
+    {
+        return $this->hasMany(Client::class);
+    }
+
+    public function masters()
+    {
+        return $this->hasMany(Masters::class);
+    }
+    /*
+    public function service()
+    {
+        return $this->hasMany(Service::class);
+    }
+    */
 }
