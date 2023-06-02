@@ -36,20 +36,6 @@ trait PagesRoutesHierarchyArray
         $this->routes_tree = $tree;
     }
 
-    private function name(array $array)
-    {
-        reset($array);
-        $n = '';
-        $max = sizeof($array);
-        for ($i = 1; $i < $max; ++$i) {
-            if (!empty($array[$i])) {
-                $n .= $array[$i].' ';
-            }
-        }
-
-        return $n;
-    }
-
     public function get_pages_menu($name = 'main'): array
     {
         $this->list_of_routes($name);
