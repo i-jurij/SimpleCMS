@@ -255,7 +255,9 @@ textarea:valid {
 .padrl1{
 	padding: 0 1rem;
 }
-
+.padrlb1{
+	padding: 0 1rem 1rem 1rem;
+}
 .pad05{	padding: 0.5rem;}
 
 .pad_tb05_rl1{padding: 0.5rem 1rem;}
@@ -757,7 +759,7 @@ a.gallery_a:hover img{
 	border: none;
 	outline: none;
     border-radius: var(--radius);
-    background-color: var(--bgcolor-content);
+    background: var(--bgcolor-content);
 	background-repeat: no-repeat;
 	box-shadow: var(--boxshadow);
 	overflow: hidden;

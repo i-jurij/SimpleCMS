@@ -13,7 +13,7 @@ use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserStatus\CallbacksEditController;
+use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
 use Illuminate\Support\Facades\Route;
 
 /*

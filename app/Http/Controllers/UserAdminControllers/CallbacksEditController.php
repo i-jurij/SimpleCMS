@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\UserStatus;
+namespace App\Http\Controllers\UserAdminControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Callback;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class CallbacksEditController extends Controller
 {
@@ -31,11 +33,13 @@ class CallbacksEditController extends Controller
         return view('admin_manikur.user_pages.callbacks', ['callbacks' => $call, 'stat' => 'Need to']);
     }
 
-    public function completed(Callback $callback)
+    public function completed()
     {
-        $callbacks = $callback->where('response', true)->toArray();
+        $callbacks = Callback::where('response', true)
+        ->with(['client'])
+        ->get();
 
-        return view('admin_manikur.user_pages.callbacks', ['callbacks' => $callbacks]);
+        return view('admin_manikur.user_pages.callback_completed', ['callbacks' => $callbacks]);
     }
 
     /**
@@ -53,24 +57,25 @@ class CallbacksEditController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, Callback $callback)
+    public function destroy(Callback $callback)
     {
         $res = '';
-        if ($callback->destroy($request->id)) {
-            $res .= 'About data have been removed!<br>';
-        } else {
-            $res .= 'WARNING! About data have been NOT removed!<br>';
-        }
-        if (!empty($request->image) && is_array($request->image)) {
-            foreach ($request->image as $image) {
-                if (delete_file($image) !== 'true') {
-                    $res .= delete_file($image);
-                } else {
-                    $res .= 'Image(s) for about(s) have been deleted.<br>';
-                }
+        $today = Carbon::today();
+
+        try {
+            // $callback::where('response', true)->delete();
+            $callback::where('response', true)->where('created_at', '<', $today->toDateTimeString())->delete();
+            // $res .= 'Callbacks data have been removed!<br>';
+        } catch (\Throwable $th) {
+            // $res .= 'WARNING! Callbacks data have been NOT removed.\n'.dd($th).'\n';
+            $storageDestinationPath = storage_path('logs'.DIRECTORY_SEPARATOR.'callback_error.log');
+            if (!File::exists($storageDestinationPath)) {
+                File::put($storageDestinationPath, "\n{$today}\ndd($th)\n");
+            } else {
+                File::append($storageDestinationPath, "\n{$today}\ndd($th)\n");
             }
         }
 
-        return view('admin_manikur.moder_pages.about', ['res' => $res]);
+        return $this->completed();
     }
 }
