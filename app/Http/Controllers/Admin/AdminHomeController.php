@@ -11,10 +11,8 @@ class AdminHomeController extends Controller
 
     public function getview()
     {
-        // $content = $this->list_of_admin_routes();
-        $content = $this->get_pages_menu('admin');
         $collection_of_routes = $this->routs_hierarchie();
 
-        return view('admin_manikur.home_adm', ['content' => $content, 'routes' => $collection_of_routes]);
+        return view('admin_manikur.home_adm', ['routes' => $collection_of_routes]);
     }
 }

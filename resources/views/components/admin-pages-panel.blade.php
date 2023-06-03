@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Support\Facades\Auth;
+
 function panel(array $variable)
 {
     $res = '';
