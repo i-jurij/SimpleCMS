@@ -15,4 +15,5 @@ $robots = 'NOINDEX, NOFOLLOW';
 
 @section('content')
 @include('components/admin-pages-panel')
+
 @stop
