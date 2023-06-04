@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Session;
 
 class CallbacksEditController extends Controller
 {
@@ -51,31 +52,34 @@ class CallbacksEditController extends Controller
             $callback->whereIn('id', $request->id)->update(['response' => true]);
         }
 
-        return $this->need();
+        return redirect()->route('admin.callbacks.need');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Callback $callback)
+    public function destroy(Request $request, Callback $callback)
     {
         $res = '';
         $today = Carbon::today();
 
-        try {
-            // $callback::where('response', true)->delete();
-            $callback::where('response', true)->where('created_at', '<', $today->toDateTimeString())->delete();
-            // $res .= 'Callbacks data have been removed!<br>';
-        } catch (\Throwable $th) {
-            // $res .= 'WARNING! Callbacks data have been NOT removed.\n'.dd($th).'\n';
-            $storageDestinationPath = storage_path('logs'.DIRECTORY_SEPARATOR.'callback_error.log');
-            if (!File::exists($storageDestinationPath)) {
-                File::put($storageDestinationPath, "\n{$today}\ndd($th)\n");
-            } else {
-                File::append($storageDestinationPath, "\n{$today}\ndd($th)\n");
+        if ($request->has('submit')) {
+            try {
+                // $callback::where('response', true)->delete();
+                $callback::where('response', true)->where('created_at', '<', $today->toDateTimeString())->delete();
+                Session::flash('res', 'Callbacks data have been removed!');
+                // $res .= 'Callbacks data have been removed!';
+            } catch (\Throwable $th) {
+                // $res .= 'WARNING! Callbacks data have been NOT removed.\n'.dd($th).'\n';
+                $storageDestinationPath = storage_path('logs'.DIRECTORY_SEPARATOR.'callback_error.log');
+                if (!File::exists($storageDestinationPath)) {
+                    File::put($storageDestinationPath, "\n{$today}\ndd($th)\n");
+                } else {
+                    File::append($storageDestinationPath, "\n{$today}\ndd($th)\n");
+                }
             }
         }
 
-        return $this->completed();
+        return redirect()->route('admin.callbacks.completed');
     }
 }

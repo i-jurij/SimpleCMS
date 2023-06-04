@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Sequence;
 
 class AboutController extends Controller
 {
-    public function index($content, $page_data = '')
+    public function index($content, $page_data = '', $method_and_params = '')
     {
         if (About::exists()) {
             $abouts = About::all()->toArray();

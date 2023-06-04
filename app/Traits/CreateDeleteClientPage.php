@@ -81,7 +81,7 @@ trait CreateDeleteClientPage
             .PHP_EOL.'use App\Models\Pages;'
             .PHP_EOL.'class '.$classname.'Controller extends Controller'
             .PHP_EOL.'{'
-                .PHP_EOL.'public function index($content, $page_data)'
+                .PHP_EOL.'public function index($content, $page_data = \'\', $method_and_params = \'\')'
                 .PHP_EOL.'{'
                     .PHP_EOL.'$res = ["Empty page."];'
                     .PHP_EOL.'return view("client_manikur.client_pages.'.mb_strtolower($classname).'", ["page_data" => $page_data, "content" => $content, "res" => $res]);'

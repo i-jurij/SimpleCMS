@@ -52,6 +52,7 @@ class PagesController extends Controller
             $img = $this->uploadFile($request->file('picture'));
             $img_res = 'The page image has been uploaded.<br>';
         }
+        // end upload img
 
         // if single_page === no - create models, controllers etc
         if ($request->single_page === 'no') {

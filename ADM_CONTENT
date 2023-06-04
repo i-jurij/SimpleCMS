@@ -35,7 +35,8 @@ Client pages:
 tables:
 table 'clients' - id, name, contacts (phone, messenger, social etc)
 table 'orders' - id, client_id (clients.id), services (services.id), master (masters.id), price (services.price), order_datetime, completed_datetime
-table 'services_categories' -             "id" => [
+table 'services_categories' -
+            "id" => [
                 "INTEGER PRIMARY KEY",
                 "AUTOINCREMENT",
                 "NOT NULL"
@@ -55,7 +56,8 @@ table 'services_categories' -             "id" => [
             ],
             "FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE ON UPDATE CASCADE"
 
-table 'services' -             "id" => [
+table 'services' -
+            "id" => [
                 "INTEGER PRIMARY KEY",
                 "AUTOINCREMENT",
                 "NOT NULL"
@@ -86,11 +88,11 @@ table 'services' -             "id" => [
 table 'callback' - id, client_id (clients.id), orders (orders.id), send, call_datetime, response_datetime, response_yes (yes or no, or bool)
 
 admin user pages:
-1. need call back
-2. call back log
+1. need call back +
+2. call back log +
 
 admin moder page:
-1. clear call back log
+1. clear call back log +
 
 client page:
 1. callback

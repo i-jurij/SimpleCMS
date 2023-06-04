@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 class CallbackController extends Controller
 {
-    public function index($content, $page_data)
+    public function index($content, $page_data, $method_and_params = '')
     {
         $res = null;
         $files = Storage::disk('public')->files('images'.DIRECTORY_SEPARATOR.'captcha_imgs');
