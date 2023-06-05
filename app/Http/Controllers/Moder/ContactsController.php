@@ -75,9 +75,9 @@ class ContactsController extends Controller
     public function update(UpdateContactsRequest $request, Contacts $contacts)
     {
         if ($contacts::where('id', $request->id)->update(['type' => $request->type, 'data' => $request->data])) {
-            return $this->index('Contacts data have been updated!');
+            return redirect()->route('admin.contacts.list')->with('res', 'Contacts data have been updated!');
         } else {
-            return $this->index('Contacts data have been NOT updated!');
+            return redirect()->route('admin.contacts.list')->with('res', 'Contacts data have been NOT updated!');
         }
     }
 
@@ -94,9 +94,9 @@ class ContactsController extends Controller
         }
 
         if ($contacts->destroy($contacts_ids)) {
-            return $this->index('Contacts data have been removed!');
+            return redirect()->route('admin.contacts.list')->with('res', 'Contacts data have been removed!');
         } else {
-            return $this->index('WARNING! Contacts data have been NOT removed!');
+            return redirect()->route('admin.contacts.list')->with('res', 'Contacts data have been NOT removed!');
         }
     }
 }

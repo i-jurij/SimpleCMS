@@ -12,6 +12,7 @@ use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\MastersController;
 use App\Http\Controllers\Moder\PagesController;
+use App\Http\Controllers\Moder\ServicePadeEditController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
 use Illuminate\Support\Facades\Route;
@@ -89,6 +90,19 @@ Route::prefix('admin')->name('admin.')
     * ADMIN AND MODER ROUTES
     */
     Route::middleware('ismoder')->group(function () {
+        Route::controller(ServicePadeEditController::class)
+        ->prefix('service_page')
+        ->name('service_page.')
+        ->group(function () {
+            Route::get('/', 'index')->name('edit');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::post('/remove', 'destroy')->name('remove');
+            Route::get('/edit', 'index')->name('edit');
+            Route::post('/edit', 'edit')->name('edit.form');
+            Route::post('/edit/update', 'update')->name('update');
+        });
+
         Route::controller(ContactsController::class)
         ->prefix('contacts')
         ->name('contacts.')
@@ -144,10 +158,6 @@ Route::prefix('admin')->name('admin.')
             Route::get('/', 'index')->name('edit');
             Route::post('/', 'go')->name('go');
         });
-
-        Route::get('/service_edit', function () {
-            return view('admin_manikur.admin_moder_pages.page_edit');
-        })->name('service_edit');
     });
 
     /*
