@@ -23,6 +23,7 @@ $robots = 'NOINDEX, NOFOLLOW';
         <b>content</b> - html|php содержимое страницы;<br />
         <b>single_page</b> - 'yes' or 'no', страница содержит подстраницы или нет (для страниц с подстраницами будут созданы контроллеры, модели, представления);<br />
         <b>publish</b> - 'yes' or 'no', показывать страницу или нет.<br />
+        <b>service_page</b> - 'yes' or default 'no', страница услуг c категориями и услугами. Все данные хранятся в БД в таблицах service_categories и services.<br />
         <small>* - обязательно для заполнения.</small><br />
     </p>
 </div>

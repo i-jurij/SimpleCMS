@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePagesRequest;
 use App\Http\Requests\UpdatePagesRequest;
 use App\Models\Pages;
+use App\Models\Service;
+use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
@@ -63,6 +65,13 @@ class PagesController extends Controller
             }
         }
 
+        // if service_page === yes - add to view buttons for categories and services creating
+        if ($request->service_page === 'yes') {
+            $create_cat_serv = 'layouts/create_cat_serv_buttons';
+        } else {
+            $create_cat_serv = '';
+        }
+
         $create = Pages::create([
             'alias' => $request->alias,
             'title' => $request->title,
@@ -71,13 +80,13 @@ class PagesController extends Controller
             'robots' => $request->robots,
             'content' => ($request->content) ? $request->content : '',
             'single_page' => $request->single_page,
-            'service_page' => $request->service_page,
+            'service_page' => ($request->service_page) ? $request->service_page : 'no',
             'img' => ($img) ? $img : '',
             'publish' => $request->publish,
         ]);
         $res = $create->attributesToArray();
 
-        return view('admin_manikur.moder_pages.pages_store', ['res' => $res, 'img_res' => $img_res]);
+        return view('admin_manikur.moder_pages.pages_store', ['res' => $res, 'img_res' => $img_res, 'create_cat_serv' => $create_cat_serv]);
     }
 
     /**
@@ -92,7 +101,7 @@ class PagesController extends Controller
      */
     public function edit(Request $request, Pages $pages)
     {
-        $data = $pages->where('id', $request->id)->get()->toArray();
+        $data = $pages->where('id', $request->id)->first()->toArray();
 
         return view('admin_manikur.moder_pages.page_edit_form', ['fields' => $data]);
     }
@@ -140,14 +149,25 @@ class PagesController extends Controller
     public function destroy(Request $request, Pages $pages)
     {
         $res = '';
-        list($page_id, $alias, $img, $single_page) = explode('plusplus', $request->id);
-        if ($single_page === 'no') {
+        list($page_id, $alias, $img, $single_page, $service_page) = explode('plusplus', $request->id);
+        if (!empty($single_page) && $single_page === 'no') {
             // delete created files, tables
             $res .= $this->delContrModMigrView($alias);
         }
 
-        if ($pages->destroy($page_id)) {
-            $res .= 'Data of page in DB <b>'.$alias.'</b> have been removed!<br>';
+        if (!empty($page_id) && $pages->destroy($page_id)) {
+            // DELETE categories and services from table in db
+            /* IF SET RELATIONSHIPS in model - not need
+            if (!empty($service_page) && $service_page === 'yes') {
+                if (ServiceCategory::where('page_id', $page_id)->delete()) {
+                    $res .= 'Data of page from table "servise_ctegories" in DB <b>'.$alias.'</b> have been removed!<br>';
+                }
+                if (Service::where('page_id', $page_id)->delete()) {
+                    $res .= 'Data of page from table "services" in DB <b>'.$alias.'</b> have been removed!<br>';
+                }
+            }
+            */
+            $res .= 'Data of page from table "pages" in DB <b>'.$alias.'</b> have been removed!<br>';
             /* $this->deleteFile($img, 'public') from trait Upload */
             if ($this->removeFile($img, 'public')) {
                 $res .= 'Image of page <b>'.$alias.'</b> have been removed!';

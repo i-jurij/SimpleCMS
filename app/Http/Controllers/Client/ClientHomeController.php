@@ -28,36 +28,31 @@ class ClientHomeController extends Controller
             if ($page_data[0]['single_page'] === 'no' || $page_data[0]['service_page'] === 'yes') {
                 // get pieces of url (route): 0 - classname, 1 - methodname, 2...x - params
                 $path_array = explode('/', trim($request->path(), '/'));
-                // $class_name = $path_array[0];
-                $method = '';
-                $param = [];
-                if (!empty($path_array[1])) {
-                    $method = $path_array[1];
-                }
-                if (!empty($path_array[2])) {
-                    for ($i = 2; $i < count($path_array); ++$i) {
-                        $param[$i - 2] = $path_array[$i];
-                    }
-                }
-                $method_and_params = ['method' => $method, 'params' => $param];
+                if ($page_data[0]['single_page'] === 'no') {
+                    $path = 'App\\Http\\Controllers\\Client\\';
+                    $class = $path.mb_ucfirst($page_alias).'Controller';
+                    if (class_exists($class)) {
+                        if (method_exists($class, 'index')) {
+                            /*
+                            return redirect()->action(
+                                [mb_ucfirst($page_alias).'Controller'::class, 'index'], ['content' => $content, 'page_data' => $page_data]
+                            );
+                            */
+                            $c = new $class();
 
-                $path = 'App\\Http\\Controllers\\Client\\';
-                $class = $path.mb_ucfirst($page_alias).'Controller';
-                if (class_exists($class)) {
-                    if (method_exists($class, 'index')) {
-                        /*
-                        return redirect()->action(
-                            [mb_ucfirst($page_alias).'Controller'::class, 'index'], ['content' => $content, 'page_data' => $page_data]
-                        );
-                        */
-                        $c = new $class();
-
-                        return response($c->index($content, $page_data, $method_and_params));
+                            return response($c->index($content, $page_data, $path_array));
+                        } else {
+                            return response('Method "index" for controller '.$class.' not exists')->header('Content-Type', 'text/plain');
+                        }
                     } else {
-                        return response('Method "index" for controller '.$class.' not exists')->header('Content-Type', 'text/plain');
+                        return response('Controller '.$class.' not exists')->header('Content-Type', 'text/plain');
                     }
-                } else {
-                    return response('Controller '.$class.' not exists')->header('Content-Type', 'text/plain');
+                }
+
+                if ($page_data[0]['service_page'] === 'yes') {
+                    $servicePageController = new ServicePageController();
+
+                    return response($servicePageController->index($content, $page_data, $path_array));
                 }
             } elseif (view()->exists('client_manikur.client_pages.'.$page_alias)) {
                 return view('client_manikur.client_pages.'.$page_alias, ['page_data' => $page_data, 'content' => $content]);

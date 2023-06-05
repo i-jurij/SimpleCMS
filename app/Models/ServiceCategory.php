@@ -4,26 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Pages extends Model
+class ServiceCategory extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'alias',
-        'title',
+        'page_id',
+        'image',
+        'name',
         'description',
-        'keywords',
-        'robots',
-        'content',
-        'single_page',
-        'img',
-        'publish',
-        'service_page',
     ];
 
-    public function categories()
+    public function page(): BelongsTo
     {
-        return $this->hasMany(ServiceCategory::class);
+        return $this->belongsTo(Pages::class);
     }
 
     public function services()

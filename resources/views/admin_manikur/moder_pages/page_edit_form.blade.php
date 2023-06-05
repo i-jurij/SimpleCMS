@@ -9,8 +9,10 @@ $filesize = 1;
 @extends('layouts/index_admin')
 @section('content')
     <div class="content">
-    @foreach ($fields as $page)
-        @if (is_array($page) && !empty($page))
+    @if (is_array($fields) && !empty($fields))
+    @if (!empty($fields['service_page']) && $fields['service_page'] === 'yes')
+        @include('layouts/create_cat_serv_buttons')
+    @endif
         <div class="price">
             <form method="post" action="{{ url()->route('admin.pages.update') }}" enctype="multipart/form-data" id="page_update"  class="form_page_add">
             @csrf
@@ -29,7 +31,7 @@ $filesize = 1;
                 </thead>
                 <tbody class="text_left">
                 <?php
-                foreach ($page as $key => $value) {
+                foreach ($fields as $key => $value) {
                     $pattern = '';
                     $length = '100';
                     if ($key === 'alias') {
@@ -77,8 +79,8 @@ $filesize = 1;
             </form>
         </div>
     </div>
-        @endif
-    @endforeach
+    @endif
+
 @stop
 <script type="module">
 document.addEventListener('DOMContentLoaded', function () {

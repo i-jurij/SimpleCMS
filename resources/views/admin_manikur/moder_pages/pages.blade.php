@@ -35,7 +35,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                             </form>
                             <form method="post" action="{{ url()->route('admin.pages.remove') }}" class="display_inline_block">
                             @csrf
-                                <button type="submit" class="buttons" value="{{$page['id']}}plusplus{{$page['alias']}}plusplus{{$page['img']}}plusplus{{$page['single_page']}}" name="id">Remove</button>
+                                <button type="submit" class="buttons" value="{{$page['id']}}plusplus{{$page['alias']}}plusplus{{$page['img']}}plusplus{{$page['single_page']}}plusplus{{$page['service_page']}}" name="id">Remove</button>
                             </form>
                             </td>
                         </tr>

@@ -81,7 +81,7 @@ trait CreateDeleteClientPage
             .PHP_EOL.'use App\Models\Pages;'
             .PHP_EOL.'class '.$classname.'Controller extends Controller'
             .PHP_EOL.'{'
-                .PHP_EOL.'public function index($content, $page_data = \'\', $method_and_params = \'\')'
+                .PHP_EOL.'public function index($content, $page_data = \'\', $path_array = \'\')'
                 .PHP_EOL.'{'
                     .PHP_EOL.'$res = ["Empty page."];'
                     .PHP_EOL.'return view("client_manikur.client_pages.'.mb_strtolower($classname).'", ["page_data" => $page_data, "content" => $content, "res" => $res]);'
@@ -146,58 +146,5 @@ trait CreateDeleteClientPage
 
             return false;
         }
-    }
-
-// ////////////////////////////////////////////////////////////////////////////
-// for services pages
-// ///////////////////////////////////////////////////////////////////////////
-    public function createServicePage($page_alias): bool
-    {
-        // create controller, model, migrate, view
-        if (function_exists('mb_ucfirst')) {
-            $classname = mb_ucfirst($page_alias);
-        }
-        if ($this->createController($classname)) {
-            return true;
-        } else {
-            // delete created files
-            /* code */
-            return false;
-        }
-    }
-
-    protected function createController($classname)
-    {
-        $path = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Client'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
-        $content = '<?php'
-            .PHP_EOL.'namespace App\Http\Controllers\Client;'
-            .PHP_EOL.'use App\Http\Controllers\Controller;'
-            .PHP_EOL.'use App\Models\Contacts;'
-            .PHP_EOL.'use App\Models\Pages;'
-            .PHP_EOL.'class '.$classname.'Controller extends Controller'
-            .PHP_EOL.'{'
-                .PHP_EOL.'public function index($content, $page_data)'
-                .PHP_EOL.'{'
-                    .PHP_EOL.'$res = [];'
-                    .PHP_EOL.'return view("client_manikur.client_pages.'.$classname.'", ["page_data" => $page_data, "content" => $content, "res" => $res]);'
-                    .PHP_EOL.'}'
-                .PHP_EOL.'}
-        ';
-    }
-
-    protected function createModel($classname)
-    {
-        $path = app_path().DIRECTORY_SEPARATOR.'Models'.DIRECTORY_SEPARATOR.$classname.'.php';
-        $content = '<?php'.PHP_EOL.'
-            namespace App\Models;'.PHP_EOL.'
-            use Illuminate\Database\Eloquent\Factories\HasFactory;'.PHP_EOL.'
-            use Illuminate\Database\Eloquent\Model;'.PHP_EOL.'
-            class '.$classname.' extends Model'.PHP_EOL.'
-            {'.PHP_EOL.'
-                use HasFactory;'.PHP_EOL.'
-                protected $fillable = ['.PHP_EOL.'
-                ];'.PHP_EOL.'
-            }
-        ';
     }
 }

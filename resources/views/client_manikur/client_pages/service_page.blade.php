@@ -1,10 +1,12 @@
 @php
 if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
-    $title = $page_data[0]["title"];
-    $page_meta_description = $page_data[0]["description"];
+    // title get from $this_show_method_data['name']
+    $title = (!empty($this_show_method_data['name'])) ? $this_show_method_data['name'] : $page_data[0]["title"];
+    // page_meta_description get from $data['cat']['description']
+    $page_meta_description = (!empty($this_show_method_data['description'])) ? $this_show_method_data['description'] : $page_data[0]["description"];
     $page_meta_keywords = $page_data[0]["keywords"];
     $robots = $page_data[0]["robots"];
-    $content = $page_data[0]["content"];
+    $content = (!empty($data['cat'])) ? $data['cat']['name'] : $page_data[0]["content"];
 } else {
     $title = "Title";
     $page_meta_description = "description";
@@ -12,9 +14,6 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $robots = "INDEX, FOLLOW";
     $content = "CONTENT FOR DEL IN FUTURE";
 }
-
-$img_cat = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$cat['category_img'];
-$img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['service_img'];
 
 @endphp
 
@@ -25,38 +24,43 @@ $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['service_img'
 
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
 
-    @if (!empty($data['res']))
-        {{$data['res']}}
+    @if (!empty($this_show_method_data))
+        @php
+            print_r($this_show_method_data)
+        @endphp
     @else
 
-        <article class="main_section_article">
-            <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">
-                <h3>Расценки</h3>
+    <article class="main_section_article">
+            <div class="main_section_article_imgdiv pad" style="background-color: var(--bgcolor-content);">
+                <h2>Расценки</h2>
             </div>
             <div class="main_section_article_content"><br />
-                <h3>{{$data['page_db_data'][0]['page_title']}}</h3>
+                <h2>{{$title}}</h2>
                 @if (!empty($data['min_price']))
                     @foreach ($data['min_price'] as $k => $v)
                         <span>{{$k}} - от {{$v}} руб.</span><br />
                     @endforeach
                 @endif
                 <br />
-                <a href="{{url('/price#'.$data['page_db_data'][0]['page_alias'])}}" style="text-decoration: underline;">Прайс</a>
+                <a href="{{url('/price#'.$page_data[0]['alias'])}}" style="text-decoration: underline;">Прайс</a>
             </div>
         </article>
 
         @if (!empty($data['cat']))
-            @foreach ($data['cat'] as $cat)
+            @foreach ($data['cat'] as $key => $cat)
+            @php
+                $img_cat = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$cat['image'];
+            @endphp
                 <article class="main_section_article ">
                     <div class="main_section_article_imgdiv">
                         <img src="{{asset('storage'.$img_cat)}}" alt="Фото {{$cat['category_name']}}" class="main_section_article_imgdiv_img" />
                     </div>
                     <div class="main_section_article_content">
-                        <h3>{{$cat['category_name']}}</h3>';
+                        <h3>{{$cat['name']}}</h3>';
                             @if (!empty($data['serv']))
-                                @foreach ($data['serv'] as $serv)
+                                @foreach ($data['serv'] as $k => $serv)
                                     @if ($serv['category_id'] == $cat['id'])
-                                        <span>{{$serv['service_name']}} от {{$serv['price']}} руб.</span><br />
+                                        <span>{{$serv['name']}} от {{$serv['price']}} руб.</span><br />
                                     @endif
                                 @endforeach
                             @endif
@@ -66,16 +70,17 @@ $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['service_img'
         @endif
 
         @if (!empty($data['serv']))
-            @foreach ($data['serv'] as $serv)
-                @if (empty($serv['category_id']) || $serv['category_id'] === '')
+            @foreach ($data['serv'] as $ke => $serv)
+                $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['image'];
+                @if (empty($data['serv'][$ke]['category_id']) || $data['serv'][$ke]['category_id'] === '')
                     <article class="main_section_article ">
                         <div class="main_section_article_imgdiv">
                             <img src="{{asset('storage'.$img_serv)}}" alt="Фото {{$serv['service_name']}}" class="main_section_article_imgdiv_img" />
                         </div>
                         <div class="main_section_article_content">
-                            <h3>{{$serv['service_name']}}</h3>
-                            <span>{{$serv['service_descr']}}</span><br />
-                            <span>от {{$serv['price']}} руб.</span>
+                            <h3>{{$data['serv'][$ke]['name']}}</h3>
+                            <span>{{$data['serv'][$ke]['description']}}</span><br />
+                            <span>от {{$data['serv'][$ke]['price']}} руб.</span>
                         </div>
                     </article>
                 @endif

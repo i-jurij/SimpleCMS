@@ -11,7 +11,7 @@ return new class() extends Migration {
     public function up(): void
     {
         Schema::table('pages', function (Blueprint $table) {
-            $table->char('service_page', 10)->default('no');
+            $table->char('service_page', 10);
         });
     }
 
