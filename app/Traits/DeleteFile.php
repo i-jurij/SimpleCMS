@@ -29,11 +29,6 @@ trait DeleteFile
         }
     }
 
-    /**
-     * delete a file or files.
-     *
-     * @return string (check if $this === 'true')
-     */
     public static function deleteFile(string $path2file): string
     {
         $mes = '';
@@ -69,7 +64,7 @@ trait DeleteFile
 
     public function del_empty_dir($dir)
     {
-        if ([] === array_diff(scandir($dir), ['.', '..'])) {
+        if (file_exists($dir) && is_dir($dir) && [] === array_diff(scandir($dir), ['.', '..'])) {
             if (rmdir($dir)) {
                 return true;
             } else {

@@ -6,7 +6,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $page_meta_description = (!empty($this_show_method_data['description'])) ? $this_show_method_data['description'] : $page_data[0]["description"];
     $page_meta_keywords = $page_data[0]["keywords"];
     $robots = $page_data[0]["robots"];
-    $content = (!empty($data['cat'])) ? $data['cat']['name'] : $page_data[0]["content"];
+    $content = (!empty($data['cat']) && !empty($data['cat']['name'])) ? $data['cat']['name'] : $page_data[0]["content"];
 } else {
     $title = "Title";
     $page_meta_description = "description";
@@ -53,10 +53,10 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
             @endphp
                 <article class="main_section_article ">
                     <div class="main_section_article_imgdiv">
-                        <img src="{{asset('storage'.$img_cat)}}" alt="Фото {{$cat['category_name']}}" class="main_section_article_imgdiv_img" />
+                        <img src="{{asset('storage'.$img_cat)}}" alt="Фото {{$cat['name']}}" class="main_section_article_imgdiv_img" />
                     </div>
-                    <div class="main_section_article_content">
-                        <h3>{{$cat['name']}}</h3>';
+                    <div class="main_section_article_content margin_top_1rem">
+                        <h3>{{$cat['name']}}</h3>
                             @if (!empty($data['serv']))
                                 @foreach ($data['serv'] as $k => $serv)
                                     @if ($serv['category_id'] == $cat['id'])
@@ -71,13 +71,15 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
         @if (!empty($data['serv']))
             @foreach ($data['serv'] as $ke => $serv)
-                $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['image'];
+                @php
+                    $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['image'];
+                @endphp
                 @if (empty($data['serv'][$ke]['category_id']) || $data['serv'][$ke]['category_id'] === '')
                     <article class="main_section_article ">
                         <div class="main_section_article_imgdiv">
-                            <img src="{{asset('storage'.$img_serv)}}" alt="Фото {{$serv['service_name']}}" class="main_section_article_imgdiv_img" />
+                            <img src="{{asset('storage'.$img_serv)}}" alt="Фото {{$serv['name']}}" class="main_section_article_imgdiv_img" />
                         </div>
-                        <div class="main_section_article_content">
+                        <div class="main_section_article_content  margin_top_1rem">
                             <h3>{{$data['serv'][$ke]['name']}}</h3>
                             <span>{{$data['serv'][$ke]['description']}}</span><br />
                             <span>от {{$data['serv'][$ke]['price']}} руб.</span>

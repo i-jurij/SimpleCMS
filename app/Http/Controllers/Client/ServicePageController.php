@@ -58,7 +58,7 @@ class ServicePageController extends Controller
                             $ccf->bindParam(':pid', $page_data[0]['id']);
                             $ccf->execute();
                             if ($rccf = $ccf->fetch(\PDO::FETCH_LAZY)) {
-                                $min_price[$cat['category_name']] = $rccf->price;
+                                $min_price[$cat['name']] = $rccf->price;
                             }
                         }
                         asort($min_price, SORT_NATURAL);

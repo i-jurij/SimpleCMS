@@ -12,7 +12,7 @@ use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\MastersController;
 use App\Http\Controllers\Moder\PagesController;
-use App\Http\Controllers\Moder\ServicePadeEditController;
+use App\Http\Controllers\Moder\ServicePageEditController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
 use Illuminate\Support\Facades\Route;
@@ -68,6 +68,14 @@ Route::prefix('admin')->name('admin.')
                 Route::post('/change/store', 'store')->name('store');
             });
 
+        Route::get('/logs', function () {
+            return view('admin_manikur.adm_pages.logs');
+        })->name('logs');
+    });
+    /*
+    * ADMIN AND MODER ROUTES
+    */
+    Route::middleware('ismoder')->group(function () {
         // Route::resource('pages', PagesController::class);
         Route::controller(PagesController::class)
         ->prefix('pages')
@@ -82,25 +90,14 @@ Route::prefix('admin')->name('admin.')
             Route::post('/update', 'update')->name('update');
         });
 
-        Route::get('/logs', function () {
-            return view('admin_manikur.adm_pages.logs');
-        })->name('logs');
-    });
-    /*
-    * ADMIN AND MODER ROUTES
-    */
-    Route::middleware('ismoder')->group(function () {
-        Route::controller(ServicePadeEditController::class)
+        Route::controller(ServicePageEditController::class)
         ->prefix('service_page')
         ->name('service_page.')
         ->group(function () {
             Route::get('/', 'index')->name('edit');
             Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
-            Route::post('/remove', 'destroy')->name('remove');
-            Route::get('/edit', 'index')->name('edit');
-            Route::post('/edit', 'edit')->name('edit.form');
-            Route::post('/edit/update', 'update')->name('update');
+            Route::get('/services', 'services_edit')->name('services_edit');
+            Route::post('/services', 'go')->name('go');
         });
 
         Route::controller(ContactsController::class)

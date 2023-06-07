@@ -42,6 +42,8 @@ class PagesController extends Controller
     public function store(StorePagesRequest $request)
     {
         // upload image
+        $img = '';
+        $img_res = '';
         $this->disk = 'public';
         $this->folder = 'images'.DIRECTORY_SEPARATOR.'pages';
         $this->filename = $request->alias;
@@ -81,7 +83,7 @@ class PagesController extends Controller
             'content' => ($request->content) ? $request->content : '',
             'single_page' => $request->single_page,
             'service_page' => ($request->service_page) ? $request->service_page : 'no',
-            'img' => ($img) ? $img : '',
+            'img' => $img,
             'publish' => $request->publish,
         ]);
         $res = $create->attributesToArray();

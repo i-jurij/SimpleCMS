@@ -87,7 +87,7 @@ class UploadFile
     public string $message;
     public string $error;
     protected array $errors;
-    protected string $name;
+    public string $name;
 
     public function __construct()
     {

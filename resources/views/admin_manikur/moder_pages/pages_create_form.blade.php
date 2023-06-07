@@ -3,6 +3,12 @@ $title = 'Pages creating';
 $page_meta_description = 'admins page, Pages creating';
 $page_meta_keywords = 'Pages, creating';
 $robots = 'NOINDEX, NOFOLLOW';
+$sp = false;
+if ((bool) mb_strstr(url()->current(), 'service_page')) {
+    $sp = true;
+    $title = 'Service page creating';
+    $page_meta_description = 'admins page, service page creating';
+}
 ?>
 
 @extends('layouts/index_admin')
@@ -48,12 +54,40 @@ if (!empty($fields)) {
         if (!in_array($key, ['id', 'img', 'created_at', 'updated_at'])) {
             $required = ($key === 'alias' || $key === 'title' || $key === 'description') ? 'required' : '';
             $star = ($key === 'alias' || $key === 'title' || $key === 'description') ? '*' : '';
+            $input_type = 'text';
             $value = '';
             $pattern = '';
             $placeholder = '';
             if ($key === 'alias') {
                 $pattern = 'pattern="^[a-zA-Zа-яА-ЯёЁ0-9-_]{1,100}$"  placeholder="Letter, numbers, dash, underline"';
             }
+
+            if ($key === 'robots') {
+                $value = 'INDEX,FOLLOW';
+            }
+            if ($key === 'single_page') {
+                $value = 'yes';
+            }
+
+            if ($key === 'publish') {
+                $value = 'yes';
+            }
+
+            $class_hidden = '';
+            if ($sp === true) {
+                if ($key === 'single_page') {
+                    $class_hidden = 'display_none';
+                    $input_type = 'hidden';
+                }
+                if ($key === 'service_page') {
+                    $value = 'yes';
+                }
+            } else {
+                if ($key === 'service_page') {
+                    $value = 'no';
+                }
+            }
+
             if ($key === 'content' || $key === 'description') {
                 if ($key === 'content') {
                     $placeholder = 'Pages text or html, php, js content';
@@ -66,20 +100,12 @@ if (!empty($fields)) {
                 $input_end = '></textarea>';
             } else {
                 $br = '';
-                $input_start = '<input type="text"';
+                $input_start = '<input type="'.$input_type.'"';
                 $input_end = ' />';
             }
 
-            if ($key === 'robots') {
-                $value = 'INDEX,FOLLOW';
-            }
-            if ($key === 'single_page' || $key === 'publish') {
-                $value = 'yes';
-            }
-            if ($key === 'service_page') {
-                $value = 'no';
-            }
-            echo $br.'<label class="display_inline_block margin_bottom_1rem">'.$key.' '.$star.' ('.$val->getLength().')<br />'
+            echo $br.'<label class="display_inline_block margin_bottom_1rem">
+                        <span class="'.$class_hidden.'"> '.$key.' '.$star.' ('.$val->getLength().')</span><br />'
                         .$input_start.' name="'.$key.'" maxlength="'.$val->getLength().'" value="'.$value.'" '.$pattern.' '.$required.$input_end.
                     '</label>'.$br.PHP_EOL;
 

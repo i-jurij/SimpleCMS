@@ -461,7 +461,7 @@ function find_by_filename($path, $filename)
 }
 function del_empty_dir($dir)
 {
-    if ([] === array_diff(scandir($dir), ['.', '..'])) {
+    if (file_exists($dir) && is_dir($dir) && [] === array_diff(scandir($dir), ['.', '..'])) {
         if (rmdir($dir)) {
             return true;
         } else {
