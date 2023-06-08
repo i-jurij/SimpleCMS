@@ -12,6 +12,7 @@ use App\Http\Controllers\Moder\GalleryController;
 use App\Http\Controllers\Moder\MapController;
 use App\Http\Controllers\Moder\MastersController;
 use App\Http\Controllers\Moder\PagesController;
+use App\Http\Controllers\Moder\PriceEditController;
 use App\Http\Controllers\Moder\ServicePageEditController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
@@ -98,6 +99,16 @@ Route::prefix('admin')->name('admin.')
             Route::get('/create', 'create')->name('create');
             Route::get('/services', 'services_edit')->name('services_edit');
             Route::post('/services', 'go')->name('go');
+        });
+
+        Route::controller(PriceEditController::class)
+        ->prefix('price')
+        ->name('price.')
+        ->group(function () {
+            Route::get('/', 'edit')->name('edit');
+            Route::get('/edit', 'post_edit')->name('post_edit');
+            Route::post('/edit', 'post_edit')->name('post_edit');
+            Route::post('/update', 'update')->name('update');
         });
 
         Route::controller(ContactsController::class)

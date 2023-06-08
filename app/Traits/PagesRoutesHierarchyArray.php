@@ -20,7 +20,9 @@ trait PagesRoutesHierarchyArray
                     array_push($admin_routes, $route->getName());
                 }
                 if ($middleware[$i] == 'ismoder') {
-                    array_push($moder_routes, $route->getName());
+                    if ($route->getName() !== 'admin.price.post_edit') {
+                        array_push($moder_routes, $route->getName());
+                    }
                 }
                 if ($middleware[$i] == 'isuser') {
                     array_push($user_routes, $route->getName());
