@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePagesRequest;
-use App\Http\Requests\UpdatePagesRequest;
-use App\Models\Pages;
+use App\Http\Requests\StorePageRequest;
+use App\Http\Requests\UpdatePageRequest;
+use App\Models\Page;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\Request;
@@ -21,7 +21,7 @@ class PagesController extends Controller
      */
     public function index(string $res = null)
     {
-        $pages = (Pages::all()->toArray()) ? Pages::all()->toArray() : 'No pages in DB';
+        $pages = (Page::all()->toArray()) ? Page::all()->toArray() : 'No pages in DB';
 
         return view('admin_manikur.moder_pages.pages', ['res' => $res, 'pages' => $pages]);
     }
@@ -29,7 +29,7 @@ class PagesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Pages $pages)
+    public function create(Page $pages)
     {
         $columns = Schema::getConnection()->getDoctrineSchemaManager()->listTableColumns($pages->getTable());
 
@@ -39,7 +39,7 @@ class PagesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePagesRequest $request)
+    public function store(StorePageRequest $request)
     {
         // upload image
         $img = '';
@@ -74,7 +74,7 @@ class PagesController extends Controller
             $create_cat_serv = '';
         }
 
-        $create = Pages::create([
+        $create = Page::create([
             'alias' => $request->alias,
             'title' => $request->title,
             'description' => $request->description,
@@ -94,14 +94,14 @@ class PagesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pages $pages)
+    public function show(Page $page)
     {
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Pages $pages)
+    public function edit(Request $request, Page $pages)
     {
         $data = $pages->where('id', $request->id)->first()->toArray();
 
@@ -111,7 +111,7 @@ class PagesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePagesRequest $request, Pages $pages)
+    public function update(UpdatePageRequest $request, Page $pages)
     {
         $array = [
             'title' => $request->title,
@@ -148,7 +148,7 @@ class PagesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, Pages $pages)
+    public function destroy(Request $request, Page $pages)
     {
         $res = '';
         list($page_id, $alias, $img, $single_page, $service_page) = explode('plusplus', $request->id);

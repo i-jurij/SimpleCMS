@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pages;
+use App\Models\Page;
 use App\MyClasses\Upload\UploadFile;
 use Illuminate\Http\Request;
 
@@ -14,7 +14,7 @@ class MapController extends Controller
         return view('admin_manikur.moder_pages.map');
     }
 
-    public function go(Request $request, Pages $pages)
+    public function go(Request $request, Page $pages)
     {
         $res = '';
 

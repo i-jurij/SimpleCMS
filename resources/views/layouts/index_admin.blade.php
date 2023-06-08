@@ -47,7 +47,7 @@
                     @if (url()->current() !== url()->route('admin.home'))
 
                         @php $pieces = explode('/', Request::path()); @endphp
-                        @if (count($pieces) > 2)
+                        @if (count($pieces) > 3)
                             @include('components/back_button')
                         @else
                             @include('components/button_go_to_admin_home')

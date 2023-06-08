@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 
-class UpdatePagesRequest extends StorePagesRequest
+class UpdatePageRequest extends StorePageRequest
 {
     public function authorize(): bool
     {

@@ -1,17 +1,16 @@
 @php
-$photo_link = 'https://disk.yandex.ru/d/PldT5ChpcRCVRg';
 if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $title = $page_data[0]["title"];
     $page_meta_description = $page_data[0]["description"];
     $page_meta_keywords = $page_data[0]["keywords"];
     $robots = $page_data[0]["robots"];
-    $content = $page_data[0]["content"];
+    $content['map'] = $page_data[0]["content"];
 } else {
     $title = "Title";
     $page_meta_description = "description";
     $page_meta_keywords = "keywords";
     $robots = "INDEX, FOLLOW";
-    $content = "CONTENT FOR DEL IN FUTURE";
+    $content['map'] = "map";
 }
 @endphp
 
@@ -24,9 +23,9 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     <div class="content">
         <div class="map">
         <?php
-        if (!empty($content)) {
+        if (!empty($content) && !empty($content['map'])) {
             // ADD check to responsible map (if isset answer)
-            echo html_entity_decode($content);
+            echo html_entity_decode($content['map']);
         } elseif (is_readable(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'map'.DIRECTORY_SEPARATOR.'map.jpg'))) {
             echo '<img src="'.asset('storage'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'map'.DIRECTORY_SEPARATOR.'map.jpg').'" alt="" class="mapp"/>';
         } else {

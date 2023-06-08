@@ -7,7 +7,6 @@ use App\Jobs\JobCallbackMail;
 use App\Models\Callback;
 use App\Models\Client;
 use App\Models\Contacts;
-use App\Models\Pages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

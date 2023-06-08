@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pages extends Model
+class Page extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -20,6 +20,15 @@ class Pages extends Model
         'publish',
         'service_page',
     ];
+
+    public function getTitleAttribute($value)
+    {
+        if (function_exists('mb_ucfirst')) {
+            return mb_ucfirst($value);
+        } else {
+            return $value;
+        }
+    }
 
     public function categories()
     {

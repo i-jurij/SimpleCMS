@@ -4,13 +4,13 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $page_meta_description = $page_data[0]["description"];
     $page_meta_keywords = $page_data[0]["keywords"];
     $robots = $page_data[0]["robots"];
-    $content = $page_data[0]["content"];
+    $content['content'] = $page_data[0]["content"];
 } else {
     $title = "Title";
     $page_meta_description = "description";
     $page_meta_keywords = "keywords";
     $robots = "INDEX, FOLLOW";
-    $content = "CONTENT FOR DEL IN FUTURE";
+    $content['content'] = "CONTENT FOR DEL IN FUTURE";
 }
     // action for form (if isset imgs in storage for captcha or not)
     // $action = (!empty($captcha_imgs)) ? url()->route('client.callback.send_mail') : 'javascript:void(0)';

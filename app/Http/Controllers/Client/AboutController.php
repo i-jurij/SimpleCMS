@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\About;
-use App\Models\Masters;
+use App\Models\Master;
 use Illuminate\Database\Eloquent\Factories\Sequence;
 
 class AboutController extends Controller
@@ -23,8 +23,8 @@ class AboutController extends Controller
             */
         }
 
-        if (Masters::exists()) {
-            $masters = Masters::whereNull('data_uvoln')->get()->toArray();
+        if (Master::exists()) {
+            $masters = Master::whereNull('data_uvoln')->get()->toArray();
         } else {
             $masters = [];
             /*

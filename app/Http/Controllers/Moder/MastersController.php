@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
-use App\Models\Masters;
+use App\Models\Master;
 use Illuminate\Http\Request;
 
 class MastersController extends Controller
@@ -13,7 +13,7 @@ class MastersController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Masters $masters)
+    public function index(Master $masters)
     {
         if ($masters->exists()) {
             $m = $masters->whereNull('data_uvoln')->get()->toArray();
@@ -40,7 +40,7 @@ class MastersController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Masters $masters)
+    public function store(Request $request, Master $masters)
     {
         $res = [];
         // upload image
@@ -79,14 +79,14 @@ class MastersController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Masters $masters)
+    public function show(Master $masters)
     {
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Masters $masters)
+    public function edit(Request $request, Master $masters)
     {
         // $res = $masters->where('id', $request->id)->get()->toArray();
         $res = $masters->where('id', $request->id)->first()->toArray();
@@ -97,7 +97,7 @@ class MastersController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Masters $masters)
+    public function update(Request $request, Master $masters)
     {
         if (!empty($request->id)) {
             $res['db'] = 'The data of master has not been changed.';
@@ -155,7 +155,7 @@ class MastersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request, Masters $masters)
+    public function destroy(Request $request, Master $masters)
     {
         $res = '';
         list($id, $image) = explode('plusplus', $request->id);

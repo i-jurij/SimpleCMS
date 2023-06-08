@@ -17,6 +17,15 @@ class Service extends Model
         'duration',
     ];
 
+    public function getNameAttribute($value)
+    {
+        if (function_exists('mb_ucfirst')) {
+            return mb_ucfirst($value);
+        } else {
+            return $value;
+        }
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(ServiceCategory::class);
@@ -24,6 +33,6 @@ class Service extends Model
 
     public function page(): BelongsTo
     {
-        return $this->belongsTo(Pages::class);
+        return $this->belongsTo(Page::class);
     }
 }

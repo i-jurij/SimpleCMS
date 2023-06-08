@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contacts;
-use App\Models\Pages;
+use App\Models\Page;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +30,7 @@ class ServicePageController extends Controller
         $this_show_method_data = [];
         // add data for head in template
         $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
-        $content['pages_menu'] = Pages::where('publish', '=', 'yes')->get()->toArray() ?? ['No pages in DB'];
+        $content['pages_menu'] = Page::where('publish', '=', 'yes')->get()->toArray() ?? ['No pages in DB'];
 
         if (Schema::hasTable('service_categories') && Schema::hasTable('services')) {
             if (count($path_array) === 1) {

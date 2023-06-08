@@ -25,7 +25,7 @@ class Order extends Model
 
     public function masters()
     {
-        return $this->hasMany(Masters::class);
+        return $this->hasMany(Master::class);
     }
     /*
     public function service()
