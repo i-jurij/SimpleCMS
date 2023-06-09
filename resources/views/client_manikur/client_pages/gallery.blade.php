@@ -22,7 +22,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 <link rel="stylesheet" type="text/css" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'gallery'.DIRECTORY_SEPARATOR.'fancybox.css') }}" >
 <link rel="stylesheet" type="text/css" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'gallery'.DIRECTORY_SEPARATOR.'panzoom.css') }}" >
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
-        <div class="content">
+        <div class="">
 
         <div class="gallery">
         @php

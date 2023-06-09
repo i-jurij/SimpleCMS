@@ -4,99 +4,36 @@ Admins pages:
 3. read and clear logs
 
 Admin Moders pages:
-4. editors of pages (services, about +, gallery +, map +)
+4. editors of pages (services +, about +, gallery +, map +)
 5. create, delete, change services for users pages +
-6. price editor
+6. price editor +
 7. contacts editor (tlf, vk, tg and other) +
 8. add, remove, change masters +
 9. schedule editor
 10. clients
 11. orders
+12. callbacks clear button in callback log (only the callbacks for today will remain)
+13. appointment by masters remove or update
 
 Admin Users pages:
-12. recall list +
-13. recall log +
+14. callback list +
+15. callback log +
 14. appointment by masters
-15. appointment by dates
+16. appointment by dates
 
 
 Client pages:
-1. callmeback +
+1. callback +
 2 gallery +
 3 about +
 4 persinfo +
 5 map +
 6 service pages +
-7 price
-8 appointment
+7 price +
+8 appointment (with appointment remove or update)
 
 
 ////////////////
-tables:
-table 'clients' - id, name, contacts (phone, messenger, social etc)
-table 'orders' - id, client_id (clients.id), services (services.id), master (masters.id), price (services.price), order_datetime, completed_datetime
-table 'services_categories' -
-            "id" => [
-                "INTEGER PRIMARY KEY",
-                "AUTOINCREMENT",
-                "NOT NULL"
-            ],
-            "page_id" => [
-                "INTEGER",
-                "NOT NULL"
-            ],
-            "category_img" => [
-                "TEXT"
-            ],
-            "category_name" => [
-                "TEXT"
-            ],
-            "category_descr" => [
-                "TEXT"
-            ],
-            "FOREIGN KEY (page_id) REFERENCES pages(id) ON DELETE CASCADE ON UPDATE CASCADE"
-
-table 'services' -
-            "id" => [
-                "INTEGER PRIMARY KEY",
-                "AUTOINCREMENT",
-                "NOT NULL"
-            ],
-            "page_id" => [
-                "INTEGER",
-                "NOT NULL"
-            ],
-            "category_id" => [
-                "INTEGER"
-            ],
-            "service_img" => [
-                "TEXT"
-            ],
-            "service_name" => [
-                "TEXT"
-            ],
-            "service_descr" => [
-                "TEXT"
-            ],
-            "price" => [
-                "REAL"
-            ],
-            "duration" => [
-                "INTEGER"
-            ],
-            "FOREIGN KEY (page_id) REFERENCES pages(page_id) ON DELETE CASCADE ON UPDATE CASCADE"
-table 'callback' - id, client_id (clients.id), orders (orders.id), send, call_datetime, response_datetime, response_yes (yes or no, or bool)
-
-admin user pages:
-1. need call back +
-2. call back log +
-
-admin moder page:
-1. clear call back log +
-
-client page:
-1. callback +
-/////////////
 
 admin pages:
 1. clients - list with rating by check, numbers of completed orders, button for orders viewing (with rating by numbers)

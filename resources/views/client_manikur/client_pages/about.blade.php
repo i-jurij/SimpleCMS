@@ -36,7 +36,7 @@
                 @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
 
 
-                <div class="content">
+                <div class="">
                     @if (!empty($abouts) && is_array($abouts))
                         @foreach ($abouts as $about)
                             @php

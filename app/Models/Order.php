@@ -18,19 +18,27 @@ class Order extends Model
         'end_dt',
     ];
 
-    public function clients()
+    public function client()
     {
-        return $this->hasMany(Client::class);
+        return $this->belongsTo(Client::class);
     }
 
-    public function masters()
+    public function master()
     {
-        return $this->hasMany(Master::class);
+        return $this->belongsTo(Master::class)->withDefault([
+            'master_photo' => '',
+            'master_name' => 'Noname',
+            'sec_name' => 'NoSecondName',
+            'master_fam' => 'NoLastName',
+            'master_phone_number' => '+7 (000) 000 00 00',
+            'spec' => 'All specialties in the world',
+            'data_priema' => date('Y-m-d H:i:s', time()),
+            'data_uvoln' => '',
+        ]);
     }
-    /*
+
     public function service()
     {
-        return $this->hasMany(Service::class);
+        return $this->belongsTo(Service::class);
     }
-    */
 }

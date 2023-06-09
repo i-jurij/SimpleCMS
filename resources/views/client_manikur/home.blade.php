@@ -15,7 +15,7 @@ $data['content'] = 'CONTENT FOR DEL IN FUTURE';
 @endpush
 
 @section('content')
-<div class="content">
+<div class="">
 @if (!empty($content['pages_menu']))
     @foreach ($content['pages_menu'] as $pages)
         @if (is_array($pages) && !empty($pages))

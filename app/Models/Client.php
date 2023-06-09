@@ -16,6 +16,28 @@ class Client extends Model
         return $this->hasMany(Order::class);
     }
 
+    // ///////////////////////////////////////
+    // не для Postgresql
+    public function latestOrder()
+    {
+        return $this->hasOne(Order::class)->latestOfMany();
+    }
+
+    public function oldestOrder()
+    {
+        return $this->hasOne(Order::class)->oldestOfMany();
+    }
+
+    /**
+     * Получить самый дорогой заказ пользователя.
+     */
+    public function largestOrder()
+    {
+        return $this->hasOne(Order::class)->ofMany('price', 'max');
+    }
+
+    // end не для Postgresql
+    // ////////////////////////////////////////
     public function callbacks(): HasMany
     {
         return $this->hasMany(Callback::class);

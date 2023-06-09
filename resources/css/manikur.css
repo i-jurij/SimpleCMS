@@ -32,6 +32,7 @@
 	:root {
 		--bgcolor: #9F091F;
 		--bgcolor-content: #282C34;
+		--input_bgcolor: #3c4555;
 		--bgcolor-button-active: black;
 
 		--fontcolor-light: #E5B5BE;
@@ -59,7 +60,7 @@
 	:root {
 		--bgcolor: #BE4874;
 		--bgcolor-content: rgba(245,243,246,1);
-		--input_bgcolor: #3c4555;
+		--input_bgcolor: white;
 		--bgcolor-button-active: white;
 
 		--fontcolor-light: #BE4874;
@@ -650,7 +651,7 @@ a.gallery_a:hover img{
 	height: 5rem;
 	/* width: 100%; */
 	background-image: url(@/../imgs/send.png);
-	background-color: var(--bgcolor-content);
+	background-color: var(--input_bgcolor);
 	background-position: 0.5rem 0.5rem;
 	background-repeat: no-repeat;
 	text-indent: 2.5rem;
