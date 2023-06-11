@@ -9,6 +9,20 @@ $filesize = 1;
 @extends('layouts/index_admin')
 
 @section('content')
+
+
+
+<pre>
+@php
+    print_r($res);
+@endphp
+</pre>
+
+
+
+<?php
+/*
+
 <div class="content">
     @if (!empty($res) && is_array($res) )
     <form action="{{url()->route('admin.masters.update')}}" method="post"  enctype="multipart/form-data" id="master_edit_form">
@@ -36,7 +50,9 @@ $filesize = 1;
                             placeholder="+7 ___ ___ __ __" pattern="(\+?7|8)?\s?[\(]{0,1}?\d{3}[\)]{0,1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?" required>
                     </input>
                     <br>
+                    <!--
                     <input type="text" value="{{$res['spec']}}" placeholder="Основная специальность" name="spec" id="spec" maxlength="50" required></input>
+                    -->
                     <br>
 
                     Hired date. Дата принятия на работу
@@ -61,9 +77,14 @@ $filesize = 1;
             </div>
             <br class="clear" />
         </div>
-	</form>
+    </form>
     @endif
 </div>
+*/
+?>
+
+
+
 @stop
 
 <script type="module">

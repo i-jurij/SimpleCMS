@@ -9,6 +9,7 @@ $filesize = 1;
 @extends('layouts/index_admin')
 
 @section('content')
+
 <div class="content">
     <form action="{{url()->route('admin.masters.store')}}" method="post"  enctype="multipart/form-data" id="master_create_form">
     @csrf
@@ -17,39 +18,78 @@ $filesize = 1;
             <div class="">
                 <div id="error"><small></small></div>
                 <div class="master_create">
-                    <label class="input-file">
-                        <input type="hidden" name="MAX_FILE_SIZE" value="{{$filesize*1024000}}" />
-                        <input type="file" id="f0" name="image_file" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" />
-                        <span >Photo of master. Фото мастера. ( < {{$filesize}}Мб )</span>
-                        <p id="fileSizef0" ></p>
-                    </label>
+                    <div class="pad">
+                        <label class="input-file">
+                            <input type="hidden" name="MAX_FILE_SIZE" value="{{$filesize*1024000}}" />
+                            <input type="file" id="f0" name="image_file" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" />
+                            <span >Photo of master. Фото мастера. ( < {{$filesize}}Мб )</span>
+                            <p id="fileSizef0" ></p>
+                        </label>
+                    </div>
 
-                    <input type="text" placeholder="Name Имя" name="master_name" id="master_name" maxlength="30" required></input>
-                    <br>
-                    <input type="text" placeholder="Second name Отчество" name="sec_name" id="sec_name" maxlength="30"></input>
-                    <br>
-                    <input type="text" placeholder="Last name Фамилия" name="master_fam" id="master_fam" maxlength="30" required></input>
-                    <br>
+                    <div class="pad">
+                        <input type="text" placeholder="Name Имя" name="master_name" id="master_name" maxlength="30" required></input>
+                        <br>
+                        <input type="text" placeholder="Second name Отчество" name="sec_name" id="sec_name" maxlength="30"></input>
+                        <br>
+                        <input type="text" placeholder="Last name Фамилия" name="master_fam" id="master_fam" maxlength="30" required></input>
+                        <br>
 
-                    <input type="tel" name="master_phone_number"  id="master_number" class="number" title="+7 999 999 99 99" minlength="6" maxlength="17"
-                            placeholder="+7 ___ ___ __ __" pattern="(\+?7|8)?\s?[\(]{0,1}?\d{3}[\)]{0,1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?" required>
-                    </input>
-                    <br>
-                    <input type="text" placeholder="Основная специальность" name="spec" id="spec" maxlength="50" required></input>
-                    <br>
+                        <input type="tel" name="master_phone_number"  id="master_number" class="number" title="+7 999 999 99 99" minlength="6" maxlength="17"
+                                placeholder="+7 ___ ___ __ __" pattern="(\+?7|8)?\s?[\(]{0,1}?\d{3}[\)]{0,1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?" required>
+                        </input>
+                        <br>
+                    </div>
 
-                    Hired date. Дата принятия на работу
+                    <!-- <input type="text" placeholder="Основная специальность" name="spec" id="spec" maxlength="50" required></input>
                     <br>
-                    <label>
-                        <input type="date" name="hired" id="hired" min="2023-01-01" max="2050-12-31"></input>
-                    </label>
-                    <br>
+                    -->
+                    <div class="shoose_services pad">
+                        <p class="">Specialization Специализация:</p>
+                        <ul>
+                            @foreach ($services as $key => $service)
+                                @php
+                                    list($page_id, $page_title) = explode('#', $key);
+                                @endphp
+                                <li class="pad display_inline_block text_left margin_top_1rem pad" style="position: relative; vertical-align: top;">
+                                <label class="buttons" for="p{{$page_id}}"><input type="checkbox" id="p{{$page_id}}" class="pagess"> {{$page_title}}: all все</label>
 
-                    Dismissed date. Дата увольнения
-                    <br>
-                    <label>
-                        <input type="date" name="dismissed" id="dismissed"  min="2023-01-01" max="2050-12-31"></input>
-                    </label>
+                                <label class="buttons clarify"><input type="button" id="add{{$page_id}}" /> Clarify Уточнить</label>
+                                    <ul class="display_none" id="padd{{$page_id}}">
+                                        @foreach ($service as $ke => $cats)
+                                            @php
+                                                list($cat_id, $cat_name) = explode('#', $ke);
+                                                if ($cat_name === 'page_serv') $cat_name = 'Other services';
+                                            @endphp
+
+                                            <li class="margin_top_1rem pad"><label class="buttons"><input type="checkbox" class="pp{{$page_id}}" id="c{{$cat_id}}" > {{$cat_name}}</label></li>
+                                            <ul>
+                                                @foreach ($cats as $k => $serv)
+                                                <li class="margin_rl1 pad"><label class="buttons"><input type="checkbox" class="pp{{$page_id}} cc{{$cat_id}}" name="serv[]" value="{{$k}}"> {{$serv}}</label></li>
+                                                @endforeach
+                                            </ul>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <div class="pad">
+                        Hired date. Дата принятия на работу
+                        <br>
+                        <label>
+                            <input type="date" name="hired" id="hired" min="2023-01-01" max="2050-12-31"></input>
+                        </label>
+                        <br>
+
+                        Dismissed date. Дата увольнения
+                        <br>
+                        <label>
+                            <input type="date" name="dismissed" id="dismissed"  min="2023-01-01" max="2050-12-31"></input>
+                        </label>
+                    </div>
+
                 </div>
             </div>
 
@@ -61,7 +101,7 @@ $filesize = 1;
         </div>
 	</form>
 </div>
-@stop
+
 
 <script type="module">
 document.addEventListener('DOMContentLoaded', function () {
@@ -94,5 +134,41 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         },200);
     });
+
+
+
+    let check = document.querySelector('.shoose_services');
+
+    check.onclick = function(el) {
+        let el_id = el.target.id;
+        let check_state = el.target.checked;
+
+        let page_checkboxed = document.querySelectorAll('.p'+el_id);
+        for(var i=0; i<page_checkboxed.length; i++) {
+            if (check_state == true) {
+                page_checkboxed[i].checked = true;
+            } else {
+                page_checkboxed[i].checked = false;
+            }
+        }
+
+        let cat_checboxed = document.querySelectorAll('.c'+el_id);
+        for(var i=0; i<cat_checboxed.length; i++) {
+            if (check_state == true) {
+                cat_checboxed[i].checked = true;
+            } else {
+                cat_checboxed[i].checked = false;
+            }
+        }
+    }
+
+    let clarify = $('.clarify');
+    clarify.on('click', function(el) {
+        let el_id = el.target.id;
+        $('#p'+el_id).toggle();
+    });
+
+
 }, false);
 </script>
+@stop

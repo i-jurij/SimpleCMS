@@ -35,4 +35,9 @@ class Service extends Model
     {
         return $this->belongsTo(Page::class);
     }
+
+    public function masters()
+    {
+        return $this->belongsToMany(Master::class);
+    }
 }

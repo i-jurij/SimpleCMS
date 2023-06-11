@@ -12,5 +12,9 @@ As view - resources/other/service_page.blade.php
 After creating service page you can add categories and services to page.
 Also admin panel has items for creating and editing categories and services.
 
-After creating the page - open files in your edoitor or IDE and edit.
+After creating the page - open files in your editor or IDE and edit.
 Also put route in routes/web.php.
+
+table master_service:
+master_id
+service_id

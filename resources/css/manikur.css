@@ -32,7 +32,7 @@
 	:root {
 		--bgcolor: #9F091F;
 		--bgcolor-content: #282C34;
-		--input_bgcolor: #3c4555;
+		--input_bgcolor: black;
 		--bgcolor-button-active: black;
 
 		--fontcolor-light: #E5B5BE;
@@ -147,6 +147,8 @@ textarea:valid {
 	border-bottom: 2px solid green;
 }
 
+.ankor:target {scroll-margin-top:6rem;}
+
 .but_back {
 	background-color: #C3C3C3;
 }
@@ -220,6 +222,9 @@ textarea:valid {
 	border: 2px solid var(--bgcolor);
 }
 
+.borderc {
+	border: 2px solid var(--bgcolor-content);
+}
 .selected_shad{
 	box-shadow: rgba(255, 0, 0, 0.9) 0px 0px 4px 4px;
 }
@@ -632,7 +637,7 @@ a.gallery_a:hover img{
   text-align: left;
 }
 
-.form-recall-main input,
+.form-recall-main input:not(input[type=checkbox], input[type=button]),
 .form-recall-main textarea {
 	margin: 0.3rem 0;
 	padding: 0.7rem;

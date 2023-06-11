@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
 use App\Models\Master;
+use App\Models\Page;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class MastersController extends Controller
@@ -34,7 +36,32 @@ class MastersController extends Controller
      */
     public function create()
     {
-        return view('admin_manikur.moder_pages.masters_create_form');
+        // get data from table services (id, page_id, categories_id, name)
+        // and from service-categories and pages (with service_page === 'yes')
+        // than in view we can display list of pages -> categories-> services and choose what you need
+        $services = [];
+        $services = Page::select('id', 'title')->where('service_page', 'yes')
+        ->with('categories')
+        ->with('services')
+        ->get()
+        ->toArray();
+
+        foreach ($services as $page) {
+            foreach ($page['categories'] as $cat) {
+                foreach ($page['services'] as $cat_serv) {
+                    if ($cat_serv['category_id'] === $cat['id']) {
+                        $data[$page['id'].'#'.$page['title']][$cat['id'].'#'.$cat['name']][$cat_serv['id']] = $cat_serv['name'];
+                    }
+                }
+            }
+            foreach ($page['services'] as $serv) {
+                if (empty($serv['category_id'])) {
+                    $data[$page['id'].'#'.$page['title']][$page['id'].'#page_serv'][$serv['id']] = $serv['name'];
+                }
+            }
+        }
+
+        return view('admin_manikur.moder_pages.masters_create_form', ['services' => $data]);
     }
 
     /**
@@ -63,14 +90,19 @@ class MastersController extends Controller
             'sec_name' => (!empty($request->sec_name)) ? $request->sec_name : null,
             'master_fam' => $request->master_fam,
             'master_phone_number' => $request->master_phone_number,
-            'spec' => $request->spec,
+            'spec' => '',
             'data_priema' => (!empty($request->hired)) ? $request->hired : null,
             'data_uvoln' => (!empty($request->data_uvoln)) ? $request->dismissed : null,
         ];
 
         if (!empty($insert) && is_array($insert)) {
-            $masters->create($insert);
+            $master_create = $masters->create($insert);
             $res['db'] = 'The data of master "'.$request->master_fam.'" has been stored in db.';
+        }
+
+        if (!empty($request->serv)) {
+            $serv = Service::find($request->serv);
+            $master_create->services()->attach($serv);
         }
 
         return view('admin_manikur.moder_pages.masters', ['res' => $res]);
@@ -89,9 +121,36 @@ class MastersController extends Controller
     public function edit(Request $request, Master $masters)
     {
         // $res = $masters->where('id', $request->id)->get()->toArray();
-        $res = $masters->where('id', $request->id)->first()->toArray();
+        // $res = $masters->where('id', $request->id)->first()->toArray();
+        $master = $masters->find($request->id);
+        $data['master'] = $master->toArray();
+        $services = $master->services;
+        $page_serv = $services->each(function ($serv) {
+            if (isset($serv->category)) {
+                $serv->category->page;
+            } else {
+                $serv->page;
+            }
+        })->toArray();
 
-        return view('admin_manikur.moder_pages.masters_edit', ['res' => $res]);
+        foreach ($page_serv as $serv) {
+            if (!empty($serv['category']['page']['id'])) {
+                $page_id = $serv['category']['page']['id'];
+            }
+            if (!empty($serv['page']['id'])) {
+                $page_id = $serv['page']['id'];
+            }
+
+            $page_title = (!empty($serv['page']['title'])) ? $serv['page']['title'] : $serv['category']['page']['title'];
+
+            $category_id = (!empty($serv['category']['id'])) ? $serv['category']['id'] : $page_id;
+
+            $category_name = (!empty($serv['category']['name'])) ? $serv['category']['name'] : 'page_serv';
+
+            $data['services'][$page_id.'#'.$page_title][$category_id.'#'.$category_name][$serv['id']] = $serv['name'];
+        }
+
+        return view('admin_manikur.moder_pages.masters_edit', ['res' => $data]);
     }
 
     /**

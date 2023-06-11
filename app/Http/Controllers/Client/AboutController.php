@@ -28,14 +28,14 @@ class AboutController extends Controller
         } else {
             $masters = [];
             /*
-            Masters::factory()
+            Master::factory()
             ->count(6)
             ->state(new Sequence(
                 ['data_uvoln' => null],
                 ['data_uvoln' => date('Y-m-d H:i:s', time())],
             ))
             ->create();
-            $masters = Masters::all()->toArray();
+            $masters = Master::all()->toArray();
             */
         }
 

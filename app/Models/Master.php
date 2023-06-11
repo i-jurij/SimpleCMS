@@ -19,4 +19,9 @@ class Master extends Model
         'data_priema',
         'data_uvoln',
     ];
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class);
+    }
 }
