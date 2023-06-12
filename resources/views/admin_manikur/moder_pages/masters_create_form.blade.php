@@ -41,9 +41,6 @@ $filesize = 1;
                         <br>
                     </div>
 
-                    <!-- <input type="text" placeholder="Основная специальность" name="spec" id="spec" maxlength="50" required></input>
-                    <br>
-                    -->
                     <div class="shoose_services pad">
                         <p class="">Specialization Специализация:</p>
                         <ul>

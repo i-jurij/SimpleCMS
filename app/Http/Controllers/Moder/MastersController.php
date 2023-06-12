@@ -12,23 +12,18 @@ class MastersController extends Controller
 {
     use \App\Traits\Upload;
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Master $masters)
     {
-        if ($masters->exists()) {
-            $m = $masters->whereNull('data_uvoln')->get()->toArray();
-            $m_dism = $masters->whereNotNull('data_uvoln')->get()->toArray();
-        }
-        if (!isset($m)) {
-            $m = 'Table masters is empty';
-        }
-        if (!isset($m_dism)) {
-            $m_dism = '';
+        $m = $this->all_masters($masters);
+
+        // services for each masters
+        foreach ($m as $mm) {
+            foreach ($mm as $master) {
+                $services[$master['id']] = $this->services_for_master($masters, $master['id']);
+            }
         }
 
-        return view('admin_manikur.moder_pages.masters', ['masters' => $m, 'masters_dism' => $m_dism]);
+        return view('admin_manikur.moder_pages.masters', ['masters' => $m['masters'], 'masters_dism' => $m['dismissed_masters'], 'services' => $services]);
     }
 
     /**
@@ -36,30 +31,7 @@ class MastersController extends Controller
      */
     public function create()
     {
-        // get data from table services (id, page_id, categories_id, name)
-        // and from service-categories and pages (with service_page === 'yes')
-        // than in view we can display list of pages -> categories-> services and choose what you need
-        $services = [];
-        $services = Page::select('id', 'title')->where('service_page', 'yes')
-        ->with('categories')
-        ->with('services')
-        ->get()
-        ->toArray();
-
-        foreach ($services as $page) {
-            foreach ($page['categories'] as $cat) {
-                foreach ($page['services'] as $cat_serv) {
-                    if ($cat_serv['category_id'] === $cat['id']) {
-                        $data[$page['id'].'#'.$page['title']][$cat['id'].'#'.$cat['name']][$cat_serv['id']] = $cat_serv['name'];
-                    }
-                }
-            }
-            foreach ($page['services'] as $serv) {
-                if (empty($serv['category_id'])) {
-                    $data[$page['id'].'#'.$page['title']][$page['id'].'#page_serv'][$serv['id']] = $serv['name'];
-                }
-            }
-        }
+        $data = $this->all_services();
 
         return view('admin_manikur.moder_pages.masters_create_form', ['services' => $data]);
     }
@@ -92,7 +64,7 @@ class MastersController extends Controller
             'master_phone_number' => $request->master_phone_number,
             'spec' => '',
             'data_priema' => (!empty($request->hired)) ? $request->hired : null,
-            'data_uvoln' => (!empty($request->data_uvoln)) ? $request->dismissed : null,
+            'data_uvoln' => (!empty($request->dismissed)) ? $request->dismissed : null,
         ];
 
         if (!empty($insert) && is_array($insert)) {
@@ -105,7 +77,8 @@ class MastersController extends Controller
             $master_create->services()->attach($serv);
         }
 
-        return view('admin_manikur.moder_pages.masters', ['res' => $res]);
+        // return view('admin_manikur.moder_pages.masters', ['res' => $res]);
+        return redirect()->route('admin.masters.list')->with('mes', $res);
     }
 
     /**
@@ -124,31 +97,7 @@ class MastersController extends Controller
         // $res = $masters->where('id', $request->id)->first()->toArray();
         $master = $masters->find($request->id);
         $data['master'] = $master->toArray();
-        $services = $master->services;
-        $page_serv = $services->each(function ($serv) {
-            if (isset($serv->category)) {
-                $serv->category->page;
-            } else {
-                $serv->page;
-            }
-        })->toArray();
-
-        foreach ($page_serv as $serv) {
-            if (!empty($serv['category']['page']['id'])) {
-                $page_id = $serv['category']['page']['id'];
-            }
-            if (!empty($serv['page']['id'])) {
-                $page_id = $serv['page']['id'];
-            }
-
-            $page_title = (!empty($serv['page']['title'])) ? $serv['page']['title'] : $serv['category']['page']['title'];
-
-            $category_id = (!empty($serv['category']['id'])) ? $serv['category']['id'] : $page_id;
-
-            $category_name = (!empty($serv['category']['name'])) ? $serv['category']['name'] : 'page_serv';
-
-            $data['services'][$page_id.'#'.$page_title][$category_id.'#'.$category_name][$serv['id']] = $serv['name'];
-        }
+        $data['services'] = $this->all_services();
 
         return view('admin_manikur.moder_pages.masters_edit', ['res' => $data]);
     }
@@ -175,11 +124,11 @@ class MastersController extends Controller
             if (!empty($request->spec)) {
                 $insert['spec'] = $request->spec;
             }
-            if (!empty($request->data_priema)) {
-                $insert['data_priema'] = $request->data_priema;
+            if (!empty($request->hired)) {
+                $insert['data_priema'] = $request->hired;
             }
-            if (!empty($request->data_uvoln)) {
-                $insert['data_uvoln'] = $request->data_uvoln;
+            if (!empty($request->dismissed)) {
+                $insert['data_uvoln'] = $request->dismissed;
             }
 
             // upload image
@@ -208,7 +157,8 @@ class MastersController extends Controller
             $res = 'The master was not selected';
         }
 
-        return view('admin_manikur.moder_pages.masters', ['res' => $res]);
+        // return view('admin_manikur.moder_pages.masters', ['res' => $res]);
+        return redirect()->route('admin.masters.list')->with('mes', $res);
     }
 
     /**
@@ -218,7 +168,9 @@ class MastersController extends Controller
     {
         $res = '';
         list($id, $image) = explode('plusplus', $request->id);
-        if (!empty($id) && $masters->destroy($id)) {
+        if (!empty($id)) {
+            $masters->find($id)->services()->detach();
+            $masters->destroy($id);
             $res .= 'Masters data have been removed! ';
         } else {
             $res .= 'WARNING! Masters data have been NOT removed! ';
@@ -231,6 +183,85 @@ class MastersController extends Controller
             }
         }
 
-        return view('admin_manikur.moder_pages.masters', ['res' => $res]);
+        // return view('admin_manikur.moder_pages.masters', ['res' => $res]);
+        return redirect()->route('admin.masters.list')->with('mes', $res);
+    }
+
+    public function all_services()
+    {
+        // get data from table services (id, page_id, categories_id, name)
+        // and from service-categories and pages (with service_page === 'yes')
+        // than in view we can display list of pages -> categories-> services and choose what you need
+        $services = [];
+        $services = Page::select('id', 'title')->where('service_page', 'yes')
+        ->with('categories')
+        ->with('services')
+        ->get()
+        ->toArray();
+
+        foreach ($services as $page) {
+            foreach ($page['categories'] as $cat) {
+                foreach ($page['services'] as $cat_serv) {
+                    if ($cat_serv['category_id'] === $cat['id']) {
+                        $data[$page['id'].'#'.$page['title']][$cat['id'].'#'.$cat['name']][$cat_serv['id']] = $cat_serv['name'];
+                    }
+                }
+            }
+            foreach ($page['services'] as $serv) {
+                if (empty($serv['category_id'])) {
+                    $data[$page['id'].'#'.$page['title']][$page['id'].'#page_serv'][$serv['id']] = $serv['name'];
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    public function all_masters(Master $masters)
+    {
+        if ($masters->exists()) {
+            $m = $masters->whereNull('data_uvoln')->get()->toArray();
+            $m_dism = $masters->whereNotNull('data_uvoln')->get()->toArray();
+        }
+        if (!isset($m)) {
+            $m = 'Table masters is empty';
+        }
+        if (!isset($m_dism)) {
+            $m_dism = '';
+        }
+
+        return ['masters' => $m, 'dismissed_masters' => $m_dism];
+    }
+
+    public function services_for_master(Master $master, $master_id)
+    {
+        $services = $master->find($master_id)->services;
+        $page_serv = $services->each(function ($serv) {
+            if (isset($serv->category)) {
+                $serv->category->page;
+            } else {
+                $serv->page;
+            }
+        })->toArray();
+
+        $data = [];
+        foreach ($page_serv as $serv) {
+            if (!empty($serv['category']['page']['id'])) {
+                $page_id = $serv['category']['page']['id'];
+            }
+            if (!empty($serv['page']['id'])) {
+                $page_id = $serv['page']['id'];
+            }
+
+            $page_title = (!empty($serv['page']['title'])) ? $serv['page']['title'] : $serv['category']['page']['title'];
+
+            $category_id = (!empty($serv['category']['id'])) ? $serv['category']['id'] : $page_id;
+
+            $category_name = (!empty($serv['category']['name'])) ? $serv['category']['name'] : 'page_serv';
+
+            $data[$page_id.'#'.$page_title][$category_id.'#'.$category_name][$serv['id']] = $serv['name'];
+        }
+
+        return $data;
     }
 }

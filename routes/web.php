@@ -142,11 +142,11 @@ Route::prefix('admin')->name('admin.')
         ->prefix('masters')
         ->name('masters.')
         ->group(function () {
-            Route::get('/', 'index')->name('edit');
+            Route::get('/', 'index')->name('list');
             Route::get('/create', 'create')->name('create');
             Route::post('/store', 'store')->name('store');
             Route::post('/remove', 'destroy')->name('remove');
-            Route::get('/edit', 'index')->name('edit');
+            Route::get('/edit', 'index')->name('list');
             Route::post('/edit', 'edit')->name('edit.form');
             Route::post('/edit/update', 'update')->name('update');
         });

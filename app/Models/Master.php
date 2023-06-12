@@ -24,4 +24,22 @@ class Master extends Model
     {
         return $this->belongsToMany(Service::class);
     }
+
+    public function getDataPriemaAttribute($value)
+    {
+        if (!empty($value)) {
+            return date('d.m.Y', strtotime($value));
+        } else {
+            return '';
+        }
+    }
+
+    public function getDataUvolnAttribute($value)
+    {
+        if (!empty($value)) {
+            return date('d.m.Y', strtotime($value));
+        } else {
+            return '';
+        }
+    }
 }
