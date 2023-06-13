@@ -68,6 +68,7 @@ class ServiceEditController extends Controller
                 $page_title = $ar[1];
                 $this->data['res'][] = 'Страница "'.$page_title.'":';
                 $post = array_map('test_input', $request->input('cats_name'));
+                $post_desc = $request->input('cats_desc');
                 // PROCESSING $_FILES
                 $load = new UploadFile();
                 if ($load->issetData()) {
@@ -92,6 +93,7 @@ class ServiceEditController extends Controller
                                 }
                                 // sql insert
                                 $cat_name = $post[$key];
+                                $cat_descr = (!empty($post_desc[$key])) ? $post_desc[$key] : '';
                                 $cat_img = 'categories'.DIRECTORY_SEPARATOR.$page_id.DIRECTORY_SEPARATOR.$load->new_file_name;
                                 $iscat = ServiceCategory::where('page_id', $page_id)
                                     ->where(function ($query) use ($cat_name, $cat_img) {
@@ -107,7 +109,7 @@ class ServiceEditController extends Controller
                                         'page_id' => $page_id,
                                         'image' => $cat_img,
                                         'name' => $cat_name,
-                                        'description' => '',
+                                        'description' => $cat_descr,
                                     ];
 
                                     if (ServiceCategory::insert($insert)) {
@@ -129,6 +131,7 @@ class ServiceEditController extends Controller
                                 }
                             }
                         }
+                        $this->data['res'][] = '';
                     }
                 } else {
                     $this->data['res'][] = 'Фото для загрузки не были выбраны.';
@@ -160,6 +163,7 @@ class ServiceEditController extends Controller
                 } else {
                     $this->data['res'][] = 'Пустые входные данные.';
                 }
+                $this->data['res'][] = '';
             }
             $this->del_empty_pageimg_dir();
         } elseif (!empty($request->serv_del)) { // SERV DEL
@@ -169,6 +173,7 @@ class ServiceEditController extends Controller
                 $this->get_serv4page_data($serv);
                 $this->img_del($this->serv_img);
                 $this->services_sql_del();
+                $this->data['res'][] = '';
             }
             $this->del_empty_pageimg_dir();
         } else {
@@ -212,6 +217,7 @@ class ServiceEditController extends Controller
 
                     foreach ($request->file('serv_img') as $k => $image) {
                         $serv = $serv_name[$k];
+                        $descr = (!empty($serv_desc[$k])) ? $serv_desc[$k] : '';
                         $this->filename = pathinfo(mb_strtolower(sanitize(translit_to_lat($serv))), PATHINFO_FILENAME);
                         $img = mb_str_replace('images/', '', $this->uploadFile($image));
                         if ((bool) $img) {
@@ -238,7 +244,7 @@ class ServiceEditController extends Controller
                                 'image' => (!empty($img)) ? $img : '',
                                 'price' => $price_end,
                                 'duration' => $duration[$k],
-                                'description' => '',
+                                'description' => $descr,
                             ];
 
                             try {
@@ -248,6 +254,7 @@ class ServiceEditController extends Controller
                                 $this->data['res'][] = 'Ошибка! Данные услуги "'.$serv.'" НЕ внесены в базу.<br />'.$th;
                             }
                         }
+                        $this->data['res'][] = '';
                     }
                 }
             } else { // service for page
@@ -318,6 +325,7 @@ class ServiceEditController extends Controller
                                 }
                             }
                         }
+                        $this->data['res'][] = '';
                     }
                 } else {
                     $this->data['res'][] = 'Фото для загрузки не были выбраны.<br />';

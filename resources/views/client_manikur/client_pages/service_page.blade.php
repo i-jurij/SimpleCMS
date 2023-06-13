@@ -27,20 +27,71 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     @if (!empty($this_show_method_data))
         @php
             $title = (!empty($this_show_method_data['cat']['name'])) ? $this_show_method_data['cat']['name'] : $this_show_method_data['serv']['name'];
-            $page_meta_description = (!empty($this_show_method_data['cat']['description'])) ? $this_show_method_data['cat']['description'] : $this_show_method_data['serv']['description'];
+            $page_meta_description = (!empty($this_show_method_data['cat']['description'])) ? $this_show_method_data['cat']['description'] : ((!empty($this_show_method_data['serv']['description'])) ? $this_show_method_data['serv']['description'] : '');
             $page_meta_keywords =str_replace(' ', ', ', $page_meta_description);
             $robots = "INDEX, FOLLOW";
         @endphp
 
-        <pre class="back pad mar">
-        @php
-            print_r($this_show_method_data)
-        @endphp
-        </pre>
+        @if (!empty($this_show_method_data['cat']))
+            @php
+                $cat = $this_show_method_data['cat'];
+                $img_cat = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$cat['image'];
+            @endphp
+            <article class="main_section_article ">
+                <div class="main_section_article_imgdiv">
+                    <img src="{{asset('storage'.$img_cat)}}" alt="Фото {{$cat['name']}}" class="main_section_article_imgdiv_img" />
+                </div>
+                <div class="main_section_article_content margin_top_1rem">
+                    <h3>{{$cat['name']}}</h3>
+                    <span>{{$cat['description']}}</span>
+                </div>
+            </article>
+
+            @if (!empty($this_show_method_data['serv']))
+                @foreach ($this_show_method_data['serv'] as $ke => $serv)
+                    @php
+                        $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['image'];
+                    @endphp
+                    @if (empty($data['serv'][$ke]['category_id']) || $data['serv'][$ke]['category_id'] === '')
+                        <article class="main_section_article ">
+                            <div class="main_section_article_imgdiv">
+                                <img src="{{asset('storage'.$img_serv)}}" alt="Фото {{$serv['name']}}" class="main_section_article_imgdiv_img" />
+                            </div>
+                            <div class="main_section_article_content  margin_top_1rem">
+                                <h3>{{$serv['name']}}</h3>
+                                <span>{{$serv['description']}}</span><br />
+                                <span>от {{$serv['price']}} руб.</span>
+                            </div>
+                        </article>
+                    @endif
+                @endforeach
+            @endif
+
+        @endif
+
+        @if (empty($this_show_method_data['cat']) && !empty($this_show_method_data['serv']))
+            @php
+                $serv = $this_show_method_data['serv'];
+                $img_serv = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$serv['image'];
+            @endphp
+            <article class="back shad rad pad margin_rlb1">
+                <div class="persinfo ">
+                    <img
+                        src="{{asset('storage'.$img_serv)}}"
+                        alt="Фото {{$serv['name']}}"
+                        style="width:60%;display:block;margin:auto;"
+                    />
+                </div>
+                <div class="  margin_top_1rem">
+                    <h3>{{$serv['name']}}</h3>
+                    <span>{{$serv['description']}}</span><br />
+                     <span>от {{$serv['price']}} руб.</span>
+                </div>
+            </article>
+        @endif
 
     @else
-
-    <article class="main_section_article">
+        <article class="main_section_article">
             <div class="main_section_article_imgdiv pad" style="background-color: var(--bgcolor-content);">
                 <h2>Расценки</h2>
             </div>
