@@ -14,9 +14,14 @@ $robots = 'NOINDEX, NOFOLLOW';
 <?php
 $dn = '';
 if (!empty($data['res'])) {
-    echo '<p>';
-    print_r($data['res']);
-    echo '</p>';
+    if (is_array($data['res'])) {
+        foreach ($data['res'] as $value) {
+            echo $value.'<br>';
+        }
+    }
+    if (is_string($data['res'])) {
+        echo $data['res'];
+    }
     $dn = 'display_none';
 } elseif (!empty($data['page_id'])) {
     echo '<p class=""><b>Страница "'.$data['page_title'].'":</b></p>';
@@ -112,7 +117,7 @@ if (!empty($data['res'])) {
         if (!empty($data['page_cats'])) {
             foreach ($data['page_cats'] as $cat) { // foreach cat ids from table
                 echo '  <label class="checkbox-btn">
-                                    <input type="checkbox" name="cat_del[]" value="'.$cat['id'].'#'.$cat['image'].'#'.$cat['name'].'">
+                                    <input type="checkbox" name="cat_del[]" value="'.$cat['id'].'#'.$cat['image'].'#'.$cat['name'].'#'.$cat['page_id'].'">
                                     <span>'.$cat['name'].'</span>
                                 </label>';
             }
@@ -133,7 +138,7 @@ if (!empty($data['res'])) {
                     foreach ($data['page_cats_serv'] as $serv) {
                         if ($serv['category_id'] === $value['id']) {
                             $cs .= '  <label class="display_inline_block margin_bottom_1rem shad rad pad">
-                                                    <input type="checkbox" name="serv_del[]" value="'.$serv['id'].'#'.$serv['name'].'#'.$serv['page_id'].'#'.$serv['category_id'].'">
+                                                    <input type="checkbox" name="serv_del[]" value="'.$serv['id'].'#'.$serv['name'].'#'.$serv['page_id'].'#'.$serv['category_id'].$serv['image'].'">
                                                     <span>'.$serv['name'].'</span>
                                                 </label>';
                         }
@@ -159,7 +164,7 @@ if (!empty($data['res'])) {
         if (!empty($data['page_serv'])) {
             foreach ($data['page_serv'] as $pserv) {
                 echo '  <label class="display_inline_block margin_bottom_1rem shad rad pad">
-                                        <input type="checkbox" name="serv_del[]" value="'.$pserv['id'].'#'.$pserv['name'].'#'.$pserv['page_id'].'#'.$pserv['image'].'">
+                                        <input type="checkbox" name="serv_del[]" value="'.$pserv['id'].'#'.$pserv['name'].'#'.$pserv['page_id'].'#0#'.$pserv['image'].'">
                                         <span>'.$pserv['name'].'</span>
                                     </label>';
             }
@@ -260,7 +265,7 @@ function add(el) {
                         </p>\
                     </label>';
         if ($('#cats_view').text() == 'Скрыть категории') {
-            file = '';
+            // file = '';
             // desc = '';
         }
     }
@@ -286,11 +291,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 $('#cats_list').toggle();
                 if (TDEL.text() == 'Показать категории' ) {
                     TDEL.text('Скрыть категории');
-                    $('.input-file').hide();
+                    //$('.input-file').hide();
                     //$('.textarea').hide();
                 } else {
                     TDEL.text('Показать категории');
-                    $('.input-file').show();
+                    //$('.input-file').show();
                     //$('.textarea').show();
                 }
             });

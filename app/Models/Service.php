@@ -26,6 +26,11 @@ class Service extends Model
         }
     }
 
+    public function getImageAttribute($value)
+    {
+        return mb_str_replace('images/', '', $value);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(ServiceCategory::class)->withDefault();

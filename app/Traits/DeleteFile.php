@@ -36,30 +36,26 @@ trait DeleteFile
             // $path2file = realpath($path2file);
             if (file_exists($path2file)) {
                 if (is_writable($path2file)) {
-                    if (unlink($path2file)) {
-                        $mes .= 'File '.$path2file.' was removed.';
-
-                        return $mes;
+                    if (is_file($path2file)) {
+                        if (unlink($path2file)) {
+                            $mes .= 'File '.$path2file.' was removed.';
+                        } else {
+                            $mes .= 'ERROR! Not unlink "'.$path2file.'".';
+                        }
                     } else {
-                        $mes .= 'ERROR! Not unlink "'.$path2file.'".';
-
-                        return $mes;
+                        $mes .= 'ERROR! The "'.$path2file.'" is not file.';
                     }
                 } else {
                     $mes .= 'ERROR! File "'.$path2file.'" is not writable.';
-
-                    return $mes;
                 }
             } else {
                 $mes .= 'WARNING! File "'.$path2file.'" is not exists.';
-
-                return $mes;
             }
         } else {
             $mes .= 'ERROR! Input for $this->delFile($path2file) must be sring.';
-
-            return $mes;
         }
+
+        return $mes;
     }
 
     public function del_empty_dir($dir)

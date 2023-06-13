@@ -255,7 +255,7 @@ class UploadFile
 
         if (move_uploaded_file($file_tmp_name, $dir.DIRECTORY_SEPARATOR.$this->new_file_name)) {
             chmod($dir.DIRECTORY_SEPARATOR.$this->new_file_name, $this->file_permissions);
-            $this->message .= 'File is uploaded to: "'.$dir.DIRECTORY_SEPARATOR.$this->new_file_name.'".<br />';
+            $this->message .= 'File is uploaded to: "'.$dir.DIRECTORY_SEPARATOR.$this->new_file_name.'"';
 
             return true;
         } else {

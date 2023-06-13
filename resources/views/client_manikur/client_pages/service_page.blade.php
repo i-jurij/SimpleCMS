@@ -26,9 +26,9 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
     @if (!empty($this_show_method_data))
         @php
-            $title = $this_show_method_data['cat']['name'];
-            $page_meta_description = $this_show_method_data['cat']['description'];
-            $page_meta_keywords =str_replace(' ', ', ', $this_show_method_data['cat']['description']);
+            $title = (!empty($this_show_method_data['cat']['name'])) ? $this_show_method_data['cat']['name'] : $this_show_method_data['serv']['name'];
+            $page_meta_description = (!empty($this_show_method_data['cat']['description'])) ? $this_show_method_data['cat']['description'] : $this_show_method_data['serv']['description'];
+            $page_meta_keywords =str_replace(' ', ', ', $page_meta_description);
             $robots = "INDEX, FOLLOW";
         @endphp
 

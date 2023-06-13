@@ -26,6 +26,14 @@ function getOutput($file)
     return $output;
 }
 
+function mb_str_replace($search, $replace, $string)
+{
+    $charset = mb_detect_encoding($string);
+    $unicodeString = iconv($charset, 'UTF-8', $string);
+
+    return str_replace($search, $replace, $unicodeString);
+}
+
 function mb_ucfirst($str)
 {
     $fc = mb_strtoupper(mb_substr($str, 0, 1));
