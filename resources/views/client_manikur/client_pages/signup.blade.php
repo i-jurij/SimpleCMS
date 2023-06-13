@@ -1,12 +1,12 @@
 @php
 if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     // title get from $this_show_method_data['name']
-    $title = $page_data[0]["title"];
+    $title = (!empty($this_show_method_data['name'])) ? $this_show_method_data['name'] : $page_data[0]["title"];
     // page_meta_description get from $data['cat']['description']
-    $page_meta_description = $page_data[0]["description"];
+    $page_meta_description = (!empty($this_show_method_data['description'])) ? $this_show_method_data['description'] : $page_data[0]["description"];
     $page_meta_keywords = $page_data[0]["keywords"];
     $robots = $page_data[0]["robots"];
-    $content['content'] = $page_data[0]["content"];
+    $content['content'] = (!empty($data['cat']) && !empty($data['cat']['name'])) ? $data['cat']['name'] : $page_data[0]["content"];
 } else {
     $title = "Title";
     $page_meta_description = "description";
@@ -26,18 +26,8 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
     @if (!empty($this_show_method_data))
         @php
-            $title = $this_show_method_data['cat']['name'];
-            $page_meta_description = $this_show_method_data['cat']['description'];
-            $page_meta_keywords =str_replace(' ', ', ', $this_show_method_data['cat']['description']);
-            $robots = "INDEX, FOLLOW";
-        @endphp
-
-        <pre class="back pad mar">
-        @php
             print_r($this_show_method_data)
         @endphp
-        </pre>
-
     @else
 
     <article class="main_section_article">
@@ -62,7 +52,6 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                 $img_cat = DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$cat['image'];
             @endphp
                 <article class="main_section_article ">
-                <a href="<?php echo url('/'.$page_data[0]['alias'].'/category/'.$cat['id']); ?>">
                     <div class="main_section_article_imgdiv">
                         <img src="{{asset('storage'.$img_cat)}}" alt="Фото {{$cat['name']}}" class="main_section_article_imgdiv_img" />
                     </div>
@@ -76,7 +65,6 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                                 @endforeach
                             @endif
                      </div>
-                </a>
                 </article>
             @endforeach
         @endif
@@ -88,16 +76,14 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                 @endphp
                 @if (empty($data['serv'][$ke]['category_id']) || $data['serv'][$ke]['category_id'] === '')
                     <article class="main_section_article ">
-                    <a href="<?php echo url('/'.$page_data[0]['alias'].'/service/'.$data['serv'][$ke]['id']); ?>">
                         <div class="main_section_article_imgdiv">
                             <img src="{{asset('storage'.$img_serv)}}" alt="Фото {{$serv['name']}}" class="main_section_article_imgdiv_img" />
                         </div>
                         <div class="main_section_article_content  margin_top_1rem">
                             <h3>{{$data['serv'][$ke]['name']}}</h3>
-                            <!-- <span>{{$data['serv'][$ke]['description']}}</span><br /> -->
+                            <span>{{$data['serv'][$ke]['description']}}</span><br />
                             <span>от {{$data['serv'][$ke]['price']}} руб.</span>
                         </div>
-                    </a>
                     </article>
                 @endif
             @endforeach

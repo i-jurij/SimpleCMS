@@ -37,6 +37,11 @@ if (!empty($data['res'])) {
                                 <input type="text" name="cats_name[]" placeholder="Название категории" maxlength="100" required />
                                 </p>
                             </label>
+                            <label class="textarea"><p>Описание категории (до 500 символов)</p>
+                                <p>
+                                    <textarea name="cats_desc[]" placeholder="Описание категории" maxlength="500"></textarea>
+                                </p>
+                            </label>
                         </div>
                     </div>
                     <div class="mar " id="">
@@ -221,6 +226,12 @@ function add(el) {
     let price = '';
     let duration = '';
 
+    desc = '<label class="textarea"><p>Описание '+name+' (до 500 символов)</p>\
+                    <p>\
+                        <textarea name="'+shoose+'_desc[]" placeholder="Описание '+name+'" maxlength="500"></textarea>\
+                    </p>\
+                </label>' ;
+
     if (shoose == "cats") {
         name = "категории";
         file = '<label class="input-file">\
@@ -237,11 +248,7 @@ function add(el) {
                     <p id="fileSizef'+shoose+id+'"></p>\
                 </label>';
         name = "услуги";
-        desc = '<label class="textarea"><p>Описание '+name+' (до 500 символов)</p>\
-                    <p>\
-                        <textarea name="'+shoose+'_desc[]" placeholder="Описание '+name+'" maxlength="500"></textarea>\
-                    </p>\
-                </label>' ;
+
         price = '   <label ><p>Прайс (цифры, до 10 символов)</p>\
                         <p>\
                             <input type="number" name="price[]" placeholder="10000" min="0" max="1000000" step="0.1" title="Только цифры" required />\
@@ -253,7 +260,8 @@ function add(el) {
                         </p>\
                     </label>';
         if ($('#cats_view').text() == 'Скрыть категории') {
-            file = ''; desc = '';
+            file = '';
+            // desc = '';
         }
     }
     // add fields for input
@@ -279,11 +287,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (TDEL.text() == 'Показать категории' ) {
                     TDEL.text('Скрыть категории');
                     $('.input-file').hide();
-                    $('.textarea').hide();
+                    //$('.textarea').hide();
                 } else {
                     TDEL.text('Показать категории');
                     $('.input-file').show();
-                    $('.textarea').show();
+                    //$('.textarea').show();
                 }
             });
         }

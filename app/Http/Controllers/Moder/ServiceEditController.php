@@ -264,21 +264,22 @@ class ServiceEditController extends Controller
                     } else {
                         $this->data['res'] .= self::deleteFile(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$ar[1])).'<br />';
                     }
+
+                    // sql del services of category
+                    $sql_serv = Service::where('category_id', $ar[0])->select('id')->get();
+                    $sql_serv->each(function ($serv) {
+                        $serv->masters()->detach();
+                        $serv->destroy($serv->id);
+                    });
+
+                    $this->data['res'] .= 'Данные услуг категории "'.$ar[2].'" удалены из базы.<br />';
+
                     // sql del category
-                    $sql = ServiceCategory::where('id', $ar[0])->delete();
+                    $sql = ServiceCategory::destroy($ar[0]);
                     if ($sql > 0) {
                         $this->data['res'] .= 'Данные категории "'.$ar[2].'" удалены из базы.<br />';
                     } else {
                         $this->data['res'] .= 'Данные категории "'.$ar[2].'" НЕ удалены или не существуют в базе.<br />';
-                    }
-
-                    // sql del services of category
-                    $sql = Service::where('category_id', $ar[0])->delete();
-
-                    if ($sql > 0) {
-                        $this->data['res'] .= 'Данные услуг категории "'.$ar[2].'" удалены из базы.<br />';
-                    } else {
-                        $this->data['res'] .= 'Данные услуг категории "'.$ar[2].'" НЕ удалены или не существуют в базе.<br />';
                     }
                 } else {
                     $this->data['res'] .= 'Пустые входные данные.<br />';

@@ -24,10 +24,12 @@ class ClientHomeController extends Controller
         $page_data = (Page::where('alias', $page_alias)->get()) ? Page::where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
 
         $page_data = ($pages->where('alias', $page_alias)->get()) ? $pages->where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
+
+        // get pieces of url (route): 0 - classname, 1 - methodname, 2...x - params
+        $path_array = explode('/', trim($request->path(), '/'));
+
         if (!empty($page_data) && !empty($page_data[0]) && !empty($page_data[0]['alias'])) {
             if ($page_data[0]['single_page'] === 'no' || $page_data[0]['service_page'] === 'yes') {
-                // get pieces of url (route): 0 - classname, 1 - methodname, 2...x - params
-                $path_array = explode('/', trim($request->path(), '/'));
                 if ($page_data[0]['single_page'] === 'no') {
                     $path = 'App\\Http\\Controllers\\Client\\';
                     $class = $path.mb_ucfirst($page_alias).'Controller';
@@ -59,6 +61,10 @@ class ClientHomeController extends Controller
             } else {
                 return view('client_manikur.page_template', ['page_data' => $page_data, 'content' => $content]);
             }
+        } elseif ($path_array[1] === 'category' || $path_array[1] === 'service') {
+            $servicePageController = new ServicePageController();
+
+            return response($servicePageController->index($content, $page_data, $path_array));
         } else {
             abort(404);
         }

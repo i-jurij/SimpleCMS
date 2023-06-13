@@ -28,7 +28,7 @@ class Service extends Model
 
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ServiceCategory::class);
+        return $this->belongsTo(ServiceCategory::class)->withDefault();
     }
 
     public function page(): BelongsTo

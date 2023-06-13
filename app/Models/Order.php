@@ -30,8 +30,8 @@ class Order extends Model
             'master_name' => 'Noname',
             'sec_name' => 'NoSecondName',
             'master_fam' => 'NoLastName',
-            'master_phone_number' => '+7 (000) 000 00 00',
-            'spec' => 'All specialties in the world',
+            'master_phone_number' => 'No phone',
+            'spec' => 'All specialities in the world',
             'data_priema' => date('Y-m-d H:i:s', time()),
             'data_uvoln' => '',
         ]);

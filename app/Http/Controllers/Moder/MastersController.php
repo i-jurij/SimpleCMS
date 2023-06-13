@@ -237,7 +237,7 @@ class MastersController extends Controller
     {
         $services = $master->find($master_id)->services;
         $page_serv = $services->each(function ($serv) {
-            if (isset($serv->category)) {
+            if (!empty($serv->category_id)) {
                 $serv->category->page;
             } else {
                 $serv->page;
@@ -245,15 +245,19 @@ class MastersController extends Controller
         })->toArray();
 
         $data = [];
+        $page_id = 0;
         foreach ($page_serv as $serv) {
             if (!empty($serv['category']['page']['id'])) {
                 $page_id = $serv['category']['page']['id'];
-            }
-            if (!empty($serv['page']['id'])) {
-                $page_id = $serv['page']['id'];
+                $title = $serv['category']['page']['title'];
             }
 
-            $page_title = (!empty($serv['page']['title'])) ? $serv['page']['title'] : $serv['category']['page']['title'];
+            if (!empty($serv['page']['id'])) {
+                $page_id = $serv['page']['id'];
+                $title = $serv['page']['title'];
+            }
+
+            $page_title = (!empty($title)) ? $title : 'no page title';
 
             $category_id = (!empty($serv['category']['id'])) ? $serv['category']['id'] : $page_id;
 
