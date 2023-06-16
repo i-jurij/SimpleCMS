@@ -45,7 +45,8 @@ Route::name('client.')
     Route::post('/callback/store', [CallbackController::class, 'store'])->name('callback.store');
     Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
 
-    Route::post('/signup/appoint_phone', [SignupController::class, 'appoint_phone'])->name('signup.appoint_phone');
+    Route::post('/signup/masters', [SignupController::class, 'appoint_masters'])->name('signup.masters');
+    Route::post('/signup/phone', [SignupController::class, 'appoint_phone'])->name('signup.phone');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');
 });

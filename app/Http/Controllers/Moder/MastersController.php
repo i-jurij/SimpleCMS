@@ -153,6 +153,13 @@ class MastersController extends Controller
                     $res['db'] = 'The data of master has been updated in db.';
                 }
             }
+
+            if (!empty($request->serv)) {
+                $master = $masters::find($request->id);
+                $master->services()->detach($request->serv);
+                $master->services()->attach($request->serv);
+                $res['db'] = 'The data of master has been updated in db.';
+            }
         } else {
             $res = 'The master was not selected';
         }

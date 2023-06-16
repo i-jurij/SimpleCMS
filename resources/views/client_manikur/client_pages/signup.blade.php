@@ -22,21 +22,6 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
 @section("content")
 
-
-<?php
-$master_id = '8';
-$time = DateTime::createFromFormat('d-m-Y H:i', '16-06-2023 14:30');
-
-$order = \App\Models\Order::where('master_id', $master_id)
-    ->where('start_dt', '<=', $time)
-    ->where('end_dt', '>', $time)
-    ->get()
-    ->toArray();
-
-print_r($order);
-?>
-
-
 <link rel="stylesheet" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'ppntmt'.DIRECTORY_SEPARATOR.'appointment'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'style.css') }}" />
 
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
@@ -73,7 +58,7 @@ print_r($order);
                                                 <input
                                                     type="radio"
                                                     name="usluga"
-                                                    value="{{$duration}}plus{{$serv_id}}"
+                                                    value="{{$serv_id}}"
                                                     id="{{$id}}"
                                                 />
                                                 <span>&emsp;{{$cat_name}}: {{$serv_name}},<br>&emsp;{{$price}} руб.</span>
@@ -90,7 +75,7 @@ print_r($order);
                                                 <input
                                                 type="radio"
                                                 name="usluga"
-                                                value="{{$duration}}plus{{$serv_id}}"
+                                                value="{{$serv_id}}"
                                                 id="{{$id}}" />
                                                 <span>&emsp;{{$serv_name}},<br>&emsp;{{$price}} руб.</span>
                                             </label>
@@ -104,29 +89,35 @@ print_r($order);
                     </div>
                 </div>
 
-                <div class="choice display_none" id="master_choice">
-                    <h3 class="back shad rad pad margin_rlb1">Выберите специалиста</h3>
-                    <div class="radio-group flex">
-                        @foreach ($data['masters'] as $key => $master)
-                            <article class="main_section_article radio" data-value="{{$master['id']}}">
-                                <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">
-                                    <img src="{{asset('storage'.DIRECTORY_SEPARATOR.$master['master_photo'])}}" alt="Фото {{$master['master_fam']}}" class="main_section_article_imgdiv_img" />
-                                </div>
-
-                                <div class="main_section_article_content margin_top_1rem">
-                                    <h3 id="'{{$master['id']}}">{{$master['master_name']}} {{$master['master_fam']}}</h3>
-                                    <span>{{$master['spec']}}</span>
-                                </div>
-                            </article>
-                        @endforeach
-                        <input type="hidden" id="master" name="master" />
-                    </div>
-                </div>
+                <div class="choice display_none" id="master_choice"></div>
 
                 <h3 class="back shad rad pad margin_rlb1 display_none" id="timeh3">Выберите время</h3>
                 <div class="choice display_none margin_bottom_1rem" id="time_choice"></div>
 
-                <div class="choice display_none" id="give_a_phone"></div>
+                <div class="choice display_none" id="give_a_phone">
+                    <h3 class="back shad rad pad">Введите свое имя и номер телефона для связи</h3>
+                    <div class="form-group pad margin_bottom_1rem">
+                        <div class="">
+                            <div id="error"><small></small></div>
+                            <label class="zapis_usluga">
+                                <p class="pad">Ваше имя:</p>
+                                <input type="text" placeholder="Ваше имя" name="name" id="name" maxlength="255" value="{{ old('name') }}" />
+                            </label>
+                            <br>
+                            <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
+                            <p class="error" id="tel_mes"></p>
+                            <label class="zapis_usluga">
+                                <p class="pad">Номер мобильной связи:</p>
+                                <input type="tel" name="zapis_phone_number"  id="number" class="number"
+                                title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"
+                                minlength="6" maxlength="17"
+                                pattern="^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?"
+                                value="{{ old('phone_number') }}"
+                                required />
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
             </form>
 
@@ -188,16 +179,58 @@ $(function() {
     //if ( $('#services_choice input:checkbox:checked').length > 0 && $(this).val() == 'master_next')
     if ( $('#services_choice input:radio:checked').length > 0 && $(this).val() == 'master_next')
     {
-      $('#services_choice').hide();
-      $('#master_choice').show();
-      $('html, body').animate({
-          scrollTop: $(".title").offset().top
-      }, 500);
+        let service = $('#services_choice input[type="radio"][name="usluga"]:checked').val();
 
-      $(this).val('time_next');
-      $('#button_back').val('services_choice').prop('disabled', false);
+        $.ajax({
+        url: '<?php echo url('/'); ?>/signup/masters',
+    		method: 'post',
+    		dataType: 'json',
+    		data: {
+                "_token": "{{ csrf_token() }}",
+                'serv_id': service
+            },
+    		success: function(data){
+                if (data.masters.length > 0) {
+                    let mst = '<h3 class="back shad rad pad margin_rlb1">Выберите специалиста</h3>\
+                                <div class="radio-group flex">';
+
+                    data.masters.forEach(element => {
+                        mst += '<article class="main_section_article radio" data-value="'+element.id+'">\
+                                    <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">\
+                                        <img src="{{asset("storage")}}/'+element.master_photo+'" alt="Фото '+element.master_fam+'" class="main_section_article_imgdiv_img" />\
+                                    </div>\
+                                    <div class="main_section_article_content margin_top_1rem">\
+                                        <h3 id="'+element.id+'">'+element.master_name+' '+element.master_fam+'</h3>\
+                                    </div>\
+                                </article>';
+                    });
+                    mst += '<input type="hidden" id="master" name="master" />\
+                            </div>';
+                    $('#master_choice').html(mst);
+                } else {
+                    $('#master_choice').html('<p class="pad">No masters for this service available.</p>');
+                    //click event on button next
+                    setTimeout(function(){
+                        $("#button_next").click();
+                    }, 100);
+                }
+
+    		},
+            error: function(data) {
+                $('#master_choice').html('<p class="pad">Извините, где-то возникла ошибка :(</p>');
+            }
+    	});
+
+        $('#services_choice').hide();
+        $('#master_choice').show();
+        $('html, body').animate({
+            scrollTop: $(".title").offset().top
+        }, 500);
+
+        $(this).val('time_next');
+        $('#button_back').val('services_choice').prop('disabled', false);
     }
-    else if ( $('#master_choice #master').val() && $(this).val() == 'time_next' )
+    else if ( ( $('#master_choice #master').val() || $('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') && $(this).val() == 'time_next' )
     {
       $('#master_choice').hide();
       $('#timeh3').show();
@@ -214,12 +247,6 @@ $(function() {
     }
     else if ( $('#time_choice input[name="time"]:checked').length && $(this).val() == 'phone_next' )
     {
-        //alert($('.master_datetime input[name="time"]:checked').val());
-        $('#timeh3').hide();
-        $('#time_choice').hide();
-        $('#give_a_phone').show();
-        $(this).val('end_next');
-        $('#button_back').val('time_choice');
         let master = $('#master_choice #master').val();
         let serv = $('#services_choice input[type="radio"]:checked').val();
         let ttime = Number($('#time_choice input[type="radio"][name="time"]:checked').val());
@@ -230,9 +257,8 @@ $(function() {
         const year = jsDateTime.getFullYear();
         const hours = jsDateTime.getHours();
         const minutes = jsDateTime.getMinutes();
-
-      $.ajax({
-        url: '<?php echo url('/'); ?>/signup/appoint_phone',
+        $.ajax({
+        url: '<?php echo url('/'); ?>/signup/phone',
     		method: 'post',
     		dataType: 'json',
 
@@ -243,49 +269,26 @@ $(function() {
                 'time': ttime
             },
     		success: function(data){
-                if (data.res && data.res != 'empty') {
-                    var tlf_form =
-                        '<div class="form-recall-main">\
-                            <h3 class="back shad rad pad margin_bottom_1rem">Введите свое имя и номер телефона для связи</h3>\
-                            <div class="form-recall-main-section">\
-                                <div class="flex">\
-                                    <input type="text" placeholder="Ваше имя" name="zapis_name" id="zapis_name" maxlength="50"></input>\
-                                    <input type="tel" name="zapis_phone_number"  id="number" class="number"\
-                                        title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"\
-                                        minlength="6" maxlength="17"\
-                                        pattern="^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?"\
-                                        required />\
-                                    <div id="error"><small></small></div>\
-                                </div>\
-                            </div>\
-                        </div>\
-                        <div class="form-recall-main">\
-                            <p class="pers">\
-                                Отправляя данную форму, вы даете согласие на\
-                                <br>\
-                                <a href="{{url('/')}}/persinfo">\
-                                обработку персональных данных\
-                                </a>\
-                            </p>\
-                        </div>';
-                } else if (data.res && data.res == 'empty') {
-                    var tlf_form = '<p class="pad">Извините, где-то возникла ошибка :(</p>';
-                } else {
-                    var tlf_form = "<p class=\"pad\">"+day+', '+day_of_month+' '+month+' '+year+', '+pad(hours)+':'+pad(minutes)+"\
+                if (!data.res) {
+                    let tlf_form = "<p class=\"pad\">"+day+', '+day_of_month+' '+month+' '+year+', '+pad(hours)+':'+pad(minutes)+"\
                                         <br /> недавно были заняты другим клиентом.<br />Выберите, пожалуйста другое время.\
                                     </p>";
+                    $('#give_a_phone').html(tlf_form);
+                } else if (data.res && data.res == 'empty') {
+                    let tlf_form = '<p class="pad">Извините, где-то возникла ошибка :(</p>';
+                    $('#give_a_phone').html(tlf_form);
                 }
-    			$('#give_a_phone').html(tlf_form);
-                /*
-                $('body').find('.number').each(function(){
-                        $(this).mask("+7 999 999 99 99",{autoclear: false});
-                });
-                */
     		},
             error: function(data) {
                 $('#give_a_phone').html('<p class="pad">Извините, где-то возникла ошибка :(</p>');
             }
     	});
+        //alert($('.master_datetime input[name="time"]:checked').val());
+        $('#timeh3').hide();
+        $('#time_choice').hide();
+        $('#give_a_phone').show();
+        $(this).val('end_next');
+        $('#button_back').val('time_choice');
     }
     else if ( $('#give_a_phone input[name="zapis_phone_number"]').val() && $(this).val() == 'end_next' )
     {
@@ -340,7 +343,7 @@ $(function() {
     else if ( $(this).val() == 'zapis_sql' )
     {
       $.ajax({
-    		url: '<?php echo url('/'); ?>/app/models/appoint_end.php',
+    		url: '<?php echo url('/'); ?>/signup/end',
     		method: 'post',
     		dataType: 'html',
     		data: $('form#zapis_usluga_form').serialize(),
