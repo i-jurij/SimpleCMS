@@ -61,7 +61,7 @@ class ClientHomeController extends Controller
             } else {
                 return view('client_manikur.page_template', ['page_data' => $page_data, 'content' => $content]);
             }
-        } elseif ($path_array[1] === 'category' || $path_array[1] === 'service') {
+        } elseif (!empty($path_array[1]) && ($path_array[1] === 'category' || $path_array[1] === 'service')) {
             $servicePageController = new ServicePageController();
 
             return response($servicePageController->index($content, $page_data, $path_array));

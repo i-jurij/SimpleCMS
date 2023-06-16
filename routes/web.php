@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CaptchaServiceController;
 use App\Http\Controllers\Client\CallbackController;
 use App\Http\Controllers\Client\ClientHomeController;
+use App\Http\Controllers\Client\SignupController;
 use App\Http\Controllers\Moder\AboutController as AboutEditController;
 use App\Http\Controllers\Moder\ContactsController;
 use App\Http\Controllers\Moder\GalleryController;
@@ -43,6 +44,8 @@ Route::name('client.')
 
     Route::post('/callback/store', [CallbackController::class, 'store'])->name('callback.store');
     Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
+
+    Route::post('/signup/appoint_phone', [SignupController::class, 'appoint_phone'])->name('signup.appoint_phone');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');
 });
