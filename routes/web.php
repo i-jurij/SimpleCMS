@@ -47,6 +47,7 @@ Route::name('client.')
 
     Route::post('/signup/masters', [SignupController::class, 'appoint_masters'])->name('signup.masters');
     Route::post('/signup/phone', [SignupController::class, 'appoint_phone'])->name('signup.phone');
+    Route::post('/signup/end', [SignupController::class, 'appoint_end'])->name('signup.end');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');
 });

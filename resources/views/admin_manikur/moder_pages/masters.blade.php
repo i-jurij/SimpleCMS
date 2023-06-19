@@ -50,7 +50,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                         <td>{{$key + 1}}</td>
                         <td><img src="{{asset('storage'.DIRECTORY_SEPARATOR.$img)}}" alt="Photo  {{$master['master_fam']}}" /></td>
                         <td>{{$master['master_name']}}<br> {{$master['sec_name']}}<br> {{$master['master_fam']}}</td>
-                        <td>{{$master['master_phone_number']}}</td>
+                        <td>{!!str_replace(' ', '&nbsp;', $master['master_phone_number'])!!}</td>
                         <td>
                             @if (!empty($services) && !empty($services[$master['id']]))
                             <ul>

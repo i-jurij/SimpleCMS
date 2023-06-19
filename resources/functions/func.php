@@ -1,6 +1,6 @@
 <?php
 
-function createRandom()
+function createRandomAGTNO()
 {
     do {
         $agt_no = mt_rand(100000000, 900000000);

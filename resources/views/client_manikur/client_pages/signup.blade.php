@@ -26,8 +26,14 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
 
-    @if (!empty($data['res']))
-        <div class="content"><p>{{$data['res']}}</p></div>
+    @if (!empty(session('res')))
+        @if (is_array(session('res')))
+            @php
+                print_r(session('res'));
+            @endphp
+        @elseif (is_string(session('res')))
+            <div class="content"><p>{!!session('res')!!}</p></div>
+        @endif
     @else
         <div class="content">
         @if (!empty($data['serv']))
@@ -61,7 +67,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                                                     value="{{$serv_id}}"
                                                     id="{{$id}}"
                                                 />
-                                                <span>&emsp;{{$cat_name}}: {{$serv_name}},<br>&emsp;{{$price}} руб.</span>
+                                                <span>{{$cat_name}}: {{$serv_name}},<br>{{$price}} руб.</span>
                                             </label>
                                         @endforeach
                                     @elseif ($cat_name == 'page_serv')
@@ -73,11 +79,12 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                                             @endphp
                                             <label class="custom-checkbox back text_left" for="{{$id}}">
                                                 <input
-                                                type="radio"
-                                                name="usluga"
-                                                value="{{$serv_id}}"
-                                                id="{{$id}}" />
-                                                <span>&emsp;{{$serv_name}},<br>&emsp;{{$price}} руб.</span>
+                                                    type="radio"
+                                                    name="usluga"
+                                                    value="{{$serv_id}}"
+                                                    id="{{$id}}"
+                                                />
+                                                <span>{{$serv_name}},<br>{{$price}} руб.</span>
                                             </label>
                                         @endforeach
                                     @endif
@@ -95,28 +102,31 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                 <div class="choice display_none margin_bottom_1rem" id="time_choice"></div>
 
                 <div class="choice display_none" id="give_a_phone">
-                    <h3 class="back shad rad pad">Введите свое имя и номер телефона для связи</h3>
-                    <div class="form-group pad margin_bottom_1rem">
-                        <div class="">
-                            <div id="error"><small></small></div>
-                            <label class="zapis_usluga">
-                                <p class="pad">Ваше имя:</p>
-                                <input type="text" placeholder="Ваше имя" name="name" id="name" maxlength="255" value="{{ old('name') }}" />
-                            </label>
-                            <br>
-                            <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
-                            <p class="error" id="tel_mes"></p>
-                            <label class="zapis_usluga">
-                                <p class="pad">Номер мобильной связи:</p>
-                                <input type="tel" name="zapis_phone_number"  id="number" class="number"
-                                title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"
-                                minlength="6" maxlength="17"
-                                pattern="^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?"
-                                value="{{ old('phone_number') }}"
-                                required />
-                            </label>
+                    <div class=" display_none" id="form_phone">
+                        <h3 class="back shad rad pad">Введите свое имя и номер телефона для связи</h3>
+                        <div class="form-group pad margin_bottom_1rem">
+                            <div class="">
+                                <div id="error"><small></small></div>
+                                <label class="zapis_usluga">
+                                    <p class="pad">Ваше имя:</p>
+                                    <input type="text" placeholder="Ваше имя (одно слово, только буквы)" pattern="^([а-яА-ЯёЁa-zA-Z]+)?$" name="zapis_name" id="zapis_name" maxlength="255" value="{{ old('name') }}" />
+                                </label>
+                                <br>
+                                <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
+                                <p class="error" id="tel_mes"></p>
+                                <label class="zapis_usluga">
+                                    <p class="pad">Номер мобильной связи:</p>
+                                    <input type="tel" name="zapis_phone_number"  id="number" class="number"
+                                    title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"
+                                    minlength="6" maxlength="17"
+                                    pattern="^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?"
+                                    value="{{ old('phone_number') }}"
+                                    required />
+                                </label>
+                            </div>
                         </div>
                     </div>
+                    <div class="display_none" id="occupied"></div>
                 </div>
 
             </form>
@@ -147,54 +157,79 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-$(function() {
-  //for page choice
-  // Найти все узлы TD
-  var page_buttons=$("#services_choice > .page_buttons > .zapis_usluga_buttons");
-  // Добавить событие щелчка для всех TD
-  page_buttons.click(function() {
-    var button_id = $(this).prop('id');
-    $('.uslugi').each(function (index, value){
-    let page_id = $(this).prop('id');
-    if (page_id == 'div'+button_id) {
-      $("#div"+button_id).toggle();
-      //$('#services_choice label').show();
-    } else {
-      $(this).hide();
-    }
-    });
-  });
+    function my_date_string(timestamp) {
+        let cyrnameofmonth = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        const jsDateTime = new Date(timestamp);
+        const day = capitalizeFirstLetter(getDayName(jsDateTime, locale, long));
+        const day_of_month = jsDateTime.getDate();
+        const month = cyrnameofmonth[jsDateTime.getMonth()];
+        const year = jsDateTime.getFullYear();
+        const hours = jsDateTime.getHours();
+        const minutes = jsDateTime.getMinutes();
 
-  $('#services_choice input[type="radio"]').on('change', function(){
-      if ( $('#services_choice input[type="radio"]:checked').length > 0 ) {
-        $('#button_next').val('master_next').prop('disabled', false);
-        $('html, body').animate({
-          scrollTop: $("#buttons_div").offset().top
-        }, 500);
-        $('#button_next').focus();
-      }
-  });
+        return day+', '+day_of_month+' '+month+' '+year+', '+pad(hours)+':'+pad(minutes);
+    }
+
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+$(function() {
+    //for page choice
+    // Найти все узлы TD
+    var page_buttons=$("#services_choice > .page_buttons > .zapis_usluga_buttons");
+    // Добавить событие щелчка для всех TD
+    page_buttons.click(function() {
+        var button_id = $(this).prop('id');
+        $('.uslugi').each(function (index, value){
+        let page_id = $(this).prop('id');
+        if (page_id == 'div'+button_id) {
+        $("#div"+button_id).toggle();
+        //$('#services_choice label').show();
+        } else {
+        $(this).hide();
+        }
+        });
+    });
+
+    $('#services_choice input[type="radio"]').on('change', function(){
+        if ( $('#services_choice input[type="radio"]:checked').length > 0 ) {
+            $('#button_next').val('master_next').prop('disabled', false);
+            $('html, body').animate({
+            scrollTop: $("#buttons_div").offset().top
+            }, 500);
+            $('#button_next').focus();
+        }
+    });
 ////////////////////////
-  $('#button_next').click(function(){
+$('#button_next').click(function(){
     //if ( $('#services_choice input:checkbox:checked').length > 0 && $(this).val() == 'master_next')
     if ( $('#services_choice input:radio:checked').length > 0 && $(this).val() == 'master_next')
     {
         let service = $('#services_choice input[type="radio"][name="usluga"]:checked').val();
-
+        $('#services_choice').hide();
+        $('#master_choice').show();
+        $(this).val('time_next');
+        $('#button_back').val('services_choice').prop('disabled', false);
         $.ajax({
-        url: '<?php echo url('/'); ?>/signup/masters',
+            url: '<?php echo url('/'); ?>/signup/masters',
     		method: 'post',
     		dataType: 'json',
     		data: {
                 "_token": "{{ csrf_token() }}",
                 'serv_id': service
             },
-    		success: function(data){
-                if (data.masters.length > 0) {
+    		success: function(result){
+                if (result.masters.length > 0) {
                     let mst = '<h3 class="back shad rad pad margin_rlb1">Выберите специалиста</h3>\
                                 <div class="radio-group flex">';
 
-                    data.masters.forEach(element => {
+                        result.masters.forEach(element => {
                         mst += '<article class="main_section_article radio" data-value="'+element.id+'">\
                                     <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">\
                                         <img src="{{asset("storage")}}/'+element.master_photo+'" alt="Фото '+element.master_fam+'" class="main_section_article_imgdiv_img" />\
@@ -207,28 +242,33 @@ $(function() {
                     mst += '<input type="hidden" id="master" name="master" />\
                             </div>';
                     $('#master_choice').html(mst);
+
+                    //for master_choice
+                    $('.radio-group .radio').click(function(){
+                        $(this).parent().find('.radio').removeClass('selected');
+                        $(this).addClass('selected');
+                        var val = $(this).attr('data-value');
+                        $(this).parent().find('#master').val(val);
+
+                        $('html, body').animate({
+                            scrollTop: $("#buttons_div").offset().top
+                        }, 500);
+                        $('#button_next').focus();
+                    });
                 } else {
                     $('#master_choice').html('<p class="pad">No masters for this service available.</p>');
                     //click event on button next
                     setTimeout(function(){
                         $("#button_next").click();
-                    }, 100);
+                    }, 10);
                 }
 
     		},
             error: function(data) {
                 $('#master_choice').html('<p class="pad">Извините, где-то возникла ошибка :(</p>');
-            }
+            },
+            cache: false
     	});
-
-        $('#services_choice').hide();
-        $('#master_choice').show();
-        $('html, body').animate({
-            scrollTop: $(".title").offset().top
-        }, 500);
-
-        $(this).val('time_next');
-        $('#button_back').val('services_choice').prop('disabled', false);
     }
     else if ( ( $('#master_choice #master').val() || $('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') && $(this).val() == 'time_next' )
     {
@@ -237,8 +277,8 @@ $(function() {
       $('#time_choice').show();
       $(this).val('phone_next');
       $('#button_back').val('master_choice');
-      //console.log($('#master_choice #master').val());
       let master = $('#master_choice #master').val();
+      // CALL TO APPOINTMENT SCRIPT
       appointment('short');
       $('html, body').animate({
           scrollTop: $(".title").offset().top
@@ -248,42 +288,42 @@ $(function() {
     else if ( $('#time_choice input[name="time"]:checked').length && $(this).val() == 'phone_next' )
     {
         let master = $('#master_choice #master').val();
-        let serv = $('#services_choice input[type="radio"]:checked').val();
         let ttime = Number($('#time_choice input[type="radio"][name="time"]:checked').val());
-        const jsDateTime = new Date(ttime);
-        const day = capitalizeFirstLetter(getDayName(jsDateTime, locale, long));
-        const day_of_month = jsDateTime.getDate();
-        const month = jsDateTime.getMonth();
-        const year = jsDateTime.getFullYear();
-        const hours = jsDateTime.getHours();
-        const minutes = jsDateTime.getMinutes();
         $.ajax({
-        url: '<?php echo url('/'); ?>/signup/phone',
+            url: '<?php echo url('/'); ?>/signup/phone',
     		method: 'post',
     		dataType: 'json',
 
     		data: {
                 "_token": "{{ csrf_token() }}",
                 'master': master,
-                'serv': serv,
                 'time': ttime
             },
     		success: function(data){
                 if (!data.res) {
-                    let tlf_form = "<p class=\"pad\">"+day+', '+day_of_month+' '+month+' '+year+', '+pad(hours)+':'+pad(minutes)+"\
+                    let mes = "<p class=\"pad\">"+my_date_string(ttime)+"\
                                         <br /> недавно были заняты другим клиентом.<br />Выберите, пожалуйста другое время.\
                                     </p>";
-                    $('#give_a_phone').html(tlf_form);
+                    $('#occupied').html(mes).show();
+                    $('#form_phone').hide();
                 } else if (data.res && data.res == 'empty') {
-                    let tlf_form = '<p class="pad">Извините, где-то возникла ошибка :(</p>';
-                    $('#give_a_phone').html(tlf_form);
+                    let mes = '<p class="pad">Сервер получил запрос без необходимых данных :(</p>';
+                    $('#occupied').html(mes).show();
+                    $('#form_phone').hide();
+                } else if (data.res && data.res != 'empty') {
+                    $('#occupied').hide();
+                    $('#form_phone').show();
                 }
     		},
             error: function(data) {
-                $('#give_a_phone').html('<p class="pad">Извините, где-то возникла ошибка :(</p>');
-            }
+                let tlf_form = '<p class="pad">Извините, где-то возникла ошибка :(</p>)';
+                $('#occupied').html(tlf_form).show();
+                $('#form_phone').hide();
+            },
+            cache: false
     	});
         //alert($('.master_datetime input[name="time"]:checked').val());
+
         $('#timeh3').hide();
         $('#time_choice').hide();
         $('#give_a_phone').show();
@@ -292,71 +332,90 @@ $(function() {
     }
     else if ( $('#give_a_phone input[name="zapis_phone_number"]').val() && $(this).val() == 'end_next' )
     {
-      $('#give_a_phone').hide();
-      $('#zapis_end').show();
-      $('#button_back').val('give_a_phone');
-      $(this).val('zapis_sql').html('Записаться!');
-      //$('form#zapis_usluga_form').hide();
+        $('#give_a_phone').hide();
+        $('#zapis_end').show();
+        $('#button_back').val('give_a_phone');
+        $(this).val('zapis_sql').html('Записаться!');
 
-      let client_name = $('form#zapis_usluga_form input[name="zapis_name"]').val();
-      $('#zapis_end').show().addClass('back shad rad pad margin_rlb1').html('<h3>'+client_name+' </h3>\
-                                  <p id="zap_na">Вы записываетесь на:</p>\
-                                  <div class="table_body text_left" >\
-                                  ');
-//////////////////////
-      let serv = $('#services_choice input:radio:checked').val().split('plus');
-      if (serv[1] != 'page_serv') {
-        var cn = serv[1]+': ';
-      }else {
-        cn = '';
-      }
-      let price = serv[3].split('-');
-      $('#zapis_end').append('  <div class="table_row">\
-                                    <div class="table_cell text_right">'+serv[0]+', '+cn.toLowerCase()+' '+serv[2].toLowerCase()+'</div>\
-                                    <div class="table_cell text_left">'+price[0]+' руб.</div>\
-                                </div>');
-/////////////////
-      //let master_data = $('#master_choice #master').val().split('#');
-      let master = $('#master_choice #master').val();
-      let master_data = $('#'+master).html();
-      $('#zapis_end').append('  <div class="table_row">\
-                                    <div class="table_cell text_right">Мастер: </div>\
-                                    <div class="table_cell text_left">'+master_data+'</div>\
-                                </div>');
+        let master = $('#master_choice #master').val();
+        let master_data = $('#'+master).html();
+        let time = Number($('#time_choice input[type="radio"][name="time"]:checked').val());
+        let phone = $('#give_a_phone input[type="tel"]').val().replace(/ /g, '\u00a0');
 
-      let dayweek_date = $('#time_choice input[type="radio"][name="date"]:checked').val();
-      let day_date_arr = dayweek_date.split(/\s{1}/);
-      let date_0 = day_date_arr[1].split('-');
-      let date = date_0[2]+'.'+date_0[1]+'.'+date_0[0]+', '+day_date_arr[0];
-      let time = $('#time_choice input[type="radio"][name="time"]:checked').val();
-      $('#zapis_end').append('<div class="table_row">\
-                                <div class="table_cell text_right">Дата,<br /> время:</div>\
-                                <div class="table_cell text_left">'+date+'<br />'+time+'</div>\
-                              </div>');
-      let phone = $('#give_a_phone input[type="tel"]').val().replace(/ /g, '\u00a0');
-      $('#zapis_end').append('<div class="table_row">\
-                                <div class="table_cell text_right">Ваш номер:</div>\
-                                <div class="table_cell text_left">'+phone+' </div>\
-                              </div>');
+        //validation inputs
+        let res = {};
+        let name_regex = new RegExp('\^\(\[а\-яА\-ЯёЁa\-zA\-Z\]\+\)\?\$');
+        let client_name = escapeHtml($('form#zapis_usluga_form input[name="zapis_name"]').val());
 
+        let phone_regex = new RegExp("\^\(\\\+\?\(7\|8\|38\)\)\[ \]\{0,1\}s\?\[\\\(\]\{0,1\}\?\\d\{3\}\[\\\)\]\{0,1\}s\?\[\\\- \]\{0,1\}s\?\\d\{1\}\[\\\- \]\{0,1\}\?\\d\{1\}s\?\[\\\- \]\{0,1\}\?\\d\{1\}s\?\[\\\- \]\{0,1\}\?\\d\{1\}s\?\[\\\- \]\{0,1\}\?\\d\{1\}s\?\[\\\- \]\{0,1\}\?\\d\{1\}s\?\[\\\- \]\{0,1\}\?\\d\{1\}s\?\[\\\- \]\{0,1\}\?");
+        let client_phone = escapeHtml($('form#zapis_usluga_form input[name="zapis_phone_number"]').val());
+
+        if (name_regex.test(client_name)) {
+            res.client_name = true;
+        } else {
+            res.error = '<p class="error pad" >Имя должно состоять только из букв.</p>';
+        }
+        if (phone_regex.test(client_phone)) {
+            res.client_phone = true;
+        } else {
+            res.error += '<p class="error pad" >Неверно введен номер телефона.</p>';
+        }
+        if (res.client_name && res.client_phone) {
+            $('#zapis_end').show().addClass('margin_rlb1').html('<h3>'+client_name+' </h3>\
+                                    <p id="zap_na">Вы записываетесь на:</p>\
+                                    <div class="table_body text_left div_center" >\
+                                        <div class="table_row">\
+                                            <div class="table_cell text_right">Услуга:</div>\
+                                            <div class="table_cell text_left">'
+                                                +$("input:radio[name=\"usluga\"]:checked").next('span').html().replace('<br>', ' ').split('&emsp;').join(' ')+
+                                            '</div>\
+                                        </div>\
+                                        <div class="table_row">\
+                                            <div class="table_cell text_right">Мастер: </div>\
+                                            <div class="table_cell text_left">'+master_data+'</div>\
+                                        </div>\
+                                        <div class="table_row">\
+                                            <div class="table_cell text_right">Дата,<br /> время:</div>\
+                                            <div class="table_cell text_left">'+my_date_string(time)+'</div>\
+                                        </div>\
+                                        <div class="table_row">\
+                                            <div class="table_cell text_right">Ваш номер:</div>\
+                                            <div class="table_cell text_left">'+phone+' </div>\
+                                        </div>\
+                                    </div>');
+        } else {
+            $('#zapis_end').html(res.error);
+            $('#button_next').prop('disabled', true);
+        }
     }
     else if ( $(this).val() == 'zapis_sql' )
     {
-      $.ajax({
-    		url: '<?php echo url('/'); ?>/signup/end',
-    		method: 'post',
-    		dataType: 'html',
-    		data: $('form#zapis_usluga_form').serialize(),
-    		success: function(data){
+        // set button next type = submit and action for form = url()->route("client.signup.end")
+        $(this).val('zapis_sql').attr("type", "submit").attr("form", "zapis_usluga_form");
+        $('form#zapis_usluga_form').attr('action', '{{url()->route("client.signup.end")}}');
+        /*
+        $.ajax({
+            url: '<?php // echo url('/');?>/signup/end',
+            method: 'post',
+            dataType: 'html',
+            data: $('form#zapis_usluga_form').serialize(),
+            success: function(data){
                 $('#zapis_end').html(data);
                 $('#button_back, #button_next').hide();
                 //console.dir(data);
-                }
-            });
+            },
+            error: function(data) {
+                let res = '<p class="error pad">Ошибка передачи данных. Повторите ввод данных, пожалуйста. :(</p>)';
+                $('#zapis_end').html(res);
+            },
+            cache: false
+        });
+        */
     }
     else
     {
-      alert('Сделайте выбор или введите данные, пожалуйста.');
+      //alert('Сделайте выбор или введите данные, пожалуйста.');
+      modal_alert('Сделайте выбор или введите данные, пожалуйста.');
     }
   });
 
@@ -367,42 +426,36 @@ $(function() {
       {
         $('#'+choice_div_id).show();
         if ( $(this).prop('id') == 'services_choice') {
-          $('#button_next').val('master_next');
-          $('#button_back').prop('disabled', true);
+            $('#button_next').val('master_next');
+            $('#button_back').prop('disabled', true);
+            if ($('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') {
+                $('#timeh3').hide();
+            }
         } else if ($(this).prop('id') == 'master_choice') {
           $('#button_next').val('time_next');
           $('#button_back').val('services_choice');
           $('#timeh3').hide();
         }else if ($(this).prop('id') == 'time_choice') {
-          $('#button_next').val('phone_next');
-          $('#button_back').val('master_choice');
-          let master = $('#master_choice #master').val();
-          $('#timeh3').show();
-          appointment('short');
+            $('#button_next').val('phone_next');
+            if ($('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') {
+                $('#button_back').val('services_choice');
+            } else {
+                $('#button_back').val('master_choice');
+            }
+            $('#timeh3').show();
+            //appointment('short');
         }else if ($(this).prop('id') == 'give_a_phone') {
           $('#button_back').val('time_choice');
           $('#button_next').val('end_next').html('Далее');
-        } /* else if ($(this).prop('id') == 'zapis_end') {
+          $('#button_next').prop('disabled', false);
+        } else if ($(this).prop('id') == 'zapis_end') {
           $('#button_back').val('give_a_phone');
           //$('#button_next').val('zapis_sql');
-        } */
+        }
       } else {
         $(this).hide();
       }
     });
-  });
-
-//for master_choice
-  $('.radio-group .radio').click(function(){
-      $(this).parent().find('.radio').removeClass('selected');
-      $(this).addClass('selected');
-      var val = $(this).attr('data-value');
-      $(this).parent().find('#master').val(val);
-
-      $('html, body').animate({
-          scrollTop: $("#buttons_div").offset().top
-      }, 500);
-      $('#button_next').focus();
   });
 });
 }, false);

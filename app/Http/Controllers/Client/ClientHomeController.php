@@ -21,8 +21,6 @@ class ClientHomeController extends Controller
     public function page(Request $request, Page $pages, $page_alias)
     {
         $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
-        $page_data = (Page::where('alias', $page_alias)->get()) ? Page::where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
-
         $page_data = ($pages->where('alias', $page_alias)->get()) ? $pages->where('alias', $page_alias)->get()->toArray() : ['No pages data in DB'];
 
         // get pieces of url (route): 0 - classname, 1 - methodname, 2...x - params

@@ -194,7 +194,12 @@ textarea:valid {
 .margin_rl1 {
 	margin: auto 1rem;
 }
-
+.margin_l2 {
+	margin: auto auto auto 2rem;
+}
+.margin_r2 {
+	margin: auto 2rem auto auto;
+}
 .margin_bottom_1rem {
 	margin: 0 auto 1rem auto;
 }
@@ -264,6 +269,12 @@ textarea:valid {
 
 .padrl1{
 	padding: 0 1rem;
+}
+.padrl2 {
+	padding: 0 2rem;
+}
+.padl2 {
+	padding: 0 0 0 2rem;
 }
 .padrlb1{
 	padding: 0 1rem 1rem 1rem;
@@ -932,7 +943,7 @@ a.gallery_a:hover img{
 .custom-checkbox {
 	display: inline-block;
   /* border: 1px solid black; */
-	padding: 0.5rem;
+	padding: 1rem;
 	margin: 0.2rem 0.2rem;
  	width: 90%;
 	max-width: 90%;
@@ -954,7 +965,7 @@ a.gallery_a:hover img{
 
 /* для элемента label, связанного с .custom-checkbox */
 .custom-checkbox>span {
-	padding: 0.5rem;
+	/* padding: 0.5rem 1rem 0.5rem 1rem; */
 	display: inline-flex;
 	align-items: center;
 	user-select: none;
@@ -964,13 +975,13 @@ a.gallery_a:hover img{
 .custom-checkbox>span::before {
   content: '';
   display: inline-block;
-  width: 1em;
-  height: 1em;
+  width: 2rem;
+  height: 2rem;
   flex-shrink: 0;
   flex-grow: 0;
   border: 1px solid #adb5bd;
-  border-radius: 0.25em;
-  margin-right: 0.5em;
+  border-radius: 0.25rem;
+  margin: auto 1rem auto 1rem;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 50% 50%;
