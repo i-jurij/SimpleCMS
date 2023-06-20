@@ -279,7 +279,7 @@ $('#button_next').click(function(){
         let service = $('#services_choice input[type="radio"][name="usluga"]:checked').val();
         $('#services_choice').hide();
         $('#master_choice').show();
-        $(this).val('time_next');
+        $(this).val('time_choice');
         $('#button_back').val('services_choice')
 
         $.ajax({
@@ -336,12 +336,12 @@ $('#button_next').click(function(){
             cache: false
     	});
     }
-    else if ( ( $('#master_choice #master').val() || $('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') && $(this).val() == 'time_next' )
+    else if ( ( $('#master_choice #master').val() || $('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') && $(this).val() == 'time_choice' )
     {
         $('#master_choice').hide();
         $('#timeh3').show();
         $('#time_choice').show();
-        $(this).val('end_next');
+        $(this).val('zapis_end');
 
         if ($('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') {
                 $('#button_back').val('services_choice');
@@ -359,9 +359,9 @@ $('#button_next').click(function(){
         $('html, body').animate({
             scrollTop: $(".title").offset().top
         }, 500);
-        scrolltobuttonnext('input[name="time"]');
+        //scrolltobuttonnext('#time_choice input[name="time"]');
     }
-    else if ( $('#time_choice input[name="time"]:checked').length && $(this).val() == 'end_next' )
+    else if ( $('#time_choice input[name="time"]:checked').length && $(this).val() == 'zapis_end' )
     {
         let master = $('#master_choice #master').val();
         let ttime = Number($('#time_choice input[type="radio"][name="time"]:checked').val());
@@ -381,14 +381,13 @@ $('#button_next').click(function(){
                                         <br /> недавно были заняты другим клиентом.<br />Выберите, пожалуйста другое время.\
                                     </p>";
                     $('#occupied').html(mes).show();
-                    $('#form_phone').hide();
                 } else if (data.res && data.res == 'empty') {
                     let mes = '<p class="pad">Сервер получил запрос без необходимых данных :(</p>';
                     $('#occupied').html(mes).show();
-                    $('#form_phone').hide();
                 } else if (data.res && data.res != 'empty') {
                     $('#occupied').hide();
-                    $('#form_phone').show();
+                    //$('#form_phone').show();
+
                 }
     		},
             error: function(data) {
@@ -399,17 +398,13 @@ $('#button_next').click(function(){
             cache: false
     	});
         //alert($('.master_datetime input[name="time"]:checked').val());
-
+        $(this)
         $('#timeh3').hide();
         $('#time_choice').hide();
         //$('#give_a_phone').show();
         $(this).val('zapis_sql').html('Записаться!');
         $('#button_back').val('time_choice');
-    }
-
-
-
-    else if ( $(this).val() == 'zapis_sql' )
+    } else if ( $(this).val() == 'zapis_sql' )
     {
         // set button next type = submit and action for form = url()->route("client.signup.end")
         $(this).val('zapis_sql').attr("type", "submit").attr("form", "zapis_usluga_form");
@@ -456,18 +451,18 @@ $('#button_next').click(function(){
                 $('#timeh3').hide();
             }
         } else if ($(this).prop('id') == 'master_choice') {
-          $('#button_next').val('time_next');
+          $('#button_next').val('time_choice');
           $('#button_back').val('services_choice');
           $('#timeh3').hide();
         }else if ($(this).prop('id') == 'time_choice') {
-            $('#button_next').val('phone_next');
+            $('#button_next').val('zapis_end');
             if ($('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') {
                 $('#button_back').val('services_choice');
             } else {
                 $('#button_back').val('master_choice');
             }
             $('#timeh3').show();
-            $(this).val('zapis_sql').html('Далее');
+            $('#button_next').val('zapis_end').html('Далее');
         }else if ($(this).prop('id') == 'zapis_end') {
             $('#button_back').val('time_choice');
           //$('#button_next').val('zapis_sql');
