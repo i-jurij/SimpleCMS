@@ -260,4 +260,32 @@ class SignupController extends Controller
 
         return back()->with('res', $res);
     }
+
+    public function appoint_time(Request $request)
+    {
+        $master_id = ($request->get('master_id')) ? $request->get('master') : null;
+        if (!empty($master_id)) {
+            // get appointment by master
+        }
+        if (!empty($request->service_id)) {
+            $dur = Service::find($request->service_id)->duration;
+        }
+
+        // query for get woktime, lunchtime, holiday, weekdays and other
+
+        $res = [
+            'lehgth_cal' => null,
+            'endtime' => null,
+            'period' => null,
+            'worktime' => null,
+            'lunch' => null,
+            'org_weekend' => null,
+            'rest_day_time' => null,
+            'holiday' => null,
+            'exist_app_date_time_arr' => null,
+            'serv_duration' => $dur,
+        ];
+
+        return response()->json($res);
+    }
 }

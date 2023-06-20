@@ -46,6 +46,7 @@ Route::name('client.')
     Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
 
     Route::post('/signup/masters', [SignupController::class, 'appoint_masters'])->name('signup.masters');
+    Route::post('/signup/time', [SignupController::class, 'appoint_time'])->name('signup.time');
     Route::post('/signup/phone', [SignupController::class, 'appoint_phone'])->name('signup.phone');
     Route::post('/signup/end', [SignupController::class, 'appoint_end'])->name('signup.end');
 
