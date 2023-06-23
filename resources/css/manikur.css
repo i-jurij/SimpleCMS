@@ -1701,12 +1701,12 @@ overflow: hidden;
 		max-width: 588px;
 	}
 
-	.backbutton {
-		height: 2rem;
+	.backbutton input {
+		max-height: 3rem;
+		max-width: 3rem;
 	}
-
 	.backbutton img {
-		max-width: 2rem;
+		max-width: 3rem;
 	}
 }
 

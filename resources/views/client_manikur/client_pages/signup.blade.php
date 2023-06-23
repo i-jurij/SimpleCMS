@@ -14,7 +14,12 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $robots = "INDEX, FOLLOW";
     $content['content'] = "CONTENT FOR DEL IN FUTURE";
 }
-
+    $dismiss_signup = ' <p class=\"pad\">\
+                            <small>\
+                                Если нужно записаться на то же время к другому мастеру или на другую услугу:\
+                                <br>отмените запись (нужно будет ввести номер телефона) и запишитесь заново.\
+                            </small>\
+                        </p>';
 @endphp
 
 
@@ -28,13 +33,69 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
     @if (!empty(session('res')))
         @if (is_array(session('res')))
-            @php
-                print_r(session('res'));
-            @endphp
+            <div class="content">
+                <h3 class="pad">{{session('res')['client_name']}}</h3>
+                <p><b>Вы записались на:</b></p>
+                <div class="table_body" style="border-collapse: collapse;">
+                    <div class="table_row">
+                        <div class="table_cell" style="text-align:right;">{{session('res')['service']}}</div>
+                        <div class="table_cell">{{session('res')['price']}} руб.</div>
+                    </div>
+                    @if (!empty(session('res')['master']))
+                    <div class="table_row">
+                        <div class="table_cell" style="text-align:right;">Мастер: </div>
+                        <div class="table_cell">{{session('res')['master']}}</div>
+                    </div>
+                    @endif
+                    <div class="table_row">
+                        <div class="table_cell" style="text-align:right;">Дата,<br /> время:</div>
+                        <div class="table_cell">{{session('res')['time']}}</div>
+                    </div>
+                    <div class="table_row">
+                        <div class="table_cell" style="text-align:right;">Ваш номер:</div>
+                        <div class="table_cell">{{session('res')['client_phone']}} </div>
+                    </div>
+                </div>
+                <h3>Спасибо за ваш выбор!</h3>
+            </div>
         @elseif (is_string(session('res')))
-            <div class="content"><p>{!!session('res')!!}</p></div>
+            <div class="content"><p>{{session('res')}}</p></div>
+        @elseif (session('res') === false)
+            <p class="error">
+                Warning!<br>
+                Data of order have been NOT stored!<br>
+                You may have already signed up?
+            </p>
+            {!!$dismiss_signup!!}
         @endif
     @else
+        @if (!empty(session('dismiss')))
+            <script type="text/javascript">
+                function modal_alert(message_string) {
+                    var newDiv = document.createElement('div');
+                    newDiv.classList.add('modal')
+                    newDiv.id = "alert"
+                    newDiv.innerHTML = '<div><p>' + message_string + '</p><button id="alert_ok">OK</button></div>';
+                    // Добавляем только что созданный элемент в дерево DOM
+                    //document.body.insertBefore(newDiv, my_div);
+                    document.querySelector('#zapis_usluga_form').parentNode.insertBefore(newDiv, document.querySelector('#zapis_usluga_form'));
+                    // setup body no scroll
+                    document.body.style.overflow = 'hidden';
+
+                    let but = document.getElementById('alert_ok')
+                    but.focus()
+                    but.addEventListener('click', function (ev) {
+                    newDiv.remove()
+                    // setup body scroll
+                    document.body.style.overflow = 'visible';
+                    })
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    modal_alert("{{session('dismiss')}}");
+                });
+            </script>
+        @endif
         <div class="content">
         @if (!empty($data['serv']))
             <form method="post" action="" id="zapis_usluga_form" class="form_zapis_usluga">
@@ -147,26 +208,6 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
 
-    function modal_alert(message_string) {
-        var newDiv = document.createElement('div');
-        newDiv.classList.add('modal')
-        newDiv.id = "alert"
-        newDiv.innerHTML = '<div><p>' + message_string + '</p><button id="alert_ok">OK</button></div>';
-        // Добавляем только что созданный элемент в дерево DOM
-        //document.body.insertBefore(newDiv, my_div);
-        document.querySelector('#zapis_usluga_form').parentNode.insertBefore(newDiv, document.querySelector('#zapis_usluga_form'));
-        // setup body no scroll
-        document.body.style.overflow = 'hidden';
-
-        let but = document.getElementById('alert_ok')
-        but.focus()
-        but.addEventListener('click', function (ev) {
-          newDiv.remove()
-        // setup body scroll
-        document.body.style.overflow = 'visible';
-        })
-    }
-
     function scrolltobuttonnext(radioinputselector) {
         $(radioinputselector).on('change', function(){
             if ( $(radioinputselector+':checked').length > 0 ) {
@@ -178,10 +219,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    //get name of day of week
+    function getDayName(dateStr, locale, long) {
+        if (!dateStr) dateStr = new Date()
+        if (!long) long = "long"
+        if (!locale) locale = "ru-RU"
+        var date = new Date(dateStr);
+        return date.toLocaleDateString(locale, { weekday: long });
+    }
+
+    function pad(n) {
+        return n<10 ? '0'+n : n;
+    }
+
     function my_date_string(timestamp) {
         let cyrnameofmonth = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
         const jsDateTime = new Date(timestamp);
-        const day = capitalizeFirstLetter(getDayName(jsDateTime, locale, long));
+        const day = capitalizeFirstLetter(getDayName(jsDateTime));
         const day_of_month = jsDateTime.getDate();
         const month = cyrnameofmonth[jsDateTime.getMonth()];
         const year = jsDateTime.getFullYear();
@@ -274,7 +332,7 @@ $('#button_next').click(function(){
         }
     }
     //if ( $('#services_choice input:checkbox:checked').length > 0 && $(this).val() == 'master_next')
-    else if ( $('#services_choice input:radio:checked').length > 0 && $(this).val() == 'master_next')
+    else if ( $('#services_choice input[type="radio"][name="usluga"]:checked').length > 0 && $(this).val() == 'master_next')
     {
         let service = $('#services_choice input[type="radio"][name="usluga"]:checked').val();
         $('#services_choice').hide();
@@ -363,46 +421,128 @@ $('#button_next').click(function(){
     }
     else if ( $('#time_choice input[name="time"]:checked').length && $(this).val() == 'zapis_end' )
     {
-        let master = $('#master_choice #master').val();
-        let ttime = Number($('#time_choice input[type="radio"][name="time"]:checked').val());
+        $(this).val('zapis_sql').html('Записаться!');
+
+        let client_name = $('input[name="zapis_name"]').val();
+        let client_phone = $('input[name="zapis_phone_number"]').val();
+        let service = Number($('input[name="usluga"]:checked').val());
+        let master = Number($('#master_choice #master').val());
+        let time = Number($('#time_choice input[type="radio"][name="time"]:checked').val());
         $.ajax({
-            url: '<?php echo url('/'); ?>/signup/phone',
+            url: '<?php echo url('/'); ?>/signup/check',
     		method: 'post',
     		dataType: 'json',
 
     		data: {
                 "_token": "{{ csrf_token() }}",
+                'zapis_phone_number': client_phone,
                 'master': master,
-                'time': ttime
+                'usluga': service,
+                'time': time
             },
-    		success: function(data){
-                if (!data.res) {
-                    let mes = "<p class=\"pad\">"+my_date_string(ttime)+"\
-                                        <br /> недавно были заняты другим клиентом.<br />Выберите, пожалуйста другое время.\
-                                    </p>";
-                    $('#occupied').html(mes).show();
-                } else if (data.res && data.res == 'empty') {
-                    let mes = '<p class="pad">Сервер получил запрос без необходимых данных :(</p>';
-                    $('#occupied').html(mes).show();
-                } else if (data.res && data.res != 'empty') {
-                    $('#occupied').hide();
-                    //$('#form_phone').show();
+    		success: function(responce){
+                if (responce.hasOwnProperty('res') && responce.res == true) {
+                    //client can sign up
+                    if (responce.hasOwnProperty('master_data')) {
+                        master_photo = (responce.master_data.hasOwnProperty('master_photo')) ? responce.master_data.master_photo : '';
+                        master_name = (responce.master_data.hasOwnProperty('master_name')) ? responce.master_data.master_name : '';
+                        sec_name = (responce.master_data.hasOwnProperty('sec_name')) ? responce.master_data.sec_name : '';
+                        master_fam = (responce.master_data.hasOwnProperty('master_fam')) ? responce.master_data.master_fam : '';
+                        master_info = master_name+' '+sec_name+' '+master_fam;
+                        mp = ' <img \
+                                    src="{{asset("storage")}}/'+master_photo+'" \
+                                    alt="Photo '+master+'" \
+                                    style="max-height:10rem;"\
+                                />';
+                        mmm = ' <div class="table_row">\
+                                    <div class="table_cell text_right" style="vertical-align:top;">Мастер: </div>\
+                                    <div class="table_cell text_left">'
+                                        +mp+master_info+
+                                    '</div>\
+                                </div>';
+                    } else {
+                        mmm = '';
+                    }
 
+                    //$('#occupied').hide();
+                    $('#zapis_end').show().addClass('margin_rlb1').html( '<h3 class="pad">'+client_name+' </h3>\
+                                    <p id="zap_na">Вы записываетесь на:</p>\
+                                    <div class="table_body text_left div_center" >\
+                                        <div class="table_row">\
+                                            <div class="table_cell text_right">Услуга:</div>\
+                                            <div class="table_cell text_left">'
+                                                +$("input:radio[name=\"usluga\"]:checked").next('span').html().replace('<br>', ' ').split('&emsp;').join(' ')+
+                                            '</div>\
+                                        </div>'
+                                        +mmm+
+                                        '<div class="table_row">\
+                                            <div class="table_cell text_right">Дата, время:</div>\
+                                            <div class="table_cell text_left">'+my_date_string(time)+'</div>\
+                                        </div>\
+                                        <div class="table_row">\
+                                            <div class="table_cell text_right">Ваш номер:</div>\
+                                            <div class="table_cell text_left">'+client_phone+' </div>\
+                                        </div>\
+                                    </div>');
+                } else {
+                    //client can not sign up
+                    if (responce.hasOwnProperty('client_signup')) {
+                        order_id = (responce.client_signup.hasOwnProperty('order_id')) ? responce.client_signup.order_id : '';
+                        time_data = (responce.client_signup.hasOwnProperty('time')) ? responce.client_signup.time : '';
+                        master_data = (responce.client_signup.hasOwnProperty('master')) ? responce.client_signup.master : '';
+                        service_data = (responce.client_signup.hasOwnProperty('service')) ? responce.client_signup.service : '';
+                    }
+
+                    $('#button_next').val('zapis_sql').html('Отменить запись');
+                    //$("form#zapis_usluga_form")[0].reset();
+                    $('#button_back').focus();
+                    // add input with dismiss input
+                    $('#time_choice').after('<input type="hidden" name="dismiss" value="'+order_id+'" />');
+
+
+                    let client_signup = '<p style="margin: 0 auto;">Вы уже записаны на:</p>\
+                            <div class="table_body" style="border-collapse: collapse;">\
+                                <div class="table_row">\
+                                    <div class="table_cell" style="text-align:right;">Дата, время:</div>\
+                                    <div class="table_cell">'+my_date_string(time_data)+'</div>\
+                                </div>\
+                                <div class="table_row">\
+                                    <div class="table_cell" style="text-align:right;">Услуга:</div>\
+                                    <div class="table_cell">'+service_data+' руб.</div>\
+                                </div>\
+                                <div class="table_row">\
+                                    <div class="table_cell" style="text-align:right;">Мастер:</div>\
+                                    <div class="table_cell">'+master_data+'</div>\
+                                </div>\
+                            </div>';
+                    let dismiss_signup = "{!!$dismiss_signup!!}";
+
+                    if (responce.hasOwnProperty('client_signup')) {
+                        $('#zapis_end').show().addClass('margin_rlb1').html(client_signup+dismiss_signup);
+                    }
+
+                    if (responce.hasOwnProperty('master_busy')) {
+                        $('#zapis_end').show().addClass('margin_rlb1').html( "<p class=\"pad\">"+my_date_string(time)+"\
+                                    <br /> недавно были заняты другим клиентом.<br />\
+                                    Выберите, пожалуйста другое время или другого мастера.\
+                                </p>");
+                    }
+
+                    if (responce.hasOwnProperty('all_master_busy')) {
+                        $('#zapis_end').show().addClass('margin_rlb1').html( "<p class=\"pad\">"+my_date_string(time)+"\
+                                    <br /> все мастера заняты.<br />Выберите, пожалуйста другое время.\
+                                </p>");
+                    }
                 }
     		},
             error: function(data) {
-                let tlf_form = '<p class="pad">Извините, где-то возникла ошибка :(</p>)';
-                $('#occupied').html(tlf_form).show();
-                $('#form_phone').hide();
+                $('#zapis_end').show().addClass('margin_rlb1').html( '<p class="pad">Извините, где-то возникла ошибка :(</p>)');
             },
             cache: false
     	});
         //alert($('.master_datetime input[name="time"]:checked').val());
-        $(this)
         $('#timeh3').hide();
         $('#time_choice').hide();
-        //$('#give_a_phone').show();
-        $(this).val('zapis_sql').html('Записаться!');
         $('#button_back').val('time_choice');
     } else if ( $(this).val() == 'zapis_sql' )
     {
@@ -462,7 +602,8 @@ $('#button_next').click(function(){
                 $('#button_back').val('master_choice');
             }
             $('#timeh3').show();
-            $('#button_next').val('zapis_end').html('Далее');
+
+            $('#button_next').val('zapis_end').html('Далее').attr('disabled', false).show();
         }else if ($(this).prop('id') == 'zapis_end') {
             $('#button_back').val('time_choice');
           //$('#button_next').val('zapis_sql');
