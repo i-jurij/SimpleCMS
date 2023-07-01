@@ -15,6 +15,8 @@ use App\Http\Controllers\Moder\MastersController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\Moder\PriceEditController;
 use App\Http\Controllers\Moder\ServicePageEditController;
+use App\Http\Controllers\Moder\SignupController as ModerSignupController;
+use App\Http\Controllers\Moder\SignupSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +85,20 @@ Route::prefix('admin')->name('admin.')
     * ADMIN AND MODER ROUTES
     */
     Route::middleware('ismoder')->group(function () {
+        Route::controller(ContactsController::class)
+        ->prefix('contacts')
+        ->name('contacts.')
+        ->group(function () {
+            Route::get('/', 'index')->name('list');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/remove', 'index')->name('remove');
+            Route::post('/remove', 'destroy')->name('destroy');
+            Route::get('/edit', 'index')->name('edit');
+            Route::post('/edit', 'edit')->name('post_edit');
+            Route::post('/edit/update', 'update')->name('update');
+        });
+
         // Route::resource('pages', PagesController::class);
         Route::controller(PagesController::class)
         ->prefix('pages')
@@ -117,20 +133,6 @@ Route::prefix('admin')->name('admin.')
             Route::post('/update', 'update')->name('update');
         });
 
-        Route::controller(ContactsController::class)
-        ->prefix('contacts')
-        ->name('contacts.')
-        ->group(function () {
-            Route::get('/', 'index')->name('list');
-            Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
-            Route::get('/remove', 'index')->name('remove');
-            Route::post('/remove', 'destroy')->name('destroy');
-            Route::get('/edit', 'index')->name('edit');
-            Route::post('/edit', 'edit')->name('post_edit');
-            Route::post('/edit/update', 'update')->name('update');
-        });
-
         Route::controller(AboutEditController::class)
         ->prefix('about_editor')
         ->name('about_editor.')
@@ -141,19 +143,6 @@ Route::prefix('admin')->name('admin.')
             Route::post('/remove', 'destroy')->name('destroy');
             Route::get('/edit', 'index')->name('edit');
             Route::post('/edit', 'edit')->name('post_edit');
-            Route::post('/edit/update', 'update')->name('update');
-        });
-
-        Route::controller(MastersController::class)
-        ->prefix('masters')
-        ->name('masters.')
-        ->group(function () {
-            Route::get('/', 'index')->name('list');
-            Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
-            Route::post('/remove', 'destroy')->name('remove');
-            Route::get('/edit', 'index')->name('list');
-            Route::post('/edit', 'edit')->name('edit.form');
             Route::post('/edit/update', 'update')->name('update');
         });
 
@@ -171,6 +160,30 @@ Route::prefix('admin')->name('admin.')
         ->group(function () {
             Route::get('/', 'index')->name('edit');
             Route::post('/', 'go')->name('go');
+        });
+
+        Route::controller(MastersController::class)
+        ->prefix('masters')
+        ->name('masters.')
+        ->group(function () {
+            Route::get('/', 'index')->name('list');
+            Route::get('/create', 'create')->name('create');
+            Route::post('/store', 'store')->name('store');
+            Route::post('/remove', 'destroy')->name('remove');
+            Route::get('/edit', 'index')->name('list');
+            Route::post('/edit', 'edit')->name('edit.form');
+            Route::post('/edit/update', 'update')->name('update');
+        });
+
+        Route::controller(ModerSignupController::class)
+        ->prefix('signup')
+        ->name('signup.')
+        ->group(function () {
+            Route::get('/settings', [SignupSettingsController::class, 'settings'])->middleware('isadmin')->name('settings');
+            Route::post('/settings', [SignupSettingsController::class, 'store'])->middleware('isadmin')->name('settings.store');
+            Route::get('/by_date', 'by_date')->name('by_date');
+            Route::get('/by_master', 'by_master')->name('by_master');
+            Route::post('/remove', 'remove')->name('remove');
         });
     });
 

@@ -121,6 +121,8 @@ a:link {
 
 a:visited, a:focus, a:hover,  a:active { text-decoration: underline; }
 
+input[type="number"],
+input[type="time"],
 input[type="text"],
 input[type="tel"],
 input[type="email"],
@@ -133,8 +135,11 @@ textarea {
 	font-size: var(--base-fontsize);
 	border: 1px solid #999;
 	border-radius: var(--radius);
+	width: auto;
 }
 
+input[type="number"]:invalid,
+input[type="time"]:invalid,
 input[type="text"]:invalid,
 input[type="tel"]:invalid,
 input[type="email"]:invalid,
@@ -143,12 +148,38 @@ textarea:invalid {
 	border-bottom: 2px solid red;
 }
 
+input[type="number"]:valid,
+input[type="time"]:valid,
 input[type="text"]:valid,
 input[type="tel"]:valid,
 input[type="email"]:valid,
 input[type="password"]:valid,
 textarea:valid {
 	border-bottom: 2px solid green;
+}
+
+.select{
+    /* width: 100%; */
+    border: 1px solid #999;
+    border-radius: var(--radius);
+    padding-left: 5px;
+    padding: 10px;
+    font-size: var(--base-fontsize);
+    font-family: inherit;
+    color: inherit;
+    background-color:var(--input_bgcolor);
+    background-image: none;
+}
+.select>option{
+    font-size: var(--base-fontsize);
+	font-family: inherit;
+    color: inherit;
+    background-color:var(--input_bgcolor);
+    background-image: none;
+    font-size: var(--base-fontsize);
+    height: 50px;
+    padding: 15px;
+    border: 1px solid #999;
 }
 
 .ankor:target {scroll-margin-top:6rem;}
