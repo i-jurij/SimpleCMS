@@ -15,6 +15,7 @@ use App\Http\Controllers\Moder\MastersController;
 use App\Http\Controllers\Moder\PagesController;
 use App\Http\Controllers\Moder\PriceEditController;
 use App\Http\Controllers\Moder\ServicePageEditController;
+use App\Http\Controllers\Moder\SheduleMasterController;
 use App\Http\Controllers\Moder\SignupController as ModerSignupController;
 use App\Http\Controllers\Moder\SignupSettingsController;
 use App\Http\Controllers\ProfileController;
@@ -173,6 +174,9 @@ Route::prefix('admin')->name('admin.')
             Route::get('/edit', 'index')->name('list');
             Route::post('/edit', 'edit')->name('edit.form');
             Route::post('/edit/update', 'update')->name('update');
+            Route::get('/shedule', [SheduleMasterController::class, 'index'])->name('shedule');
+            Route::post('/shedule/edit', [SheduleMasterController::class, 'edit'])->name('shedule.edit');
+            Route::post('/shedule/store', [SheduleMasterController::class, 'store'])->name('shedule.store');
         });
 
         Route::controller(ModerSignupController::class)

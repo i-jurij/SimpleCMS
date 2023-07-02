@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 
 class SignupController extends Controller
 {
+    use \App\Traits\GetCalendarSettings;
+
     public function index($content, $page_data, $path_array)
     {
         $data = [];
@@ -356,16 +358,17 @@ class SignupController extends Controller
         }
 
         // query for get woktime, lunchtime, holiday, weekdays and other
+        $data = $this->getCalSet();
 
         $res = [
-            'lehgth_cal' => null,
-            'endtime' => null,
-            'period' => null,
-            'worktime' => null,
-            'lunch' => null,
-            'org_weekend' => null,
+            'lehgth_cal' => $data['lehgth_cal'],
+            'endtime' => $data['endtime'],
+            'period' => $data['period'],
+            'worktime' => $data['worktime'],
+            'lunch' => $data['lunch'],
+            'org_weekend' => $data['orgweekends'],
+            'holiday' => $data['holidays'],
             'rest_day_time' => null,
-            'holiday' => null,
             'exist_app_date_time_arr' => null,
             'serv_duration' => $dur,
         ];
