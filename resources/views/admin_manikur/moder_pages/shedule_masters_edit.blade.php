@@ -43,7 +43,9 @@ $robots = "NOINDEX, NOFOLLOW";
                 print_r($data);
             @endphp
         </pre>
-
+        <script>
+            appointment('shedule', '/signup/time', service_id, master_id, "{{csrf_token()}}");
+        </script>
 
     </form>
     </div>
