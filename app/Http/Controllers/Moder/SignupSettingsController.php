@@ -82,7 +82,7 @@ class SignupSettingsController extends Controller
                         if (!empty($request->weekend_start[$key]) && preg_match('/^\d{2}:\d{2}$/', $request->weekend_start[$key])) {
                             $weekend_insert[$key]['time'] = $request->weekend_start[$key];
                         } else {
-                            $weekend_insert[$key]['time'] = null;
+                            $weekend_insert[$key]['time'] = '';
                         }
                     }
                 }

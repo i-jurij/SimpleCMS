@@ -207,6 +207,37 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 <script src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'ppntmt'.DIRECTORY_SEPARATOR.'appointment'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'appointment.js')}}"></script>
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', function () {
+    var div_id = "time_choice"
+    var div_short = document.querySelector('#' + div_id)
+    var div_sched = document.querySelector('#' + div_id)
+    var div_month = document.querySelector('#' + div_id)
+
+    function modal_alert(message_string) {
+          var newDiv = document.createElement('div');
+          newDiv.classList.add('modal')
+          newDiv.id = "alert"
+          newDiv.innerHTML = '<div><p>' + message_string + '</p><button id="alert_ok">OK</button></div>';
+          // Добавляем только что созданный элемент в дерево DOM
+          if (!!div_month) {
+            my_div = div_month
+          }
+          if (!!div_short) {
+            my_div = div_short
+          }
+          //document.body.insertBefore(newDiv, my_div);
+          document.querySelector('#time_choice').parentNode.insertBefore(newDiv, my_div);
+          // setup body no scroll
+          document.body.style.overflow = 'hidden';
+
+          let but = document.getElementById('alert_ok')
+          but.focus()
+          but.addEventListener('click', function (ev) {
+            newDiv.remove()
+          // setup body scroll
+          document.body.style.overflow = 'visible';
+          })
+        }
+
 
     function scrolltobuttonnext(radioinputselector) {
         $(radioinputselector).on('change', function(){

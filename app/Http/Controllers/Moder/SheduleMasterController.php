@@ -22,13 +22,28 @@ class SheduleMasterController extends Controller
 
     public function edit(Request $request)
     {
-        $data = [];
-
-        $data = $this->getCalSet();
+        $res = $this->getCalSet();
+        $data = [
+            'lehgth_cal' => $res['lehgth_cal'],
+            'endtime' => $res['endtime'],
+            'period' => $res['period'],
+            'worktime' => $res['worktime'],
+            'lunch' => $res['lunch'],
+            'org_weekend' => $res['orgweekends'],
+            'holiday' => $res['holidays'],
+            'rest_day_time' => null,
+            'exist_app_date_time_arr' => null,
+            'serv_duration' => '',
+        ];
 
         $data['master_freedaystimes'] = [];
 
-        return view('admin_manikur.moder_pages.shedule_masters_edit', ['data' => $data]);
+        // return view('admin_manikur.moder_pages.shedule_masters_edit', ['data' => $data]);
+        return response()->json($data);
+    }
+
+    public function calendarSettings()
+    {
     }
 
     public function store(Request $request)
