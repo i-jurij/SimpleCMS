@@ -36,7 +36,7 @@ $robots = "NOINDEX, NOFOLLOW";
         <p>Нажмите кнопку Готово, чтобы сохранить изменения.</p>
     </div>
     </div>
-    <form action="{{url()->route('admin.masters.shedule.edit')}}" method="post" id="zapis_usluga_form" class="content pad form_radio_btn">
+    <form action="{{url()->route('admin.masters.shedule.store')}}" method="post" id="zapis_usluga_form" class="content pad form_radio_btn">
     @csrf
         <div id="master_choice">
             @foreach ($data['masters'] as $master)
@@ -77,7 +77,6 @@ $robots = "NOINDEX, NOFOLLOW";
         //submit master form
         document.querySelector('#master_choice').addEventListener('click',function(element){
             //document.querySelector('form#grafiki-master').submit();
-
             let input = document.querySelector('input[type="radio"][name="master"]:checked');
             if(!!input) {
                var master_id = input.value;
