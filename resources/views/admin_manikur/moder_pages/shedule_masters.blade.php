@@ -9,18 +9,25 @@ $robots = "NOINDEX, NOFOLLOW";
 @section("content")
 <link rel="stylesheet" href="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'ppntmt'.DIRECTORY_SEPARATOR.'appointment'.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'style.css') }}" />
 
-    @if (!empty($data['res']))
-        <div class="content">
-            @if (is_array($data['res']))
-                @php
-                    print_r($data['res'])
-                @endphp
-            @elseif (is_string($data['res']))
-                <p>{{$data['res']}}</p>
-            @endif
-        </div>
-    @else
-    <div class="content">
+<div class="content">
+    @if (!empty(session('data')))
+        @if (is_array(session('data')))
+
+            <pre>
+            @php
+                print_r(session('data'));
+            @endphp
+            </pre>
+
+        @elseif (is_string(session('data')))
+            <p class="pad">{{session('data')}}</p>
+        @elseif (session('data') === false)
+            <p class="error pad">
+                Warning!<br>
+                Data of schedule have been NOT stored!
+            </p>
+        @endif
+    @endif
     <p class="" id="p_pro">Показать / скрыть справку</p>
     <div class="display_none text_left margintb1" style="max-width:60rem;" id="pro">
         <p>Запланированные выходные дни или часы в графике отмечены цветом.</p>
@@ -31,8 +38,10 @@ $robots = "NOINDEX, NOFOLLOW";
         <p>Чтобы добавить <b>отдельное время отдыха или перерыва:</b></p>
         <ul>
             <li>нажмите на ячейку на пересечении нужного дня и времени.</li>
+            <li>Чтобы снять отметку - кликните по ячейке еще раз.</li>
+            <li>Чтобы снять все отметки - нажмите кнопку "Сбросить".</li>
         </ul>
-        <p>Выходные отмечать не нужно, по умолчанию они отключены для записи клиентов.</p>
+        <p>Выходные дни и обеденные часы отмечать не нужно, по умолчанию они уже отключены для записи клиентов.</p>
         <p>Нажмите кнопку Готово, чтобы сохранить изменения.</p>
     </div>
     </div>
@@ -67,30 +76,31 @@ $robots = "NOINDEX, NOFOLLOW";
             <button type="button" class="but" id="zapis_usluga_form_sub" disabled />Готово</button>
         </div>
     </form>
-
-    @endif
 </div>
 <script src="{{ url()->asset('storage'.DIRECTORY_SEPARATOR.'ppntmt'.DIRECTORY_SEPARATOR.'appointment'.DIRECTORY_SEPARATOR.'js'.DIRECTORY_SEPARATOR.'appointment.js')}}"></script>
 
 <script >
     document.addEventListener('DOMContentLoaded', function () {
         //submit master form
-        document.querySelector('#master_choice').addEventListener('click',function(element){
-            //document.querySelector('form#grafiki-master').submit();
-            let input = document.querySelector('input[type="radio"][name="master"]:checked');
-            if(!!input) {
-               var master_id = input.value;
-               var service_id = '';
+        let mc = document.querySelector('#master_choice');
+        if (!!mc) {
+            mc.addEventListener('click',function(element){
+                //document.querySelector('form#grafiki-master').submit();
+                let input = document.querySelector('input[type="radio"][name="master"]:checked');
+                if(!!input) {
+                var master_id = input.value;
+                var service_id = '';
 
-                document.querySelector('#master_choice').style.display = 'none';
+                    document.querySelector('#master_choice').style.display = 'none';
 
-                if (master_id !== 'undefined' || master_id !== '' || master_id !== null) {
-                    document.querySelector('#buttons_div').style.display = 'block';
-                    appointment('schedule', "{{url()->route('admin.masters.shedule.edit')}}", service_id, master_id, "{{csrf_token()}}");
-                    //window.scrollTo(0, 0);
+                    if (master_id !== 'undefined' || master_id !== '' || master_id !== null) {
+                        document.querySelector('#buttons_div').style.display = 'block';
+                        appointment('schedule', "{{url()->route('admin.masters.shedule.edit')}}", service_id, master_id, "{{csrf_token()}}");
+                        //window.scrollTo(0, 0);
+                    }
                 }
-            }
-        });
+            });
+        }
     }, false);
 </script>
 @stop

@@ -14,7 +14,7 @@ return new class() extends Migration {
             $table->id();
             $table->foreignId('master_id')->constrained();
             $table->date('date');
-            $table->string('times');
+            $table->string('time')->nullable();
             $table->timestamps();
         });
     }
