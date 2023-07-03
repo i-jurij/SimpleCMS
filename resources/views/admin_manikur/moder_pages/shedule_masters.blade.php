@@ -12,13 +12,9 @@ $robots = "NOINDEX, NOFOLLOW";
 <div class="content">
     @if (!empty(session('data')))
         @if (is_array(session('data')))
-
-            <pre>
-            @php
-                print_r(session('data'));
-            @endphp
-            </pre>
-
+            @foreach (session('data') as $mes)
+                {{$mes}}<br>
+            @endforeach
         @elseif (is_string(session('data')))
             <p class="pad">{{session('data')}}</p>
         @elseif (session('data') === false)

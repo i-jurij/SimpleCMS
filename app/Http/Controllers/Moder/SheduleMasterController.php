@@ -24,6 +24,13 @@ class SheduleMasterController extends Controller
 
     public function edit(Request $request)
     {
+        $master_id = (!empty($request->master_id)) ? $request->master_id : null;
+        if (!empty($master_id)) {
+            // get appointment by master
+            // get restdaytimes by master
+            $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
+        }
+
         $res = $this->getCalSet();
         $data = [
             'lehgth_cal' => $res['lehgth_cal'],
@@ -33,12 +40,10 @@ class SheduleMasterController extends Controller
             'lunch' => $res['lunch'],
             'org_weekend' => $res['orgweekends'],
             'holiday' => $res['holidays'],
-            'rest_day_time' => null,
+            'rest_day_time' => $rest_day_time,
             'exist_app_date_time_arr' => null,
             'serv_duration' => '',
         ];
-
-        $data['master_freedaystimes'] = [];
 
         // return view('admin_manikur.moder_pages.shedule_masters_edit', ['data' => $data]);
         return response()->json($data);
@@ -46,51 +51,66 @@ class SheduleMasterController extends Controller
 
     public function store(Request $request)
     {
-        $data = '';
+        $data = [];
 
         $validated = $request->validate([
             'master' => 'required|',
-            'date.*' => 'numeric',
-            'daytime.*' => 'numeric',
-            'deldate.*' => 'numeric',
-            'deltime.*' => 'numeric',
         ]);
 
         if (!empty($request->date)) {
+            $validated = $request->validate([
+                'date.*' => 'numeric',
+            ]);
             foreach ($request->date as $value) {
                 $date = CarbonImmutable::createFromTimestamp($value / 1000)->toDateString();
                 $insert_date[] = ['master_id' => $request->master, 'date' => $date];
             }
             $sql_insert_date = DB::table('restdaytimes')->insert($insert_date);
+            $data['insert_date'] = 'SUCCESS! Masters rest date have been stored.';
         }
 
         if (!empty($request->daytime)) {
+            $validated = $request->validate([
+                'daytime.*' => 'numeric',
+            ]);
             foreach ($request->daytime as $val) {
                 $datetime = CarbonImmutable::createFromTimestamp($val / 1000);
                 $insert_daytime[] = ['master_id' => $request->master, 'date' => $datetime->toDateString(), 'time' => $datetime->format('H:i')];
             }
             $sql_insert_daytime = DB::table('restdaytimes')->insert($insert_daytime);
+            $data['insert_time'] = 'SUCCESS! Masters rest datetime have been stored.';
         }
 
         if (!empty($request->deldate)) {
+            $validated = $request->validate([
+                'deldate.*' => 'numeric',
+            ]);
             foreach ($request->deldate as $va) {
                 $deldate = CarbonImmutable::createFromTimestamp($va / 1000)->toDateString();
-                $delete_date[] = ['master_id' => $request->master, 'date' => $deldate];
+                $delete_date[] = $deldate;
             }
-            $sql_delete_date = DB::table('restdaytimes')->where($delete_date)->delete();
+            $sql_delete_date = DB::table('restdaytimes')->where('master_id', $request->master)->whereIn('date', $delete_date)->delete();
+            $data['dalete_date'] = 'SUCCESS! Masters rest date have been deleted.';
         }
 
         if (!empty($request->deltime)) {
+            $validated = $request->validate([
+                'deltime.*' => 'numeric',
+            ]);
             foreach ($request->deltime as $v) {
                 $deldatetime = CarbonImmutable::createFromTimestamp($v / 1000);
-                $delete_daytime[] = ['master_id' => $request->master, 'date' => $deldatetime->toDateString(), 'time' => $deldatetime->format('H:i')];
+                // $delete_daytime[] = ['master_id' => $request->master, 'date' => $deldatetime->toDateString(), 'time' => $deldatetime->format('H:i')];
+                $sql_delete_daytime = DB::table('restdaytimes')
+                    ->where('master_id', $request->master)
+                    ->where('date', $deldatetime->toDateString())
+                    ->where('time', $deldatetime->format('H:i'))
+                    ->delete();
             }
-            $sql_insert_daytime = DB::table('restdaytimes')->where($delete_daytime)->delete();
+            // $sql_delete_daytime = DB::table('restdaytimes')->where($delete_daytime)->delete();
+            $data['dalete_time'] = 'SUCCESS! Masters datetimes have been deleted.';
         }
 
-        $data = 'SUCCESS! Data for schedule of master have been stored.';
-
         // return view('admin_manikur.moder_pages.shedule_masters', ['data' => $data]);
-        return back()->with('data', $data);
+        return redirect()->route('admin.masters.shedule')->with('data', $data);
     }
 }

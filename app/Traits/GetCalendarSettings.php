@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 trait GetCalendarSettings
@@ -25,6 +26,24 @@ trait GetCalendarSettings
         $hol = DB::table('holidays')->get();
         foreach ($hol as $va) {
             $data['holidays'][] = $va->date;
+        }
+
+        return $data;
+    }
+
+    protected function get_restdaytimes($id)
+    {
+        // clear restdaytimes older then two year
+        $two_year_ago = Carbon::today()->subYears(2)->toDateString();
+        $clear = DB::table('restdaytimes')->where('master_id', $id)->where('date', '<', $two_year_ago)->delete();
+
+        $sql = DB::table('restdaytimes')->where('master_id', $id)->get();
+        foreach ($sql as $value) {
+            if (!empty($value->time)) {
+                $data[$value->date][] = $value->time;
+            } else {
+                $data[$value->date] = [];
+            }
         }
 
         return $data;

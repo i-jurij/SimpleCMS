@@ -349,9 +349,11 @@ class SignupController extends Controller
 
     public function appoint_time(Request $request)
     {
-        $master_id = ($request->get('master_id')) ? $request->get('master') : null;
+        $master_id = (!empty($request->master_id)) ? $request->master_id : null;
         if (!empty($master_id)) {
             // get appointment by master
+            // get restdaytimes by master
+            $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
         }
         if (!empty($request->service_id)) {
             $dur = Service::find($request->service_id)->duration;
@@ -368,7 +370,7 @@ class SignupController extends Controller
             'lunch' => $data['lunch'],
             'org_weekend' => $data['orgweekends'],
             'holiday' => $data['holidays'],
-            'rest_day_time' => null,
+            'rest_day_time' => $rest_day_time,
             'exist_app_date_time_arr' => null,
             'serv_duration' => $dur,
         ];
