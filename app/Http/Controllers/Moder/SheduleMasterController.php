@@ -24,6 +24,9 @@ class SheduleMasterController extends Controller
 
     public function edit(Request $request)
     {
+        $validated = $request->validate([
+            'master' => 'required|numeric',
+        ]);
         $master_id = (!empty($request->master_id)) ? $request->master_id : null;
         if (!empty($master_id)) {
             // get appointment by master
@@ -54,7 +57,7 @@ class SheduleMasterController extends Controller
         $data = [];
 
         $validated = $request->validate([
-            'master' => 'required|',
+            'master' => 'required|numeric',
         ]);
 
         if (!empty($request->date)) {
