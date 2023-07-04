@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 class SheduleMasterController extends Controller
 {
     use \App\Traits\GetCalendarSettings;
+    use \App\Traits\GetRestDayTimes;
+    use \App\Traits\GetAppointment;
 
     /**
      * Display a listing of the resource.
@@ -31,6 +33,7 @@ class SheduleMasterController extends Controller
         // get restdaytimes by master
         $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
         // get appointment by master
+        // $appointment = $this->get_appointment($master_id, 1) ?? null;
 
         $res = $this->getCalSet();
         $data = [

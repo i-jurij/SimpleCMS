@@ -16,6 +16,8 @@ use Illuminate\Http\Request;
 class SignupController extends Controller
 {
     use \App\Traits\GetCalendarSettings;
+    use \App\Traits\GetRestDayTimes;
+    use \App\Traits\GetAppointment;
 
     public function index($content, $page_data, $path_array)
     {
@@ -358,6 +360,7 @@ class SignupController extends Controller
         }
         $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
         // get appointment by master
+        $appointment = $this->get_appointment($master_id, 1) ?? null;
 
         if (!empty($request->service_id)) {
             $dur = Service::find($request->service_id)->duration;
@@ -375,7 +378,7 @@ class SignupController extends Controller
             'org_weekend' => $data['orgweekends'],
             'holiday' => $data['holidays'],
             'rest_day_time' => $rest_day_time,
-            'exist_app_date_time_arr' => null,
+            'exist_app_date_time_arr' => $appointment,
             'serv_duration' => $dur,
         ];
 

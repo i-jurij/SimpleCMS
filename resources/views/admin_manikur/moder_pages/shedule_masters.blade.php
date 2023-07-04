@@ -59,7 +59,7 @@ $robots = "NOINDEX, NOFOLLOW";
                             alt="Photo of {{$master['master_name']}} {{$master['sec_name']}} {{$master['master_fam']}}"
                             style="max-width:120px;"
                         />
-                        <p>
+                        <p id="mnsf{{$master['id']}}">
                             {{$master['master_name']}} {{$master['sec_name']}} {{$master['master_fam']}}<br />{{$master['master_phone_number']}}
                         </p>
                     </span>
@@ -84,10 +84,12 @@ $robots = "NOINDEX, NOFOLLOW";
                 //document.querySelector('form#grafiki-master').submit();
                 let input = document.querySelector('input[type="radio"][name="master"]:checked');
                 if(!!input) {
-                var master_id = input.value;
-                var service_id = '';
-
+                    var master_id = input.value;
+                    var service_id = '';
                     document.querySelector('#master_choice').style.display = 'none';
+
+                    let master_name = document.querySelector('#mnsf'+master_id).innerHTML;
+                    document.getElementById("page_title").innerHTML += "<br>"+master_name;
 
                     if (master_id !== 'undefined' || master_id !== '' || master_id !== null) {
                         document.querySelector('#buttons_div').style.display = 'block';
