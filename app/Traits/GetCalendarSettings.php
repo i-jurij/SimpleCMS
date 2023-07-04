@@ -33,6 +33,10 @@ trait GetCalendarSettings
 
     protected function get_restdaytimes($id)
     {
+        // clear restdaytimes older then two year
+        $two_year_ago = Carbon::today()->subYears(2)->toDateString();
+        $clear = DB::table('restdaytimes')->where('master_id', $id)->where('date', '<', $two_year_ago)->delete();
+
         $data = [];
         if (!empty($id)) {
             $sql = DB::table('restdaytimes')->where('master_id', $id)->get();
@@ -44,9 +48,6 @@ trait GetCalendarSettings
                 }
             }
         }
-        // clear restdaytimes older then two year
-        $two_year_ago = Carbon::today()->subYears(2)->toDateString();
-        $clear = DB::table('restdaytimes')->where('master_id', $id)->where('date', '<', $two_year_ago)->delete();
 
         return $data;
     }

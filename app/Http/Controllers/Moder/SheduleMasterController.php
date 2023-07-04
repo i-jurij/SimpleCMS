@@ -25,14 +25,12 @@ class SheduleMasterController extends Controller
     public function edit(Request $request)
     {
         $validated = $request->validate([
-            'master' => 'required|numeric',
+            'master_id' => 'required|numeric',
         ]);
         $master_id = (!empty($request->master_id)) ? $request->master_id : null;
-        if (!empty($master_id)) {
-            // get appointment by master
-            // get restdaytimes by master
-            $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
-        }
+        // get restdaytimes by master
+        $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
+        // get appointment by master
 
         $res = $this->getCalSet();
         $data = [

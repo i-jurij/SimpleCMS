@@ -349,8 +349,15 @@ class SignupController extends Controller
 
     public function appoint_time(Request $request)
     {
-        $master_id = (!empty($request->master_id)) ? $request->master_id : null;
+        $master_id = null;
+        if (!empty($request->master_id)) {
+            $validated = $request->validate([
+                'master_id' => 'numeric',
+            ]);
+            $master_id = $request->master_id;
+        }
         $rest_day_time = $this->get_restdaytimes($master_id) ?? null;
+        // get appointment by master
 
         if (!empty($request->service_id)) {
             $dur = Service::find($request->service_id)->duration;
