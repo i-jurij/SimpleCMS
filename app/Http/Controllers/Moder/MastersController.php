@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Master;
 use App\Models\Page;
 use App\Models\Service;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class MastersController extends Controller
 {
@@ -70,6 +73,18 @@ class MastersController extends Controller
         if (!empty($insert) && is_array($insert)) {
             $master_create = $masters->create($insert);
             $res['db'] = 'The data of master "'.$request->master_fam.'" has been stored in db.';
+        }
+
+        if (!empty($res['db'])) {
+            // create user of app for master
+            $ne = my_sanitize_number($request->master_phone_number);
+            $user = User::create([
+                'name' => $ne,
+                'email' => $ne.'@com.com',
+                'status' => 'user',
+                'password' => Hash::make('password'),
+            ]);
+            $res['user'] = 'User "'.$ne.'" with email "'.$ne.'@com.com" created.';
         }
 
         if (!empty($request->serv)) {
@@ -176,6 +191,7 @@ class MastersController extends Controller
         $res = '';
         list($id, $image) = explode('plusplus', $request->id);
         if (!empty($id)) {
+            DB::table('restdaytimes')->where('master_id', $id)->delete();
             $masters->find($id)->services()->detach();
             $masters->destroy($id);
             $res .= 'Masters data have been removed! ';

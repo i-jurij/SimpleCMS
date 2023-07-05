@@ -13,7 +13,7 @@ class UsersController extends Controller
 {
     public function add()
     {
-        return redirect()->route('register');
+        return redirect()->route('admin.register.register');
     }
 
     public function list()

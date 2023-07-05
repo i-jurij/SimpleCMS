@@ -33,6 +33,11 @@ if masters not services - we believe that every master performs any service
 and check appointments times for all masters
 and if at least one master is free - client can sign up.
 
+When masters created also user created with status "user"
+with "name" - number of phone (+01112223344)
+with email - number of phone@com.com (+01112223344@com.com)
+with password - "password"
+
 
 ### SIGN UP
 ### Settings:

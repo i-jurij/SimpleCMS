@@ -66,6 +66,17 @@ Route::prefix('admin')->name('admin.')
 
     // ADMINS routes
     Route::middleware('isadmin')->group(function () {
+        Route::controller(RegisteredUserController::class)
+        ->prefix('register')
+        ->name('register.')
+        ->group(function () {
+            Route::get('/', 'create')
+            ->middleware(['auth', 'verified'])
+            ->name('register');
+            Route::post('/', 'store')
+            ->middleware(['auth', 'verified']);
+        });
+
         Route::controller(UsersController::class)
             ->prefix('user')
             ->name('user.')
@@ -76,6 +87,14 @@ Route::prefix('admin')->name('admin.')
                 Route::get('/change', 'list')->name('change');
                 Route::post('/change', 'show')->name('show');
                 Route::post('/change/store', 'store')->name('store');
+            });
+
+        Route::controller(ModerSignupController::class)
+            ->prefix('signup')
+            ->name('signup.')
+            ->group(function () {
+                Route::get('/settings', [SignupSettingsController::class, 'settings'])->name('settings');
+                Route::post('/settings', [SignupSettingsController::class, 'store'])->name('settings.store');
             });
 
         Route::get('/logs', function () {
@@ -183,8 +202,6 @@ Route::prefix('admin')->name('admin.')
         ->prefix('signup')
         ->name('signup.')
         ->group(function () {
-            Route::get('/settings', [SignupSettingsController::class, 'settings'])->middleware('isadmin')->name('settings');
-            Route::post('/settings', [SignupSettingsController::class, 'store'])->middleware('isadmin')->name('settings.store');
             Route::get('/by_date', 'by_date')->name('by_date');
             Route::get('/by_master', 'by_master')->name('by_master');
             Route::post('/remove', 'remove')->name('remove');
@@ -210,13 +227,6 @@ Route::prefix('admin')->name('admin.')
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::get('register', [RegisteredUserController::class, 'create'])
-->middleware(['auth', 'verified'])
-->name('register');
-
-Route::post('register', [RegisteredUserController::class, 'store'])
-->middleware(['auth', 'verified']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
