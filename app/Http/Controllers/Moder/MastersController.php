@@ -71,25 +71,40 @@ class MastersController extends Controller
         ];
 
         if (!empty($insert) && is_array($insert)) {
-            $master_create = $masters->create($insert);
-            $res['db'] = 'The data of master "'.$request->master_fam.'" has been stored in db.';
-        }
+            $master = $masters->where([
+                'master_name' => $request->master_name,
+                'master_fam' => $request->master_fam,
+                'master_phone_number' => $request->master_phone_number,
+            ])->first();
+            if (empty($master->id)) {
+                $master_create = $masters->create($insert);
+                $res['db'] = 'The data of master "'.$request->master_fam.'" has been stored in db.';
+                // create user of app for master
+                $ne = my_sanitize_number($request->master_phone_number);
 
-        if (!empty($res['db'])) {
-            // create user of app for master
-            $ne = my_sanitize_number($request->master_phone_number);
-            $user = User::create([
-                'name' => $ne,
-                'email' => $ne.'@com.com',
-                'status' => 'user',
-                'password' => Hash::make('password'),
-            ]);
-            $res['user'] = 'User "'.$ne.'" with email "'.$ne.'@com.com" created.';
-        }
+                $user = User::where(['name' => $ne, 'email' => $ne.'@com.com'])->first();
+                if (empty($user->id)) {
+                    $user_create = User::create([
+                        'name' => $ne,
+                        'email' => $ne.'@com.com',
+                        'status' => 'user',
+                        'password' => Hash::make('password'),
+                    ]);
+                    $master_create->user_id = $user_create->id;
+                    $res['user'] = 'User "'.$ne.'" with email "'.$ne.'@com.com" created.';
+                } else {
+                    $master_create->user_id = $user->id;
+                    $res['user'] = 'User "'.$ne.'" with email "'.$ne.'@com.com" already exists.';
+                }
 
-        if (!empty($request->serv)) {
-            $serv = Service::find($request->serv);
-            $master_create->services()->attach($serv);
+                $master_create->save();
+                if (!empty($request->serv)) {
+                    $serv = Service::find($request->serv);
+                    $master_create->services()->attach($serv);
+                }
+            } else {
+                $res['master_isset'] = 'The data of master "'.$request->master_fam.'" already exists in db.';
+            }
         }
 
         // return view('admin_manikur.moder_pages.masters', ['res' => $res]);
@@ -191,8 +206,15 @@ class MastersController extends Controller
         $res = '';
         list($id, $image) = explode('plusplus', $request->id);
         if (!empty($id)) {
+            $master = $masters->find($id);
+            if (!empty($master->user_id)) {
+                $user = User::where('id', $master->user_id)->delete();
+                $res .= 'User data have been removed! ';
+            }
+
             DB::table('restdaytimes')->where('master_id', $id)->delete();
-            $masters->find($id)->services()->detach();
+
+            $master->services()->detach();
             $masters->destroy($id);
             $res .= 'Masters data have been removed! ';
         } else {
