@@ -9,16 +9,19 @@ $robots = "NOINDEX, NOFOLLOW";
 @section("content")
 
 <div class="content">
-    @if (!empty($data['res']))
-        @if (is_array($data['res']))
-            @php
-                print_r($data['res'])
-            @endphp
-        @elseif (is_string($data['res']))
-            <p>{{$data['res']}}</p>
+    @if (!empty($data))
+        @if (is_array($data))
+            <pre>
+                @php
+                    print_r($data)
+                @endphp
+            </pre>
+
+        @elseif (is_string($data))
+            <p>{{$data}}</p>
         @endif
     @else
-        signup
+        No data from controller
     @endif
 </div>
 @stop

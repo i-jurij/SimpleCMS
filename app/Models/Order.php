@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -40,5 +42,18 @@ class Order extends Model
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    /**
+     * Диапазон запроса, включающий записи на две недели с сегодняшнего дня.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeLengthcalendar($query)
+    {
+        // $length = DB::table('orgworktimesets')->select('length')->first();
+        return $query->where('start_dt', '>', Carbon::today()->toDateTimeString());
     }
 }

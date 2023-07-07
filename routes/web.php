@@ -204,6 +204,10 @@ Route::prefix('admin')->name('admin.')
         ->group(function () {
             Route::get('/by_date', 'by_date')->name('by_date');
             Route::get('/by_master', 'by_master')->name('by_master');
+            Route::post('/by_master', 'post_by_master')->name('post_by_master');
+            Route::get('/add', 'add')->name('add');
+            Route::post('/add', 'add')->name('post_add');
+            Route::get('/list', 'list')->name('list');
             Route::post('/remove', 'remove')->name('remove');
         });
     });
