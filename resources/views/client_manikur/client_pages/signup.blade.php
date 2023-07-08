@@ -385,7 +385,8 @@ $('#button_next').click(function(){
                                 <div class="radio-group flex">';
 
                         result.masters.forEach(element => {
-                        mst += '<article class="main_section_article radio" data-value="'+element.id+'">\
+                            if (element.data_uvoln == '' || element.data_uvoln == null) {
+                                mst += '<article class="main_section_article radio" data-value="'+element.id+'">\
                                     <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">\
                                         <img src="{{asset("storage")}}/'+element.master_photo+'" alt="Фото '+element.master_fam+'" class="main_section_article_imgdiv_img" />\
                                     </div>\
@@ -393,6 +394,7 @@ $('#button_next').click(function(){
                                         <h3 id="'+element.id+'">'+element.master_name+' '+element.master_fam+'</h3>\
                                     </div>\
                                 </article>';
+                            }
                     });
                     mst += '<input type="hidden" id="master" name="master" />\
                             </div>';
