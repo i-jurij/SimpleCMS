@@ -7,6 +7,7 @@ use App\Models\Master;
 use App\Models\Order;
 use App\Models\Page;
 use App\Models\ServiceCategory;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -42,13 +43,24 @@ class SignupController extends Controller
             }
             $data['post_by_master'] = $signup->toArray();
             */
-            $data['post_by_master'] = $this->getServMas($signup);
+            if ($signup->isNotEmpty()) {
+                $data['post_by_master'] = $this->getServMas($signup);
+
+                foreach ($data['post_by_master'] as $master => $value) {
+                    foreach ($value as $key => $val) {
+                        $date = Carbon::createFromFormat('Y-m-d H:i:s', $val['start_dt'])->format('d M Y');
+                        $new_data['post_by_master'][$master][$date][] = $val;
+                    }
+                }
+            } else {
+                $data['post_by_master']['К мастеру нет записей.'] = '';
+            }
         } else {
-            $data['post_by_master'] = 'Error! No master id get in controller.';
+            $data['post_by_master']['Error! No master id get in controller.'] = '';
         }
 
         // return view('admin_manikur.moder_pages.signup', ['data' => $data]);
-        return response()->json($data);
+        return response()->json($new_data);
     }
 
     public function list()

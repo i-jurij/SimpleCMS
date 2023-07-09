@@ -20,6 +20,7 @@ use App\Http\Controllers\Moder\SignupController as ModerSignupController;
 use App\Http\Controllers\Moder\SignupSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
+use App\Http\Controllers\UserAdminControllers\SignupController as UserSignupController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -224,6 +225,13 @@ Route::prefix('admin')->name('admin.')
             Route::post('/need', 'update')->name('update');
             Route::get('/completed', 'completed')->name('completed');
             Route::post('/completed', 'destroy')->middleware('ismoder')->name('remove');
+        });
+
+        Route::controller(UserSignupController::class)
+        ->prefix('master_signup')
+        ->name('master_signup.')
+        ->group(function () {
+            Route::get('/list', 'list')->name('list');
         });
     });
 });
