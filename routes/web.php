@@ -90,12 +90,12 @@ Route::prefix('admin')->name('admin.')
                 Route::post('/change/store', 'store')->name('store');
             });
 
-        Route::controller(ModerSignupController::class)
+        Route::controller(SignupSettingsController::class)
             ->prefix('signup')
             ->name('signup.')
             ->group(function () {
-                Route::get('/settings', [SignupSettingsController::class, 'settings'])->name('settings');
-                Route::post('/settings', [SignupSettingsController::class, 'store'])->name('settings.store');
+                Route::get('/settings', 'settings')->name('settings');
+                Route::post('/settings', 'store')->name('settings.store');
             });
 
         Route::get('/logs', function () {
@@ -206,8 +206,6 @@ Route::prefix('admin')->name('admin.')
             Route::get('/by_date', 'by_date')->name('by_date');
             Route::get('/by_master', 'by_master')->name('by_master');
             Route::post('/by_master', 'post_by_master')->name('post_by_master');
-            Route::get('/add', 'add')->name('add');
-            Route::post('/add', 'add')->name('post_add');
             Route::get('/past', 'past')->name('past_list');
             Route::get('/future', 'future')->name('future_list');
             Route::post('/remove', 'remove')->name('remove');

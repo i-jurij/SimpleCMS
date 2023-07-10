@@ -300,6 +300,11 @@ $uv = '';
                                 console.log("Fetch Error :-S", err);
                             });
                         }
+
+                        if (action == 'change' && id != 'undefined') {
+                            //3 buttons for choice time or master or service
+
+                        }
                     }
                 });
             }

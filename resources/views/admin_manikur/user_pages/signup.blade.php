@@ -28,23 +28,23 @@ $robots = "NOINDEX, NOFOLLOW";
                 $res = '';
                 foreach ($data['by_date'] as $master => $signup) {
                     $art = '';
-                    $res .= '<div class="back shad rad pad margin_rlb1">';
-                    $res .= '<p><b>'.$master.'</b></p>';
                     foreach ($signup as $value) {
-                        if (\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $value['start_dt'])->toDateString() === $date) {
+                        if (\Carbon\Carbon::parse($value['start_dt'])->toDateString() === $date) {
                             $art .= '<article class="main_section_article">
-                                          <p>'.\Carbon\Carbon::createFromFormat('Y-m-d H:m:i', $value['start_dt'])->format('d.m.Y H:i').'</p>
+                                          <p>'.\Carbon\Carbon::parse($value['start_dt'])->format('H:i').'</p>
                                           <p>'.$value['service'].' </p>
                                           <p>'.$value['client'].'</p>
                                       </article>';
                         }
                     }
                     if (!empty($art)) {
+                        $res .= '<div class="back shad rad pad margin_rlb1">';
+                        // $res .= '<p><b>'.$master.'</b></p>';
                         $res .= $art;
+                        $res .= '</div>';
                     } else {
-                        $res .= '<p class="pad">К мастеру нет записей на '.date('d.m.Y', strtotime($date)).'.</p>';
+                        // $res .= '<p class="pad">К мастеру нет записей на '.date('d.m.Y', strtotime($date)).'.</p>';
                     }
-                    $res .= '</div>';
                 }
                 echo $res;
                 ?>

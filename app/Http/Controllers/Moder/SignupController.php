@@ -89,11 +89,6 @@ class SignupController extends Controller
         return $signup;
     }
 
-    public function add()
-    {
-        return view('admin_manikur.moder_pages.signup', ['res' => 'signup remove']);
-    }
-
     public function remove(Request $request)
     {
         if (!empty($request->order_id)) {
