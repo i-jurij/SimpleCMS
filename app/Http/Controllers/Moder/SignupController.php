@@ -66,10 +66,7 @@ class SignupController extends Controller
     public function past()
     {
         $signup['list'] = Order::where('start_dt', '<', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
-        foreach ($signup['list'] as $key => $value) {
-            $signup['list'][$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
-            $signup['list'][$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
-        }
+        $signup = $this->sort_pag($signup);
 
         return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
     }
@@ -77,12 +74,19 @@ class SignupController extends Controller
     public function future()
     {
         $signup['list'] = Order::where('start_dt', '>', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
+        $signup = $this->sort_pag($signup);
+
+        return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
+    }
+
+    protected function sort_pag($signup)
+    {
         foreach ($signup['list'] as $key => $value) {
             $signup['list'][$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
             $signup['list'][$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
         }
 
-        return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
+        return $signup;
     }
 
     public function add()
