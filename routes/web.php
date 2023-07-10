@@ -208,7 +208,8 @@ Route::prefix('admin')->name('admin.')
             Route::post('/by_master', 'post_by_master')->name('post_by_master');
             Route::get('/add', 'add')->name('add');
             Route::post('/add', 'add')->name('post_add');
-            Route::get('/list', 'list')->name('list');
+            Route::get('/past', 'past')->name('past_list');
+            Route::get('/future', 'future')->name('future_list');
             Route::post('/remove', 'remove')->name('remove');
         });
     });

@@ -46,31 +46,43 @@ class SignupController extends Controller
             if ($signup->isNotEmpty()) {
                 $data['post_by_master'] = $this->getServMas($signup);
 
-                foreach ($data['post_by_master'] as $master => $value) {
+                foreach ($data['post_by_master']['work'] as $master => $value) {
                     foreach ($value as $key => $val) {
                         $date = Carbon::createFromFormat('Y-m-d H:i:s', $val['start_dt'])->format('d M Y');
                         $new_data['post_by_master'][$master][$date][] = $val;
                     }
                 }
             } else {
-                $data['post_by_master']['К мастеру нет записей.'] = '';
+                $new_data['post_by_master']['К мастеру нет записей.'] = '';
             }
         } else {
-            $data['post_by_master']['Error! No master id get in controller.'] = '';
+            $new_data['post_by_master']['Error! No master id get in controller.'] = '';
         }
 
         // return view('admin_manikur.moder_pages.signup', ['data' => $data]);
         return response()->json($new_data);
     }
 
-    public function list()
+    public function past()
     {
-        // MAKE CHUNK RESULT AND PAGINATE
-        $signup = Order::all();
+        $signup['list'] = Order::where('start_dt', '<', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
+        foreach ($signup['list'] as $key => $value) {
+            $signup['list'][$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
+            $signup['list'][$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
+        }
 
-        $data['list'] = $this->getServMas($signup);
+        return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
+    }
 
-        return view('admin_manikur.moder_pages.signup', ['data' => $data]);
+    public function future()
+    {
+        $signup['list'] = Order::where('start_dt', '>', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
+        foreach ($signup['list'] as $key => $value) {
+            $signup['list'][$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
+            $signup['list'][$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
+        }
+
+        return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
     }
 
     public function add()
@@ -78,9 +90,18 @@ class SignupController extends Controller
         return view('admin_manikur.moder_pages.signup', ['res' => 'signup remove']);
     }
 
-    public function remove()
+    public function remove(Request $request)
     {
-        return view('admin_manikur.moder_pages.signup', ['res' => 'signup remove']);
+        if (!empty($request->order_id)) {
+            $del_order = Order::destroy($request->order_id);
+            if ($del_order > 0) {
+                $data['res'] = 'Delete';
+            }
+        } else {
+            $data['res'] = 'Not delete';
+        }
+
+        return response()->json($data);
     }
 
     protected function getServMas(Collection $collection)
@@ -95,13 +116,14 @@ class SignupController extends Controller
                 $category = (!empty($category_data)) ? $category_data.', ' : '';
                 $service = $page.', '
                     .$category
-                    .$service_data['name'].', '
-                    .$service_data['duration'].' мин., '
+                    .$service_data['name'].',<br>'
+                    .$service_data['duration'].' мин.,<br>'
                     .$service_data['price'].' руб.';
             } else {
                 $service = '';
             }
             $master_data = $value->master;
+
             $master = $master_data['master_name'].' '
                 .$master_data['sec_name'].' '
                 .$master_data['master_fam'].'<br>'
@@ -111,12 +133,26 @@ class SignupController extends Controller
             $client_name = (!empty($client_data['name'])) ? $client_data['name'] : 'noname';
             $client = 'Клиент: '.$client_name.', <span style="white-space:nowrap;"> '.$client_data['phone'].'</span>';
 
-            $res[$master][] = [
+            if (empty($master_data['data_uvoln'])) {
+                $work = 'work';
+            } else {
+                $work = 'dismiss';
+            }
+            $res[$work][$master][] = [
                 'order_id' => $collection[$key]['id'],
                 'start_dt' => $collection[$key]['start_dt'],
                 'service' => $service,
                 'client' => $client,
             ];
+        }
+
+        foreach ($res as $masters) {
+            foreach ($masters as $master => $signup) {
+                usort($signup, function ($a, $b) {
+                    return strtotime($a['start_dt']) - strtotime($b['start_dt']);
+                });
+                $res[$master] = $signup;
+            }
         }
 
         return $res;

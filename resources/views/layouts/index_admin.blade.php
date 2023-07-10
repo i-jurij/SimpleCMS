@@ -54,8 +54,10 @@
 
                         @php $pieces = explode('/', Request::path()); @endphp
                         @if (count($pieces) > 3)
+                            <p style="height:5rem;"></p>
                             @include('components/back_button')
                         @else
+                            <p style="height:5rem;"></p>
                             @include('components/button_go_to_admin_home')
                         @endif
 
