@@ -6,13 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Master;
 use App\Models\Order;
 use App\Models\Page;
+use App\Models\Service;
 use App\Models\ServiceCategory;
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class SignupController extends Controller
 {
+    use \App\Traits\GetCalendarSettings;
+    use \App\Traits\GetRestDayTimes;
+    use \App\Traits\GetAppointment;
+
     public function by_date(Request $request)
     {
         $signup = Order::lengthcalendar()->get();
@@ -36,13 +42,6 @@ class SignupController extends Controller
     {
         if (!empty($request->master_id)) {
             $signup = Order::where('master_id', $request->master_id)->lengthcalendar()->get();
-            /*
-            foreach ($signup as $key => $value) {
-                $signup[$key]['service'] = $value->service;
-                $signup[$key]['client'] = $value->client;
-            }
-            $data['post_by_master'] = $signup->toArray();
-            */
             if ($signup->isNotEmpty()) {
                 $data['post_by_master'] = $this->getServMas($signup);
 
@@ -155,5 +154,101 @@ class SignupController extends Controller
         }
 
         return $res;
+    }
+
+    public function edit(Request $request)
+    {
+        $data['edit'] = [];
+        if (!empty($request->order_id)) {
+            $data = $this->edit_get_order_data($request);
+            $master_id = $data['edit']['master_id'];
+            $service_id = $data['edit']['service_id'];
+        // $data['res'] = $this->edit_get_master_times($master_id, $service_id);
+        } else {
+            $data['edit']['Error! No order id get in controller.'] = '';
+        }
+
+        return response()->json($data);
+    }
+
+    protected function edit_get_order_data(Request $request)
+    {
+        $signup = Order::with('service')->with('master')->with('client')->find($request->order_id)->toArray();
+        if (!empty($signup['id'])) {
+            $page = Page::find($signup['service']['page_id'])->title;
+            if (!empty($signup['service']['category_id'])) {
+                $category_data = ServiceCategory::find($signup['service']['category_id'])->name;
+            }
+            $category = (!empty($category_data)) ? $category_data.', ' : '';
+            $signup['service'] = $page.', '
+                .$category
+                .$signup['service']['name'].',<br>'
+                .$signup['service']['duration'].' мин.,<br>'
+                .$signup['service']['price'].' руб.';
+
+            $data['edit'] = $signup;
+        } else {
+            $data['edit']['.'] = '';
+        }
+
+        return $data;
+    }
+
+    protected function get_master_times(Request $request)
+    {
+        $rest_day_time = $this->get_restdaytimes($request->master_id) ?? null;
+        // get appointment by master
+        $appointment = $this->get_appointment($request->master_id, 1) ?? null;
+        $dur = Service::find($request->service_id)->duration;
+
+        // query for get woktime, lunchtime, holiday, weekdays and other
+        $data = $this->getCalSet();
+
+        $res = [
+            'lehgth_cal' => $data['lehgth_cal'],
+            'endtime' => $data['endtime'],
+            'period' => $data['period'],
+            'worktime' => $data['worktime'],
+            'lunch' => $data['lunch'],
+            'org_weekend' => $data['orgweekends'],
+            'holiday' => $data['holidays'],
+            'rest_day_time' => $rest_day_time,
+            'exist_app_date_time_arr' => $appointment,
+            'serv_duration' => $dur,
+        ];
+
+        return response()->json($res);
+    }
+
+    public function post_edit(Request $request, Order $order)
+    {
+        $data = '';
+        if (!empty($request->start_dt && $request->serv_dur)) {
+            $start_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000);
+            // if $dur > 9 - minutes, else hours
+            if ($request->serv_dur > 9) {
+                $dur = (int) $request->serv_dur;
+                $end_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000)->addMinutes($dur);
+            } else {
+                $end_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000)->addHours($request->serv_dur);
+            }
+            /*
+            $order->find($request->order_id);
+            $order->start_dt = $start_dt;
+            $order->end_dt = $end_dt;
+            if ($order->save()) {
+                $data = $start_dt;
+            } else {
+                $data = 'ERROR';
+            }
+            */
+            if ($order->where('id', $request->order_id)->update(['start_dt' => $start_dt, 'End_dt' => $end_dt])) {
+                $data = $start_dt;
+            } else {
+                $data = 'ERROR';
+            }
+        }
+
+        return response()->json($data);
     }
 }
