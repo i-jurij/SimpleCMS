@@ -285,7 +285,12 @@ $uv = '';
                                                 time_change(order_id, serv_dur)
                                             }
                                             if (element.target.id == 'master_ch') {
+
+
                                                 alert('master')
+
+
+
                                             }
 
                                         });

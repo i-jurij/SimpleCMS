@@ -232,16 +232,7 @@ class SignupController extends Controller
             } else {
                 $end_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000)->addHours($request->serv_dur);
             }
-            /*
-            $order->find($request->order_id);
-            $order->start_dt = $start_dt;
-            $order->end_dt = $end_dt;
-            if ($order->save()) {
-                $data = $start_dt;
-            } else {
-                $data = 'ERROR';
-            }
-            */
+
             if ($order->where('id', $request->order_id)->update(['start_dt' => $start_dt, 'End_dt' => $end_dt])) {
                 $data = $start_dt;
             } else {
