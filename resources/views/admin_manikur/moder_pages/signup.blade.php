@@ -73,6 +73,11 @@ $uv = '';
                         id="{{$master['id']}}">{!!$master_name!!}</button>
                 @endforeach
                 </div>
+            @elseif (!empty($data['by_client']))
+                <div id="app">
+                    <p class="pad">Search by phone number:</p>
+
+                </div>
             @elseif (!empty($data['list']))
                 <div id="list_wrapper">
                     <div id="js_table"></div>
@@ -140,18 +145,27 @@ $uv = '';
             return await response.json();
         }
 
-        function time_change(order_id, serv_dur) {
+        function time_change(order_id, serv_dur, master_id) {
             var newDiv = document.createElement('div');
             newDiv.classList.add('modal')
             newDiv.id = "alert"
-            newDiv.innerHTML = '<div><div id="time_choice"></div><p>После выбора даты и времени нажмите "Ок"</p><button id="alert_ok">OK</button></div>';
+            newDiv.innerHTML = '<div><div id="time_choice"></div>\
+                                    <p>После выбора даты и времени нажмите "Ок"</p>\
+                                    <button id="alert_ok">OK</button>\
+                                    <button id="cancel_but">Cancel</button>\
+                                    </div>';
             // Добавляем только что созданный элемент в дерево DOM
             //document.body.insertBefore(newDiv, my_div);
             document.querySelector('#list_wrapper').parentNode.insertBefore(newDiv, document.querySelector('#list_wrapper'));
             // setup body no scroll
             document.body.style.overflow = 'hidden';
-            appointment('short', '/admin/signup/get_master_times', arr.service_id, arr.master_id, Laravel.csrfToken);
+            appointment('short', '/admin/signup/get_master_times', arr.service_id, master_id, Laravel.csrfToken);
             let but = document.getElementById('alert_ok');
+            let cancel_but = document.getElementById('cancel_but');
+            cancel_but.addEventListener('click', function () {
+                document.querySelector('.modal').remove();
+                document.body.style.overflow = 'scroll';
+            });
             but.addEventListener('click', function (ev) {
                 let time_checked = document.querySelector('#time_choice input[name="time"]:checked');
                 if ( time_checked ) {
@@ -165,11 +179,90 @@ $uv = '';
                         new_dt = new Date(data).toLocaleString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: "numeric", hour: 'numeric', minute: 'numeric' });
                         txt = (!!new_dt) ? new_dt : data;
                         document.querySelector('#order_time').innerHTML = '<span style="color:green;">Сохранено: <br>' + txt + '</span>';
+                        document.querySelector('#order_time').value = new Date(data).getTime();
                     })
                     .catch(function (err) {
                         console.log("Fetch Error :-S", err);
                     });
                 }
+            })
+        }
+
+        function master_change(order_id, service_id, start_dt) {
+            var newDiv = document.createElement('div');
+            newDiv.classList.add('modal')
+            newDiv.id = "alert"
+            newDiv.innerHTML = '<div><div id="master_choice"></div>\
+                                    <p>После выбора mastera нажмите "Ок"</p>\
+                                    <button id="alert_ok">OK</button>\
+                                    <button id="cancel_but">Cancel</button>\
+                                    </div>';
+            // Добавляем только что созданный элемент в дерево DOM
+            //document.body.insertBefore(newDiv, my_div);
+            document.querySelector('#list_wrapper').parentNode.insertBefore(newDiv, document.querySelector('#list_wrapper'));
+            // setup body no scroll
+            document.body.style.overflow = 'hidden';
+            let cancel_but = document.getElementById('cancel_but');
+            cancel_but.addEventListener('click', function () {
+                document.querySelector('.modal').remove();
+                    document.body.style.overflow = 'scroll';
+            });
+
+            data_from_db("{{url()->route('admin.signup.get_masters')}}", "order_id=" + order_id+"&service_id="+service_id+"&start_dt="+start_dt)
+            .then(promise => promise)
+            .then(masters_data => {
+                    //console.log(masters_data)
+                    if (typeof masters_data === 'string' || masters_data instanceof String) {
+                        document.querySelector('#master_choice').innerHTML = masters_data;
+                    } else  {
+                        document.querySelector('#master_choice').innerHTML = '<div class="radio-group flex">';
+                        for (const master of masters_data) {
+                            document.querySelector('#master_choice').innerHTML += '<article class="main_section_article radio" data-value="'+master.id+'" style="min-width:13rem;">\
+                                    <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">\
+                                        <img src="{{asset("storage")}}/'+master.master_photo+'" alt="Фото '+master.master_fam+'" class="main_section_article_imgdiv_img" />\
+                                    </div>\
+                                    <div class="main_section_article_content margin_top_1rem">\
+                                        <h3 id="'+master.id+'">'+master.master_name+' '+master.master_fam+'<br>'+master.master_phone_number+'</h3>\
+                                    </div>\
+                                </article>';
+                        }
+                        document.querySelector('#master_choice').innerHTML += '</div>';
+
+                        document.querySelectorAll('.radio').forEach(function(master_article) {
+                            master_article.addEventListener('click', function(){
+                                document.querySelectorAll('.radio').forEach(function (elm) {
+                                    elm.classList.remove("selected");
+                                });
+                                this.classList.add('selected');
+                                let master_id = $(this).attr('data-value');
+
+                                let but = document.getElementById('alert_ok');
+                                if (!!but) {
+                                    but.addEventListener('click', function (ev) {
+                                        data_from_db("{{url()->route('admin.signup.edit.post')}}", "order_id=" + order_id+"&master_id="+master_id)
+                                            .then(promise => promise)
+                                            .then(data => {
+                                                //location.reload();
+                                                if (!!document.querySelector('.modal')) {document.querySelector('.modal').remove();}
+                                                document.body.style.overflow = 'scroll';
+                                                document.querySelector('#order_master').innerHTML = '<span style="color:green;">Сохранено: <br>'
+                                                    + data.master_name +
+                                                    ' ' + data.sec_name +
+                                                    ' ' + data.master_fam +
+                                                    ', ' + data.master_phone_number +
+                                                    '</span>';
+                                                document.querySelector('#order_master').value = data.id;
+                                        })
+                                        .catch(function (err) {
+                                            console.log("Fetch Error :-S", err);
+                                        });
+                                    })
+                                }
+                            })
+                        })
+
+                    }
+
             })
         }
 
@@ -190,6 +283,8 @@ $uv = '';
                         }
 
                         if (action == 'change' && id !== 'undefined') {
+                            history.pushState(document.body.innerHTML, "", '{{url()->current()}}#change');
+
                             let div = document.querySelector('#js_edit');
                             //3 buttons for choice time or master or service
                             data_from_db("{{url()->route('admin.signup.edit')}}", "order_id=" + id)
@@ -198,6 +293,7 @@ $uv = '';
                                 //console.log(master_data)
                                 arr = master_data.edit;
                                 order_id = arr.id;
+                                service_id = arr.service_id;
                                 serv_dur = (new Date(arr.end_dt).getTime() - new Date(arr.start_dt).getTime()) / 1000 / 60;
                                 //console.log(serv_dur)
 
@@ -206,9 +302,6 @@ $uv = '';
                                 document.querySelector('#list_wrapper').innerHTML =
                                     '<div class="form-recall-main">\
                                         <table class="table price_form_table" id="signup_change">\
-                                            <p class="pad">Можно изменить только время или мастера, для одновременной замены и времени и мастера \
-                                                воспользуйтесь страницей "/signup" клиентской части сайта"\
-                                            </p>\
                                             <tbody class="text_left">\
                                                 <tr>\
                                                     <td>\
@@ -227,7 +320,7 @@ $uv = '';
                                                     <td>\
                                                         Мастер: \
                                                     </td>\
-                                                    <td>'
+                                                    <td id="order_master">'
                                                         +arr.master.master_name+' '+arr.master.sec_name+' '+arr.master.master_fam+', '+arr.master.master_phone_number+
                                                     '</td>\
                                                     <td>\
@@ -282,15 +375,31 @@ $uv = '';
                                         table_ch.addEventListener('click', function(element){
 
                                             if (element.target.id == 'time_ch') {
-                                                time_change(order_id, serv_dur)
+                                                //history.pushState(document.body.innerHTML, "", '{{url()->current()}}#time_change');
+
+                                                if (!!document.querySelector('#order_master').value) {
+                                                    master_id = document.querySelector('#order_master').value;
+                                                    console.log(master_id+'new')
+                                                } else {
+                                                    master_id = arr.master_id;
+                                                    console.log(master_id)
+                                                }
+                                                time_change(order_id, serv_dur, master_id);
                                             }
                                             if (element.target.id == 'master_ch') {
+                                                //history.pushState(document.body.innerHTML, "", '{{url()->current()}}#master_change');
 
-
-                                                alert('master')
-
-
-
+                                                if (!!document.querySelector('#order_time').value) {
+                                                    d = new Date(document.querySelector('#order_time').value);
+                                                    start_dt = (d.getFullYear()
+                                                        +"-"+("0"+(d.getMonth()+1)).slice(-2)
+                                                        +"-"+("0"+d.getDate()).slice(-2)
+                                                        +" "+("0"+d.getHours()).slice(-2)
+                                                        + ":" + ("0" + d.getMinutes()).slice(-2));
+                                                } else {
+                                                    start_dt = arr.start_dt;
+                                                }
+                                                master_change(order_id, service_id, start_dt);
                                             }
 
                                         });
@@ -303,12 +412,13 @@ $uv = '';
                     }
         }
 
+        // for by_master
         let elem = document.querySelectorAll('.masters');
         for (var i = 0; i < elem.length; i++) {
             elem[i].onclick = function (e) {
                 let id = e.target.id;
 
-
+                //history.pushState(document.body.innerHTML, "", '{{url()->current()}}');
                 document.querySelector('#app').innerHTML = '';
                 //document.querySelector('#div_'+id).toggle();
                 data_from_db("{{url()->route('admin.signup.post_by_master')}}", "master_id=" + id)
@@ -363,6 +473,11 @@ $uv = '';
                 echo 'list';
             }?>;
 
+            //history.pushState('', "", '{{url()->current()}}#list');
+            if ( !'{{url()->current()}}'.includes(window.location.hash)) {
+                history.pushState('', "", '{{url()->current()}}');
+            }
+
             //console.log(page_object['data'])
             var res_obj = {};
             page_object['data'].forEach(element => {
@@ -372,7 +487,7 @@ $uv = '';
                 const year = dt.getFullYear();
                 const month = dt.getMonth();
                 const day = dt.getDate();
-                let date = pad(day)+'.'+pad(month)+'.'+year;
+                let date = pad(day)+'.'+pad(month+1)+'.'+year;
 
                 let order_id = element.id;
                 let start_dt = pad(new Date(element.start_dt).getHours())
@@ -380,8 +495,8 @@ $uv = '';
                     +'<br>'+capitalizeFirstLetter(new Date(element.start_dt).toLocaleDateString("ru-RU", options));
                 let uvolen = (element.master.data_uvoln == null || element.master.data_uvoln == "") ? '' : '<p style="color:red;">УВОЛЕН!</p>';
                 let master = element.master.master_name+' '+element.master.sec_name+' '+element.master.master_fam+',<br>'+element.master.master_phone_number+uvolen;
-                let category = (element.category != null || element.category != 'undefined') ? element.category+', ' : '';
-                let service = element.page+', '+category+element.service.name+', '+element.service.duration+' мин., '+element.service.price+' руб.';
+                let category = (!!element.category) ? element.category+', ' : ' ';
+                let service = element.page+': '+category+element.service.name+', '+element.service.duration+' мин., '+element.service.price+' руб.';
                 let client_name = (!!element.client.name) ? element.client.name+', ' : '';
                 let client = 'Клиент:<br>'+client_name+element.client.phone;
 

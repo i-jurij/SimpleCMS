@@ -206,11 +206,17 @@ Route::prefix('admin')->name('admin.')
             Route::get('/by_date', 'by_date')->name('by_date');
             Route::get('/by_master', 'by_master')->name('by_master');
             Route::post('/by_master', 'post_by_master')->name('post_by_master');
+            Route::get('/by_client', 'by_client')->name('by_client');
+            Route::post('/by_client', 'post_by_client')->name('post_by_client');
+
             Route::get('/past', 'past')->name('past_list');
             Route::get('/future', 'future')->name('future_list');
+
             Route::post('/edit', 'edit')->name('edit');
             Route::post('/get_master_times', 'get_master_times')->name('get_master_times');
+            Route::post('/get_masters', 'get_masters')->name('get_masters');
             Route::post('/edit/post', 'post_edit')->name('edit.post');
+
             Route::post('/remove', 'remove')->name('remove');
         });
     });

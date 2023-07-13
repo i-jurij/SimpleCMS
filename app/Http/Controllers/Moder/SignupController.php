@@ -62,6 +62,24 @@ class SignupController extends Controller
         return response()->json($new_data);
     }
 
+    public function by_client(Request $request)
+    {
+        // form for search client by name or phone number
+        $data['by_client'] = 'by_client';
+
+        return view('admin_manikur.moder_pages.signup', ['data' => $data]);
+    }
+
+    public function post_by_client(Request $request)
+    {
+        if (!empty($request->phone)) {
+        } else {
+        }
+
+        // return view('admin_manikur.moder_pages.signup', ['data' => $data]);
+        return response()->json('');
+    }
+
     public function past()
     {
         $signup['list'] = Order::where('start_dt', '<', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
@@ -236,8 +254,43 @@ class SignupController extends Controller
             if ($order->where('id', $request->order_id)->update(['start_dt' => $start_dt, 'End_dt' => $end_dt])) {
                 $data = $start_dt;
             } else {
-                $data = 'ERROR';
+                $data = 'ERROR! Time not updated.';
             }
+        }
+
+        if (!empty($request->master_id)) {
+            // update master_id in order
+            if ($order->where('id', $request->order_id)->update(['master_id' => $request->master_id])) {
+                $ord = $order->find($request->order_id);
+                $data = $ord->master;
+            } else {
+                $data = 'ERROR ! Master not updated.';
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    public function get_masters(Request $request)
+    {
+        if (!empty($request->service_id) && !empty($request->start_dt)) {
+            $start_dt = Carbon::parse($request->start_dt)->toDateTime();
+            $service = Service::find($request->service_id);
+            foreach ($service->masters as $master) {
+                if (empty($master->data_uvoln)) {
+                    $order = Order::where('master_id', $master->id)
+                    ->where('start_dt', '<=', $start_dt)
+                    ->where('end_dt', '>', $start_dt)
+                    ->first();
+
+                    // check if start_dt not = or between srart_dt and end_dt for each item of $order collection
+                    if (empty($order->id)) {
+                        $data[] = $master;
+                    }
+                }
+            }
+        } else {
+            $data = 'There is no necessary data in the request';
         }
 
         return response()->json($data);
