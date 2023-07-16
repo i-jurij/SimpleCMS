@@ -840,8 +840,9 @@ a.gallery_a:hover img{
 	z-index: 21;
 }
 .backbutton input {
-	max-height: 4rem;
-	max-width: 4rem;
+	height: 4rem;
+	width: 4rem;
+	padding: 0.25rem;
 	border: 0px solid #000;
 }
 .backbutton img {

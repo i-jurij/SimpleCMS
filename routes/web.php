@@ -207,7 +207,7 @@ Route::prefix('admin')->name('admin.')
             Route::get('/by_master', 'by_master')->name('by_master');
             Route::post('/by_master', 'post_by_master')->name('post_by_master');
             Route::get('/by_client', 'by_client')->name('by_client');
-            Route::post('/by_client', 'post_by_client')->name('post_by_client');
+            Route::post('/post_by_client', 'post_by_client')->name('post_by_client');
 
             Route::get('/past', 'past')->name('past_list');
             Route::get('/future', 'future')->name('future_list');

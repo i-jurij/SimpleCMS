@@ -5,16 +5,13 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current" />
+                    <a href="{{ route('admin.home') }}">
+                        {{ __('Adm') }}
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('admin.home')" :active="request()->routeIs('admin.home')">
-                        {{ __('Adm') }}
-                    </x-nav-link>
                     @if (Auth::user()['status'] === 'admin')
                         <x-nav-link :href="route('admin.user.add')" :active="request()->routeIs('admin.user.add')">
                             {{ __('User add') }}

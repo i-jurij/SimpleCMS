@@ -73,15 +73,12 @@ $uv = '';
                         id="{{$master['id']}}">{!!$master_name!!}</button>
                 @endforeach
                 </div>
-            @elseif (!empty($data['by_client']))
-                <div id="app">
-                    <p class="pad">Search by phone number:</p>
-
-                </div>
-            @elseif (!empty($data['list']))
+            @elseif (!empty($data['list']) || !empty($data['post_by_client']))
                 <div id="list_wrapper">
                     <div id="js_table"></div>
-                    {{ $data['list']->links() }}
+                    @if (!empty($data['list']))
+                        {{ $data['list']->links() }}
+                    @endif
                 </div>
             @endif
         @elseif (is_string($data))
@@ -143,6 +140,98 @@ $uv = '';
             }
 
             return await response.json();
+        }
+
+        function res_obj(page_object){
+            page_object['data'].forEach(element => {
+                let options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+                //let date = capitalizeFirstLetter(new Date(element.start_dt).toLocaleDateString("ru-RU", options));
+                const dt = new Date(element.start_dt);
+                const year = dt.getFullYear();
+                const month = dt.getMonth();
+                const day = dt.getDate();
+                let date = pad(day)+'.'+pad(month+1)+'.'+year;
+
+                let order_id = element.id;
+                let start_dt = pad(new Date(element.start_dt).getHours())
+                    +':'+pad(new Date(element.start_dt).getMinutes())
+                    +'<br>'+capitalizeFirstLetter(new Date(element.start_dt).toLocaleDateString("ru-RU", options));
+                let uvolen = (element.master.data_uvoln == null || element.master.data_uvoln == "") ? '' : '<p style="color:red;">УВОЛЕН!</p>';
+                let master = element.master.master_name+' '+element.master.sec_name+' '+element.master.master_fam+',<br>'+element.master.master_phone_number+uvolen;
+                let category = (!!element.category) ? element.category+', ' : ' ';
+                let service = element.page+': '+category+element.service.name+', '+element.service.duration+' мин., '+element.service.price+' руб.';
+                let client_name = (!!element.client.name) ? element.client.name+', ' : '';
+                let client = 'Клиент:<br>'+client_name+element.client.phone;
+
+                function arr_push() {
+                    res_obj[date][master].push({start_dt: start_dt, order_id: order_id, service: service, client: client});
+                }
+                function obj_add() {
+                    if (!!res_obj[date][master]) {
+                        arr_push();
+                    } else {
+                        res_obj[date][master] = [];
+                        arr_push();
+                    }
+                }
+
+                if (!!res_obj[date]) {
+                    obj_add();
+                } else {
+                    res_obj[date] = {};
+                    obj_add();
+                }
+            });
+            return res_obj;
+        }
+
+        function inhtml(res_obj){
+            inhtml = '<table class="table price_form_table" id="signup_all_list">\
+                                    <colgroup>\
+                                        <col width="20%">\
+                                        <col width="30%">\
+                                        <col width="25%">\
+                                        <col width="25%">\
+                                    </colgroup>\
+                                    <tbody>';
+            for (const date in res_obj) {
+                if (Object.hasOwnProperty.call(res_obj, date)) {
+                    const element = res_obj[date];
+                    date_p = '<tr><td colspan="4">'+date+'</td></tr>';
+                    //js_table.parentNode.insertBefore(newDiv, js_table);
+                    //js_table.insertAdjacentHTML( 'afterbegin', date_p );
+                    inhtml += date_p;
+                    for (const master in element) {
+                        if (Object.hasOwnProperty.call(element, master)) {
+                            const array = element[master];
+                            inhtml += '<tr><td colspan="4">'+master+'</td></tr>';
+
+                            for (let index = 0; index < array.length; index++) {
+                                const data = array[index];
+                                inhtml += ' <tr>\
+                                                            <td id="time_order_id'+data.order_id+'">'
+                                                                +data.start_dt+
+                                                            '</td>\
+                                                            <td>'
+                                                                +data.service+
+                                                            '</td>\
+                                                            <td>'
+                                                                +data.client+
+                                                            '</td>\
+                                                            <td>\
+                                                                <button type="button" value="change" class="buttons" id="'+data.order_id+'">Изменить</button>\
+                                                                <button type="button" value="delete" class="buttons" id="'+data.order_id+'" >Удалить</button>\
+                                                            </td>\
+                                                        </tr>';
+
+                            }
+                        }
+                    }
+                    inhtml += '<tr><td colspan="4"></td></tr>';
+                }
+            }
+            inhtml += '</tbody></table>';
+            return inhtml ;
         }
 
         function time_change(order_id, serv_dur, master_id) {
@@ -360,14 +449,6 @@ $uv = '';
                                                 </tr>\
                                             </tbody>\
                                         </table>\
-                                    </div>\
-                                    <div class="backbutton ">\
-                                    <input\
-                                        type="image"\
-                                        class=" buttons"\
-                                        src="{{ Vite::asset("resources/imgs/back.png") }}";\
-                                        onclick="document.referrer ? window.location = document.referrer : history.back();"\
-                                    />\
                                     </div>';
 
                                     let table_ch = document.querySelector('#signup_change');
@@ -379,10 +460,10 @@ $uv = '';
 
                                                 if (!!document.querySelector('#order_master').value) {
                                                     master_id = document.querySelector('#order_master').value;
-                                                    console.log(master_id+'new')
+                                                    //console.log(master_id+'new')
                                                 } else {
                                                     master_id = arr.master_id;
-                                                    console.log(master_id)
+                                                    //console.log(master_id)
                                                 }
                                                 time_change(order_id, serv_dur, master_id);
                                             }
@@ -467,107 +548,25 @@ $uv = '';
 
         let js_table = document.querySelector('#js_table');
         if (!!js_table) {
-            let page_object = <?php if (!empty($data['list'])) {
-                echo json_encode($data['list']);
-            } else {
-                echo 'list';
+            let dell = <?php if (!empty($data)) {
+                echo json_encode($data);
             }?>;
+
+            if ('post_by_client' in dell) {
+                document.querySelector('#js_back_button').remove();
+                page_object = dell.post_by_client;
+                console.log(page_object)
+            } else if ('list' in dell) {
+                page_object = dell.list;
+            }
 
             //history.pushState('', "", '{{url()->current()}}#list');
             if ( !'{{url()->current()}}'.includes(window.location.hash)) {
-                history.pushState('', "", '{{url()->current()}}');
+                //history.pushState('', "", "{{url()->route('admin.home')}}");
+                //history.pushState('', "", '{{url()->current()}}');
             }
-
-            //console.log(page_object['data'])
-            var res_obj = {};
-            page_object['data'].forEach(element => {
-                let options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-                //let date = capitalizeFirstLetter(new Date(element.start_dt).toLocaleDateString("ru-RU", options));
-                const dt = new Date(element.start_dt);
-                const year = dt.getFullYear();
-                const month = dt.getMonth();
-                const day = dt.getDate();
-                let date = pad(day)+'.'+pad(month+1)+'.'+year;
-
-                let order_id = element.id;
-                let start_dt = pad(new Date(element.start_dt).getHours())
-                    +':'+pad(new Date(element.start_dt).getMinutes())
-                    +'<br>'+capitalizeFirstLetter(new Date(element.start_dt).toLocaleDateString("ru-RU", options));
-                let uvolen = (element.master.data_uvoln == null || element.master.data_uvoln == "") ? '' : '<p style="color:red;">УВОЛЕН!</p>';
-                let master = element.master.master_name+' '+element.master.sec_name+' '+element.master.master_fam+',<br>'+element.master.master_phone_number+uvolen;
-                let category = (!!element.category) ? element.category+', ' : ' ';
-                let service = element.page+': '+category+element.service.name+', '+element.service.duration+' мин., '+element.service.price+' руб.';
-                let client_name = (!!element.client.name) ? element.client.name+', ' : '';
-                let client = 'Клиент:<br>'+client_name+element.client.phone;
-
-                function arr_push() {
-                    res_obj[date][master].push({start_dt: start_dt, order_id: order_id, service: service, client: client});
-                }
-                function obj_add() {
-                    if (!!res_obj[date][master]) {
-                        arr_push();
-                    } else {
-                        res_obj[date][master] = [];
-                        arr_push();
-                    }
-                }
-
-                if (!!res_obj[date]) {
-                    obj_add();
-                } else {
-                    res_obj[date] = {};
-                    obj_add();
-                }
-            });
-
-            //console.log(res_obj)
-
-            inhtml = '<table class="table price_form_table" id="signup_all_list">\
-                                    <colgroup>\
-                                        <col width="20%">\
-                                        <col width="30%">\
-                                        <col width="25%">\
-                                        <col width="25%">\
-                                    </colgroup>\
-                                    <tbody>';
-            for (const date in res_obj) {
-                if (Object.hasOwnProperty.call(res_obj, date)) {
-                    const element = res_obj[date];
-                    date_p = '<tr><td colspan="4">'+date+'</td></tr>';
-                    //js_table.parentNode.insertBefore(newDiv, js_table);
-                    //js_table.insertAdjacentHTML( 'afterbegin', date_p );
-                    inhtml += date_p;
-                    for (const master in element) {
-                        if (Object.hasOwnProperty.call(element, master)) {
-                            const array = element[master];
-                            inhtml += '<tr><td colspan="4">'+master+'</td></tr>';
-
-                            for (let index = 0; index < array.length; index++) {
-                                const data = array[index];
-                                inhtml += ' <tr>\
-                                                            <td id="time_order_id'+data.order_id+'">'
-                                                                +data.start_dt+
-                                                            '</td>\
-                                                            <td>'
-                                                                +data.service+
-                                                            '</td>\
-                                                            <td>'
-                                                                +data.client+
-                                                            '</td>\
-                                                            <td>\
-                                                                <button type="button" value="change" class="buttons" id="'+data.order_id+'">Изменить</button>\
-                                                                <button type="button" value="delete" class="buttons" id="'+data.order_id+'" >Удалить</button>\
-                                                            </td>\
-                                                        </tr>';
-
-                            }
-                        }
-                    }
-                    inhtml += '<tr><td colspan="4"></td></tr>';
-                }
-            }
-            inhtml += '</tbody></table>';
-            js_table.innerHTML = inhtml;
+            var res_obj = res_obj(page_object);
+            js_table.innerHTML = inhtml(res_obj);
 
             let table = document.querySelector('#signup_all_list');
             if(!!table) {
@@ -576,6 +575,8 @@ $uv = '';
                 });
             }
         }
+
+
     }
 </script>
 @stop

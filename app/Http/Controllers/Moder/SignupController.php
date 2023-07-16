@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 use App\Models\Master;
 use App\Models\Order;
 use App\Models\Page;
@@ -65,45 +66,61 @@ class SignupController extends Controller
     public function by_client(Request $request)
     {
         // form for search client by name or phone number
-        $data['by_client'] = 'by_client';
+        $clients = Client::all();
+        foreach ($clients as $key => $client) {
+            $data['by_client'][$key]['id'] = $client->id;
+            $data['by_client'][$key]['name'] = $client->name;
+            $data['by_client'][$key]['phone'] = $client->phone;
+        }
 
-        return view('admin_manikur.moder_pages.signup', ['data' => $data]);
+        return view('admin_manikur.moder_pages.signup_by_client_form', ['data' => $data]);
     }
 
     public function post_by_client(Request $request)
     {
-        if (!empty($request->phone)) {
-        } else {
+        if (!empty($request->client_id)) {
+            $validatedData = $request->validate([
+                'client_id' => ['required', 'integer'],
+            ]);
         }
 
-        // return view('admin_manikur.moder_pages.signup', ['data' => $data]);
-        return response()->json('');
+        $signup = Order::where('client_id', $request->client_id)
+                ->where('start_dt', '>', Carbon::now()->toDateTimeString())
+                ->with('master')
+                ->with('service')
+                ->with('client')
+                ->orderBy('start_dt')
+                ->get();
+
+        $data['post_by_client']['data'] = $this->sort_pag($signup);
+        // return response()->json($data);
+        return view('admin_manikur.moder_pages.signup', ['data' => $data]);
     }
 
     public function past()
     {
-        $signup['list'] = Order::where('start_dt', '<', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
-        $signup = $this->sort_pag($signup);
+        $signup = Order::where('start_dt', '<', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
+        $data['list'] = $this->sort_pag($signup);
 
-        return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
+        return view('admin_manikur.moder_pages.signup', ['data' => $data]);
     }
 
     public function future()
     {
-        $signup['list'] = Order::where('start_dt', '>', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
-        $signup = $this->sort_pag($signup);
+        $signup = Order::where('start_dt', '>', Carbon::now()->toDateTimeString())->with('master')->with('service')->with('client')->orderBy('start_dt')->paginate(10);
+        $data['list'] = $this->sort_pag($signup);
 
-        return view('admin_manikur.moder_pages.signup', ['data' => $signup]);
+        return view('admin_manikur.moder_pages.signup', ['data' => $data]);
     }
 
-    protected function sort_pag($signup)
+    protected function sort_pag($array)
     {
-        foreach ($signup['list'] as $key => $value) {
-            $signup['list'][$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
-            $signup['list'][$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
+        foreach ($array as $key => $value) {
+            $array[$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
+            $array[$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
         }
 
-        return $signup;
+        return $array;
     }
 
     public function remove(Request $request)

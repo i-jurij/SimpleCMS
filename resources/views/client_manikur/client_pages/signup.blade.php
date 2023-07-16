@@ -17,7 +17,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     $dismiss_signup = ' <p class=\"pad\">\
                             <small>\
                                 Если нужно записаться на то же время к другому мастеру или на другую услугу:\
-                                <br>отмените запись (нужно будет ввести номер телефона) и запишитесь заново.\
+                                <br>отмените запись и запишитесь заново.\
                             </small>\
                         </p>';
 @endphp
@@ -627,7 +627,11 @@ $('#button_next').click(function(){
           $('#button_next').val('time_choice');
           $('#button_back').val('services_choice');
           $('#timeh3').hide();
-        }else if ($(this).prop('id') == 'time_choice') {
+        } else if ($(this).prop('id') == 'time_choice') {
+            let dissmiss_input = $('input[name="dismiss"]');
+            if (!!dissmiss_input) {
+                dissmiss_input.remove();
+            }
             $('#button_next').val('zapis_end');
             if ($('#master_choice').html() == '<p class="pad">No masters for this service available.</p>') {
                 $('#button_back').val('services_choice');
