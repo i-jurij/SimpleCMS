@@ -102,7 +102,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                 @csrf
                 <div class="choice" id="give_a_phone">
                     <div class="" id="form_phone">
-                        <h3 class="back shad rad pad">Введите свое имя и номер телефона для связи</h3>
+                    <h3 class="back shad rad pad">Введите свое имя и номер телефона для связи</h3>
                         <div class="form-group pad margin_bottom_1rem">
                             <div class="">
                                 <div class="error" id="phone_error"><small></small></div>
@@ -195,9 +195,13 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
             <div class="choice display_none" id="zapis_end"></div>
 
             <div class="zapis_usluga margin_bottom_1rem" id="buttons_div">
+                <form action="" method="post" enctype="application/x-www-form-urlencoded" id="for_dismiss_order" class="display_inline_block">
+                    <button type="submit" name="dismiss_order" class="buttons">Отменить (изменить) запись</button>
+                </form>
                 <button type="button" class="buttons" id="button_back" value="" disabled >Назад</button>
-                <button type="button" class="buttons" id="button_next" value="" disabled >Далее</button>
+                <button type="button" class="buttons" id="button_next" value="" disabled >Записаться</button>
             </div>
+
         @else
             <div class="content"><p>Список услуг пуст.</p></div>
         @endif
@@ -325,6 +329,7 @@ $(function() {
 $('#button_next').click(function(){
     if ( $('#give_a_phone input[name="zapis_phone_number"]').val() && $(this).val() == 'services_choice' )
     {
+        $('#for_dismiss_order').hide();
         //$(this).val('zapis_sql').html('Записаться!');
         let phone = $('#give_a_phone input[type="tel"]').val().replace(/ /g, '\u00a0');
 
@@ -352,7 +357,7 @@ $('#button_next').click(function(){
             $('#give_a_phone').hide();
             $('#services_choice').show();
             $('#button_back').val('give_a_phone').prop('disabled', false);
-            $(this).val('master_next');
+            $(this).val('master_next').html('Далее');
             scrolltobuttonnext('#services_choice input[type="radio"]');
         } else {
             $('#phone_error').html(res.error).show();
@@ -616,7 +621,8 @@ $('#button_next').click(function(){
         $('#'+choice_div_id).show();
         if ($(this).prop('id') == 'give_a_phone') {
             $('#button_back').prop('disabled', true);
-            $('#button_next').val('services_choice').html('Далее');
+            $('#button_next').val('services_choice').html('Записаться');
+            $('#for_dismiss_order').show();
         } else if ( $(this).prop('id') == 'services_choice') {
             $('#button_next').val('master_next');
             $('#button_back').val('give_a_phone');
