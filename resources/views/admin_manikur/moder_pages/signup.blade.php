@@ -555,7 +555,7 @@ $uv = '';
             if ('post_by_client' in dell) {
                 document.querySelector('#js_back_button').remove();
                 page_object = dell.post_by_client;
-                console.log(page_object)
+                //console.log(page_object)
             } else if ('list' in dell) {
                 page_object = dell.list;
             }

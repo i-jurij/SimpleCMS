@@ -458,6 +458,38 @@ class SignupController extends Controller
 
     public function signup_edit(Request $request)
     {
+        $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
+        $data['edit'] = [];
+        if (!empty($request->order_id)) {
+            $data = $this->edit_get_order_data($request);
+        } else {
+            $data['edit']['Error! No order id get in controller.'] = '';
+        }
+
+        return view('client_manikur.client_pages.signup_edit', ['content' => $content, 'data' => $data]);
+    }
+
+    protected function edit_get_order_data(Request $request)
+    {
+        $signup = Order::with('service')->with('master')->with('client')->find($request->order_id)->toArray();
+        if (!empty($signup['id'])) {
+            $page = Page::find($signup['service']['page_id'])->title;
+            if (!empty($signup['service']['category_id'])) {
+                $category_data = ServiceCategory::find($signup['service']['category_id'])->name;
+            }
+            $category = (!empty($category_data)) ? $category_data.', ' : '';
+            $signup['service'] = $page.', '
+                .$category
+                .$signup['service']['name'].',<br>'
+                .$signup['service']['duration'].' мин.,<br>'
+                .$signup['service']['price'].' руб.';
+
+            $data['edit'] = $signup;
+        } else {
+            $data['edit']['.'] = '';
+        }
+
+        return $data;
     }
 
     public function signup_store(Request $request)

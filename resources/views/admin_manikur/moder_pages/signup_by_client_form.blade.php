@@ -11,7 +11,7 @@ $uv = '';
 
 <div class="content" id="by_client">
     <p class="margin+tp+1rem">Search client by phone number:</p>
-    <form action="{{url()->route('admin.signup.post_by_client')}}" method="post" class="form-recall-main" id="find_client">
+    <form action="{{url()->route('admin.signup.by_client.post')}}" method="post" class="form-recall-main" id="find_client">
     @csrf
         <div class="">
             <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
