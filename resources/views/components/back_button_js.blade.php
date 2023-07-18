@@ -1,4 +1,4 @@
-<div class="backbutton ">
+<div class="backbutton " style="left: 6rem;">
 <input
     type="image"
     class=" buttons"

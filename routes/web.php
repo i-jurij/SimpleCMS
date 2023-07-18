@@ -53,6 +53,10 @@ Route::name('client.')
     Route::post('/signup/time', [SignupController::class, 'appoint_time'])->name('signup.time');
     Route::post('/signup/check', [SignupController::class, 'appoint_check'])->name('signup.check');
     Route::post('/signup/end', [SignupController::class, 'appoint_end'])->name('signup.end');
+    Route::post('/signup/list', [SignupController::class, 'signup_list'])->name('signup.list');
+    Route::post('/signup/edit', [SignupController::class, 'signup_edit'])->name('signup.edit');
+    Route::post('/signup/store', [SignupController::class, 'signup_store'])->name('signup.store');
+    Route::post('/signup/remove', [SignupController::class, 'signup_remove'])->name('signup.remove');
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');
 });

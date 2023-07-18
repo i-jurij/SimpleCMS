@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Models\Contacts;
 use App\Models\Master;
 use App\Models\Order;
 use App\Models\Page;
@@ -252,6 +253,23 @@ class SignupController extends Controller
         return json_encode($res);
     }
 
+    public function validate_name_phone(Request $request)
+    {
+        $rules = [
+            'zapis_phone_number' => ['required', 'regex:/^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?/'],
+        ];
+        $messages = [
+            'zapis_phone_number.regex' => 'The phone number does not match the specified format. Телефонный номер не соответсвует формату +9 999 999 99 99',
+        ];
+        if (isset($request->zapis_name)) {
+            $rules['zapis_name'] = ['regex:/^[а-яА-ЯёЁa-zA-Z]+$/', 'max:255'];
+            $messages['zapis_name.max'] = 'The name is too long (255 characters allowed).';
+            $messages['zapis_name.regex'] = 'The allowed characters of name is only letters.';
+        }
+
+        $this->validate($request, $rules, $messages);
+    }
+
     public function appoint_end(Request $request, Order $order)
     {
         if (!empty($request->dismiss)) {
@@ -264,19 +282,7 @@ class SignupController extends Controller
             // if isset $request->last_name - spam bot
             if (empty($request->last_name)) {
                 // save client data to table  'clients'
-                $rules = [
-                    'zapis_phone_number' => ['required', 'regex:/^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?/'],
-                ];
-                $messages = [
-                    'zapis_phone_number.regex' => 'The phone number does not match the specified format. Телефонный номер не соответсвует формату +9 999 999 99 99',
-                ];
-                if (isset($request->zapis_name)) {
-                    $rules['zapis_name'] = ['regex:/^[а-яА-ЯёЁa-zA-Z]+$/', 'max:255'];
-                    $messages['zapis_name.max'] = 'The name is too long (255 characters allowed).';
-                    $messages['zapis_name.regex'] = 'The allowed characters of name is only letters.';
-                }
-
-                $this->validate($request, $rules, $messages);
+                $this->validate_name_phone($request);
 
                 $client = Client::firstOrCreate(['phone' => $request->zapis_phone_number], ['name' => $request->zapis_name]);
 
@@ -383,5 +389,78 @@ class SignupController extends Controller
         ];
 
         return response()->json($res);
+    }
+
+    public function signup_list(Request $request, Client $client, $res = null)
+    {
+        $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
+        if (!empty($request->zapis_phone_number)) {
+            $this->validate_name_phone($request);
+        }
+
+        $client_id = ($request->client_id) ? $request->client_id : $this->get_client_id($request->zapis_phone_number, $client);
+        $signup = Order::where('client_id', $client_id)
+        ->where('start_dt', '>', Carbon::now()->toDateTimeString())
+        ->whereHas('master', function ($query) {
+            return $query->whereNull('data_uvoln');
+        })
+        ->with('master')
+        ->with('service')
+        ->orderBy('start_dt')
+        ->get();
+
+        foreach ($signup as $key => $value) {
+            $signup[$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
+            $signup[$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
+        }
+        function get_res_obj($signup)
+        {
+            $res_obj = [];
+            $date = '';
+            foreach ($signup as $elem) {
+                $date = Carbon::parse($elem['start_dt'])->locale('ru_RU')->isoFormat('LL');
+                $start_dt = Carbon::parse($elem['start_dt'])->format('H:i');
+                $order_id = $elem['id'];
+                $master = $elem['master']['master_name'].' '.$elem['master']['sec_name'].' '.$elem['master']['master_fam'].',<br>'.$elem['master']['master_phone_number'];
+                $category = (!empty($elem['category'])) ? $elem['category'].', ' : ' ';
+                $service = $elem['page'].': '.$category.$elem['service']['name'].', '.$elem['service']['duration'].' мин., '.$elem['service']['price'].' руб.';
+
+                if (!empty($res_obj[$date])) {
+                    array_push($res_obj[$date], ['start_dt' => $start_dt, 'order_id' => $order_id, 'service' => $service, 'master' => $master]);
+                } else {
+                    $res_obj[$date] = [];
+                    array_push($res_obj[$date], ['start_dt' => $start_dt, 'order_id' => $order_id, 'service' => $service, 'master' => $master]);
+                }
+            }
+
+            return $res_obj;
+        }
+
+        return view('client_manikur.client_pages.signup_edit', ['content' => $content, 'signup' => get_res_obj($signup->toArray()), 'client_id' => $client_id, 'res' => $res]);
+    }
+
+    public function signup_remove(Request $request, Client $client)
+    {
+        // $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
+        if (!empty($request->order_id)) {
+            $del_order = Order::destroy($request->order_id);
+            if ($del_order > 0) {
+                $res = 'Запись удалена!';
+            } else {
+                $res = 'Ошибка! Запись НЕ удалена или была удалена ранее!';
+            }
+        } else {
+            $res = 'Ошибка! В запросе нет информации о заказе!';
+        }
+        // return view('client_manikur.client_pages.signup_res', ['content' => $content, 'res' => $res]);
+        return $this->signup_list($request, $client, $res);
+    }
+
+    public function signup_edit(Request $request)
+    {
+    }
+
+    public function signup_store(Request $request)
+    {
     }
 }

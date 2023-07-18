@@ -1,5 +1,6 @@
 <?php
 if (!empty($content['contacts'])) {
+    $data = ['tlf' => [], 'adres' => [], 'vk' => [], 'telegram' => []];
     foreach ($content['contacts'] as $value) {
         if ($value['type'] === 'tlf') {
             $data['tlf'][] = $value['data'];
@@ -15,10 +16,12 @@ if (!empty($content['contacts'])) {
         }
     }
 } else {
-    $data['telegram'] = ['tg'];
-    $data['vk'] = ['vk'];
-    $data['tlf'] = ['+7999 777 66 55'];
-    $data['adres'] = ['adres'];
+    if (!empty($data['telegram']) && !empty($data['vk']) && !empty($data['tlf']) && !empty($data['adres'])) {
+        $data['telegram'] = ['tg'];
+        $data['vk'] = ['vk'];
+        $data['tlf'] = ['+7999 777 66 55'];
+        $data['adres'] = ['adres'];
+    }
 }
 
 ?>

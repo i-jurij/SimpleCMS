@@ -25,6 +25,8 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
     @if (!empty($menu)) <p class="content">{{$menu}}</p> @endif
 
     @if (!empty($this_show_method_data))
+        @include('components.back_button_js')
+
         @php
             $title = (!empty($this_show_method_data['cat']['name'])) ? $this_show_method_data['cat']['name'] : $this_show_method_data['serv']['name'];
             $page_meta_description = (!empty($this_show_method_data['cat']['description'])) ? $this_show_method_data['cat']['description'] : ((!empty($this_show_method_data['serv']['description'])) ? $this_show_method_data['serv']['description'] : '');

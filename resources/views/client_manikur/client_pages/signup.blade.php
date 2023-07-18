@@ -195,9 +195,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
             <div class="choice display_none" id="zapis_end"></div>
 
             <div class="zapis_usluga margin_bottom_1rem" id="buttons_div">
-                <form action="" method="post" enctype="application/x-www-form-urlencoded" id="for_dismiss_order" class="display_inline_block">
-                    <button type="submit" name="dismiss_order" class="buttons">Отменить (изменить) запись</button>
-                </form>
+                <button class="buttons" id="dismiss_order" disabled>Ваши записи</button>
                 <button type="button" class="buttons" id="button_back" value="" disabled >Назад</button>
                 <button type="button" class="buttons" id="button_next" value="" disabled >Записаться</button>
             </div>
@@ -293,43 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .replace(/'/g, "&#039;");
     }
 
-$(function() {
-    //for page choice
-    // Найти все узлы TD
-    var page_buttons=$("#services_choice > .page_buttons > .zapis_usluga_buttons");
-    // Добавить событие щелчка для всех TD
-    page_buttons.click(function() {
-        var button_id = $(this).prop('id');
-        $('.uslugi').each(function (index, value){
-        let page_id = $(this).prop('id');
-        if (page_id == 'div'+button_id) {
-        $("#div"+button_id).toggle();
-        //$('#services_choice label').show();
-        } else {
-        $(this).hide();
-        }
-        });
-    });
-
-    $('#give_a_phone input[name="zapis_phone_number"]').on('input', function(){
-        $('#button_next').val('services_choice').prop('disabled', false);
-    });
-    /*
-    $('#services_choice input[type="radio"]').on('change', function(){
-        if ( $('#services_choice input[type="radio"]:checked').length > 0 ) {
-            //$('#button_next').val('master_next').prop('disabled', false);
-            $('html, body').animate({
-            scrollTop: $("#buttons_div").offset().top
-            }, 500);
-            $('#button_next').focus();
-        }
-    });
-    */
-////////////////////////
-$('#button_next').click(function(){
-    if ( $('#give_a_phone input[name="zapis_phone_number"]').val() && $(this).val() == 'services_choice' )
-    {
-        $('#for_dismiss_order').hide();
+    function validate_data() {
         //$(this).val('zapis_sql').html('Записаться!');
         let phone = $('#give_a_phone input[type="tel"]').val().replace(/ /g, '\u00a0');
 
@@ -351,6 +313,60 @@ $('#button_next').click(function(){
         } else {
             res.error += '<p class="error pad" >Неверно введен номер телефона.</p>';
         }
+        return res;
+    }
+
+$(function() {
+    let dismiss_order = $('#dismiss_order');
+    if (dismiss_order) {
+        dismiss_order.click(function() {
+            res = validate_data();
+            if (res.client_name && res.client_phone) {
+                let input_dismiss = '<input type="hidden" name="dismiss_order" value="true" />';
+                $('form#zapis_usluga_form')
+                    .attr('action', '{{url()->route("client.signup.list")}}')
+                    .append(input_dismiss)
+                    .submit();
+            } else {
+                $('#phone_error').html(res.error).show();
+                $('#button_next').prop('disabled', true);
+                $('#give_a_phone input[name="zapis_name"]').on('input', function(){
+                    $('#button_next').val('services_choice').prop('disabled', false);
+                    $('#dismiss_order').prop('disabled', false).show();
+                });
+            }
+        });
+    }
+
+    //for page choice
+    // Найти все узлы TD
+    var page_buttons=$("#services_choice > .page_buttons > .zapis_usluga_buttons");
+    // Добавить событие щелчка для всех TD
+    page_buttons.click(function() {
+        var button_id = $(this).prop('id');
+        $('.uslugi').each(function (index, value){
+            let page_id = $(this).prop('id');
+            if (page_id == 'div'+button_id) {
+                $("#div"+button_id).toggle();
+                //$('#services_choice label').show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    $('#give_a_phone input[name="zapis_phone_number"]').on('input', function(){
+        $('#button_next').val('services_choice').prop('disabled', false);
+        $('#dismiss_order').prop('disabled', false);
+    });
+    ////////////////////////
+    $('#button_next').click(function(){
+    if ( $('#give_a_phone input[name="zapis_phone_number"]').val() && $(this).val() == 'services_choice' )
+    {
+        $('#dismiss_order').hide();
+        //$(this).val('zapis_sql').html('Записаться!');
+
+        res = validate_data();
         if (res.client_name && res.client_phone) {
             $('#phone_error').html();
             $('#phone_error').hide();
@@ -365,6 +381,7 @@ $('#button_next').click(function(){
             $('#give_a_phone input[name="zapis_name"]').on('input', function(){
                 $('#button_next').val('services_choice').prop('disabled', false);
             });
+            $('#dismiss_order').show();
         }
     }
     //if ( $('#services_choice input:checkbox:checked').length > 0 && $(this).val() == 'master_next')
@@ -622,7 +639,7 @@ $('#button_next').click(function(){
         if ($(this).prop('id') == 'give_a_phone') {
             $('#button_back').prop('disabled', true);
             $('#button_next').val('services_choice').html('Записаться');
-            $('#for_dismiss_order').show();
+            $('#dismiss_order').show();
         } else if ( $(this).prop('id') == 'services_choice') {
             $('#button_next').val('master_next');
             $('#button_back').val('give_a_phone');
