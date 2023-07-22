@@ -13,6 +13,8 @@ use App\Models\ServiceCategory;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
 class SignupController extends Controller
 {
@@ -270,6 +272,26 @@ class SignupController extends Controller
         $this->validate($request, $rules, $messages);
     }
 
+    protected function check_isset_client(Request $request, $newHash)
+    {
+        $client = Client::where(['phone' => $request->zapis_phone_number], ['name' => $request->zapis_name], ['password' => $newHash])->first();
+        if (!empty($client->id)) {
+            return [3, $client];
+        }
+        $client = Client::where(['phone' => $request->zapis_phone_number], ['password' => $newHash])->first();
+        if (!empty($client->id)) {
+            return [2, $client];
+        }
+        $client = Client::where(['phone' => $request->zapis_phone_number], ['name' => $request->zapis_name])->first();
+        if (!empty($client->id)) {
+            return [1, $client];
+        }
+        $client = Client::where(['phone' => $request->zapis_phone_number])->first();
+        if (!empty($client->id)) {
+            return [0, $client];
+        }
+    }
+
     public function appoint_end(Request $request, Order $order)
     {
         if (!empty($request->dismiss)) {
@@ -284,7 +306,41 @@ class SignupController extends Controller
                 // save client data to table  'clients'
                 $this->validate_name_phone($request);
 
-                $client = Client::firstOrCreate(['phone' => $request->zapis_phone_number], ['name' => $request->zapis_name]);
+                if (!empty($request->client_password_first)) {
+                    $request->validate(['client_password_first' => [Rules\Password::defaults()]]);
+                    $newHash = Hash::make($request->client_password_first);
+                }
+                $client_name = (!empty($request->zapis_name)) ? $request->zapis_name : null;
+                $password = (!empty($newHash)) ? $newHash : null;
+                // $client = Client::firstOrCreate(['phone' => $request->zapis_phone_number], ['name' => $request->zapis_name], ['password' => $password]);
+                $client_check = Client::where(['phone' => $request->zapis_phone_number])->first();
+                if (!empty($client_check->id)) {
+                    if (!empty($client_check->password)) {
+                        if (Hash::check($request->client_password_first, $client_check->password)) {
+                            $client = $client_check;
+                            if (empty($client->name && !empty($client_name))) {
+                                $client->name = $client_name;
+                                $client->save();
+                            }
+                        } else {
+                            $res = 'Пароли не совпадают!';
+
+                            return back()->with('res', $res);
+                        }
+                    } else {
+                        if (!empty($request->client_password_first)) {
+                            $client = $client_check;
+                            $client->password = $newHash;
+                            $client->save();
+                        }
+                        if (empty($client->name && !empty($client_name))) {
+                            $client->name = $client_name;
+                            $client->save();
+                        }
+                    }
+                } else {
+                    $client = Client::create(['phone' => $request->zapis_phone_number], ['name' => $request->zapis_name], ['password' => $password]);
+                }
 
                 // get duration of service and calculate the value of end_dt
                 $service = Service::find($request->usluga);
@@ -340,6 +396,7 @@ class SignupController extends Controller
                             'price' => $price,
                             'time' => $cyr[$start_dt->dayOfWeek].', '.$start_dt->day.' '.$month[$start_dt->month - 1].' '.$start_dt->format('Y, H:i'),
                             'client_phone' => $request->zapis_phone_number,
+                            'client_password' => $request->client_password_first,
                         ];
                     } else {
                         $res = false;
@@ -399,44 +456,60 @@ class SignupController extends Controller
         }
 
         $client_id = ($request->client_id) ? $request->client_id : $this->get_client_id($request->zapis_phone_number, $client);
-        $signup = Order::where('client_id', $client_id)
-        ->where('start_dt', '>', Carbon::now()->toDateTimeString())
-        ->whereHas('master', function ($query) {
-            return $query->whereNull('data_uvoln');
-        })
-        ->with('master')
-        ->with('service')
-        ->orderBy('start_dt')
-        ->get();
 
-        foreach ($signup as $key => $value) {
-            $signup[$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
-            $signup[$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
-        }
-        function get_res_obj($signup)
-        {
-            $res_obj = [];
-            $date = '';
-            foreach ($signup as $elem) {
-                $date = Carbon::parse($elem['start_dt'])->locale('ru_RU')->isoFormat('LL');
-                $start_dt = Carbon::parse($elem['start_dt'])->format('H:i');
-                $order_id = $elem['id'];
-                $master = $elem['master']['master_name'].' '.$elem['master']['sec_name'].' '.$elem['master']['master_fam'].',<br>'.$elem['master']['master_phone_number'];
-                $category = (!empty($elem['category'])) ? $elem['category'].', ' : ' ';
-                $service = $elem['page'].': '.$category.$elem['service']['name'].', '.$elem['service']['duration'].' мин., '.$elem['service']['price'].' руб.';
+        // password validate
+        $request->validate(['client_password' => ['required', Rules\Password::defaults()]]);
 
-                if (!empty($res_obj[$date])) {
-                    array_push($res_obj[$date], ['start_dt' => $start_dt, 'order_id' => $order_id, 'service' => $service, 'master' => $master]);
-                } else {
-                    $res_obj[$date] = [];
-                    array_push($res_obj[$date], ['start_dt' => $start_dt, 'order_id' => $order_id, 'service' => $service, 'master' => $master]);
-                }
+        $client = Client::find($client_id);
+        if (Hash::check($request->client_password, $client->password)) {
+            if (Hash::needsRehash($client->password)) {
+                $newHash = Hash::make($request->client_password);
+                $client->password = $newHash;
+                $client->save();
             }
 
-            return $res_obj;
-        }
+            // get orders data by client
+            $signup = Order::where('client_id', $client_id)
+            ->where('start_dt', '>', Carbon::now()->toDateTimeString())
+            ->whereHas('master', function ($query) {
+                return $query->whereNull('data_uvoln');
+            })
+            ->with('master')
+            ->with('service')
+            ->orderBy('start_dt')
+            ->get();
 
-        return view('client_manikur.client_pages.signup_edit', ['content' => $content, 'signup' => get_res_obj($signup->toArray()), 'client_id' => $client_id, 'res' => $res]);
+            foreach ($signup as $key => $value) {
+                $signup[$key]['page'] = Page::where('id', $value['service']['page_id'])->value('title');
+                $signup[$key]['category'] = ServiceCategory::where('id', $value['service']['category_id'])->value('name');
+            }
+            function get_res_obj($signup)
+            {
+                $res_obj = [];
+                $date = '';
+                foreach ($signup as $elem) {
+                    $date = Carbon::parse($elem['start_dt'])->locale('ru_RU')->isoFormat('LL');
+                    $start_dt = Carbon::parse($elem['start_dt'])->format('H:i');
+                    $order_id = $elem['id'];
+                    $master = $elem['master']['master_name'].' '.$elem['master']['sec_name'].' '.$elem['master']['master_fam'].',<br>'.$elem['master']['master_phone_number'];
+                    $category = (!empty($elem['category'])) ? $elem['category'].', ' : ' ';
+                    $service = $elem['page'].': '.$category.$elem['service']['name'].', '.$elem['service']['duration'].' мин., '.$elem['service']['price'].' руб.';
+
+                    if (!empty($res_obj[$date])) {
+                        array_push($res_obj[$date], ['start_dt' => $start_dt, 'order_id' => $order_id, 'service' => $service, 'master' => $master]);
+                    } else {
+                        $res_obj[$date] = [];
+                        array_push($res_obj[$date], ['start_dt' => $start_dt, 'order_id' => $order_id, 'service' => $service, 'master' => $master]);
+                    }
+                }
+
+                return $res_obj;
+            }
+
+            return view('client_manikur.client_pages.signup_edit', ['content' => $content, 'signup' => get_res_obj($signup->toArray()), 'client_id' => $client_id, 'res' => $res]);
+        } else {
+            return back()->withErrors(['password' => 'Неверный пароль :(']);
+        }
     }
 
     public function signup_remove(Request $request, Client $client)
@@ -492,7 +565,62 @@ class SignupController extends Controller
         return $data;
     }
 
-    public function signup_store(Request $request)
+    public function signup_store(Request $request, Order $order)
     {
+        $content['contacts'] = Contacts::select('type', 'data')->get()->toArray();
+        $data = '';
+        if (!empty($request->start_dt && $request->serv_dur)) {
+            $start_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000);
+            // if $dur > 9 - minutes, else hours
+            if ($request->serv_dur > 9) {
+                $dur = (int) $request->serv_dur;
+                $end_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000)->addMinutes($dur);
+            } else {
+                $end_dt = CarbonImmutable::createFromTimestamp($request->start_dt / 1000)->addHours($request->serv_dur);
+            }
+
+            if ($order->where('id', $request->order_id)->update(['start_dt' => $start_dt, 'End_dt' => $end_dt])) {
+                $data = $start_dt;
+            } else {
+                $data = 'ERROR! Time not updated.';
+            }
+        }
+
+        if (!empty($request->master_id)) {
+            // update master_id in order
+            if ($order->where('id', $request->order_id)->update(['master_id' => $request->master_id])) {
+                $ord = $order->find($request->order_id);
+                $data = $ord->master;
+            } else {
+                $data = 'ERROR ! Master not updated.';
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    public function get_masters(Request $request)
+    {
+        if (!empty($request->service_id) && !empty($request->start_dt)) {
+            $start_dt = Carbon::parse($request->start_dt)->toDateTime();
+            $service = Service::find($request->service_id);
+            foreach ($service->masters as $master) {
+                if (empty($master->data_uvoln)) {
+                    $order = Order::where('master_id', $master->id)
+                    ->where('start_dt', '<=', $start_dt)
+                    ->where('end_dt', '>', $start_dt)
+                    ->first();
+
+                    // check if start_dt not = or between srart_dt and end_dt for each item of $order collection
+                    if (empty($order->id)) {
+                        $data[] = $master;
+                    }
+                }
+            }
+        } else {
+            $data = 'There is no necessary data in the request';
+        }
+
+        return response()->json($data);
     }
 }

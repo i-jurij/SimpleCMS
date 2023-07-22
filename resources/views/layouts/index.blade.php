@@ -35,7 +35,11 @@
                                             <li>{{ $mes }}</li>
                                         @endforeach
                                     @else
-                                        <li>{{ $error }}</li>
+                                        @if ($error === "The client password field confirmation does not match.")
+                                            <li>{{ "Неверный пароль :(" }}</li>
+                                        @else
+                                            <li>{{ $error }}</li>
+                                        @endif
                                     @endif
                                 @endforeach
                             </ul>

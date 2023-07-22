@@ -95,6 +95,38 @@ document.addEventListener('DOMContentLoaded', function () {
         window.scrollTo({top: y, behavior: 'smooth'});
     }
 
+    window.Laravel = { csrfToken: '{{ csrf_token() }}' };
+
+    async function data_from_db(url, enter_data = '') { // or data = {}
+        const myHeaders = {
+            //'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded',
+            "X-CSRF-TOKEN": Laravel.csrfToken
+        };
+
+        const myInit = {
+            method: 'POST',
+            mode: 'same-origin', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: myHeaders,
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *client
+            body: enter_data
+            // JSON.stringify(data) // body data type must match "Content-Type" header
+        };
+        const myRequest = new Request(url, myInit);
+        const response = await fetch(myRequest);
+        const contentType = response.headers.get('content-type');
+        //const mytoken = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            //throw new TypeError("Data from server is not JSON!");
+            return await response;
+        } else {
+            return await response.json();
+        }
+    }
+
     let table = document.querySelector('#signup_all_list');
     if(table) {
         table.addEventListener('click', function(element){
@@ -142,9 +174,8 @@ document.addEventListener('DOMContentLoaded', function () {
         master_data = <?php if (!empty($data)) {
             echo json_encode($data);
         } else {
-            echo '';
+            echo 'undefined';
         }?>;
-        console.log(master_data)
         if (master_data) {
             arr = master_data.edit;
             order_id = arr.id;
@@ -188,35 +219,135 @@ document.addEventListener('DOMContentLoaded', function () {
                                                     <td>\
                                                     </td>\
                                                 </tr>\
-                                                <tr>\
-                                                    <td>\
-                                                        Клиент: \
-                                                    </td>\
-                                                    <td>'
-                                                        +arr.client.name+', '+arr.client.phone+
-                                                    '</td>\
-                                                    <td>\
-                                                    </td>\
-                                                </tr>\
-                                                <tr>\
-                                                    <td>\
-                                                        Статус: \
-                                                    </td>\
-                                                    <td>'
-                                                        +arr.status+
-                                                    '</td>\
-                                                    <td>\
-                                                        <br><button type="button" class="buttons" id="status_ch">Change status</button>\
-                                                    </td>\
-                                                </tr>\
                                             </tbody>\
                                         </table>\
                                     </div>';
         }
 
-        /*
+        function time_change(order_id, serv_dur, master_id) {
+            var newDiv = document.createElement('div');
+            newDiv.classList.add('modal')
+            newDiv.id = "alert"
+            newDiv.innerHTML = '<div><div id="time_choice"></div>\
+                                    <p>После выбора даты и времени нажмите "Ок"</p>\
+                                    <button id="alert_ok">OK</button>\
+                                    <button id="cancel_but">Cancel</button>\
+                                    </div>';
+            // Добавляем только что созданный элемент в дерево DOM
+            //document.body.insertBefore(newDiv, my_div);
+            table_ch.parentNode.insertBefore(newDiv, table_ch);
+            // setup body no scroll
+            document.body.style.overflow = 'hidden';
+            appointment('short', '/signup/appoint_time', arr.service_id, master_id, '{{ csrf_token() }}');
+            let but = document.getElementById('alert_ok');
+            let cancel_but = document.getElementById('cancel_but');
+            cancel_but.addEventListener('click', function () {
+                document.querySelector('.modal').remove();
+                document.body.style.overflow = 'scroll';
+            });
+            but.addEventListener('click', function (ev) {
+                let time_checked = document.querySelector('#time_choice input[name="time"]:checked');
+                if ( time_checked ) {
+                    let start_dt = time_checked.value;
+                    data_from_db('{{url()->route("client.signup.store")}}', "order_id=" + order_id+"&serv_dur="+serv_dur+"&start_dt="+start_dt)
+                    .then(promise => promise)
+                    .then(data => {
+                        //location.reload();
+                        document.querySelector('.modal').remove();
+                        document.body.style.overflow = 'scroll';
+                        new_dt = new Date(data).toLocaleString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long', year: "numeric", hour: 'numeric', minute: 'numeric' });
+                        txt = (!!new_dt) ? new_dt : data;
+                        if (txt === 'Invalid Date') {
+                            document.querySelector('#order_time').innerHTML = '<span style="color:red;">Ошибка!</span>';
+                        } else {
+                            document.querySelector('#order_time').innerHTML = '<span style="color:green;">Сохранено: <br>' + txt + '</span>';
+                            document.querySelector('#order_time').value = new Date(data).getTime();
+                        }
+                    })
+                    .catch(function (err) {
+                        console.log("Fetch Error :-S", err);
+                    });
+                }
+            })
+        }
+
+        function master_change(order_id, service_id, start_dt) {
+            var newDiv = document.createElement('div');
+            newDiv.classList.add('modal')
+            newDiv.id = "alert"
+            newDiv.innerHTML = '<div><div id="master_choice"></div>\
+                                    <p>После выбора mastera нажмите "Ок"</p>\
+                                    <button id="alert_ok">OK</button>\
+                                    <button id="cancel_but">Cancel</button>\
+                                    </div>';
+            table_ch.parentNode.insertBefore(newDiv, table_ch);
+            // setup body no scroll
+            document.body.style.overflow = 'hidden';
+            let cancel_but = document.getElementById('cancel_but');
+            cancel_but.addEventListener('click', function () {
+                document.querySelector('.modal').remove();
+                    document.body.style.overflow = 'scroll';
+            });
+
+            data_from_db("{{url()->route('client.signup.get_masters')}}", "order_id=" + order_id+"&service_id="+service_id+"&start_dt="+start_dt)
+            .then(promise => promise)
+            .then(masters_data => {
+                    //console.log(masters_data)
+                    if (typeof masters_data === 'string' || masters_data instanceof String) {
+                        document.querySelector('#master_choice').innerHTML = masters_data;
+                    } else  {
+                        document.querySelector('#master_choice').innerHTML = '<div class="radio-group flex">';
+                        for (const master of masters_data) {
+                            document.querySelector('#master_choice').innerHTML += '<article class="main_section_article radio" data-value="'+master.id+'" style="min-width:13rem;">\
+                                    <div class="main_section_article_imgdiv" style="background-color: var(--bgcolor-content);">\
+                                        <img src="{{asset("storage")}}/'+master.master_photo+'" alt="Фото '+master.master_fam+'" class="main_section_article_imgdiv_img" />\
+                                    </div>\
+                                    <div class="main_section_article_content margin_top_1rem">\
+                                        <h3 id="'+master.id+'">'+master.master_name+' '+master.master_fam+'<br>'+master.master_phone_number+'</h3>\
+                                    </div>\
+                                </article>';
+                        }
+                        document.querySelector('#master_choice').innerHTML += '</div>';
+
+                        document.querySelectorAll('.radio').forEach(function(master_article) {
+                            master_article.addEventListener('click', function(){
+                                document.querySelectorAll('.radio').forEach(function (elm) {
+                                    elm.classList.remove("selected");
+                                });
+                                this.classList.add('selected');
+                                let master_id = $(this).attr('data-value');
+
+                                let but = document.getElementById('alert_ok');
+                                if (!!but) {
+                                    but.addEventListener('click', function (ev) {
+                                        data_from_db('{{url()->route("client.signup.store")}}', "order_id=" + order_id+"&master_id="+master_id)
+                                            .then(promise => promise)
+                                            .then(data => {
+                                                //location.reload();
+                                                if (!!document.querySelector('.modal')) {document.querySelector('.modal').remove();}
+                                                document.body.style.overflow = 'scroll';
+                                                document.querySelector('#order_master').innerHTML = '<span style="color:green;">Сохранено: <br>'
+                                                    + data.master_name +
+                                                    ' ' + data.sec_name +
+                                                    ' ' + data.master_fam +
+                                                    ', ' + data.master_phone_number +
+                                                    '</span>';
+                                                document.querySelector('#order_master').value = data.id;
+                                        })
+                                        .catch(function (err) {
+                                            console.log("Fetch Error :-S", err);
+                                        });
+                                    })
+                                }
+                            })
+                        })
+
+                    }
+            })
+        }
+
         let table_ch = document.querySelector('#signup_change');
-        if (!!table_ch) {
+        if (table_ch) {
             table_ch.addEventListener('click', function(element){
                 if (element.target.id == 'time_ch') {
                     if (!!document.querySelector('#order_master').value) {
@@ -243,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }
-        */
+
     }
 }, false);
 </script>

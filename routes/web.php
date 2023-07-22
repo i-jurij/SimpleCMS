@@ -46,17 +46,21 @@ Route::name('client.')
     Route::get('/{page_alias?}', [ClientHomeController::class, 'page'])
     ->where('page_alias', '^((?!login|register|dashboard|admin|api|reload_captcha).)*$');
 
-    Route::post('/callback/store', [CallbackController::class, 'store'])->name('callback.store');
-    Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
+    Route::middleware('throttle:15,1')->group(function () {
+        Route::post('/callback/store', [CallbackController::class, 'store'])->name('callback.store');
+        Route::post('/callback/send_mail', [CallbackController::class, 'send_mail'])->name('callback.send_mail');
 
-    Route::post('/signup/masters', [SignupController::class, 'appoint_masters'])->name('signup.masters');
-    Route::post('/signup/time', [SignupController::class, 'appoint_time'])->name('signup.time');
-    Route::post('/signup/check', [SignupController::class, 'appoint_check'])->name('signup.check');
-    Route::post('/signup/end', [SignupController::class, 'appoint_end'])->name('signup.end');
-    Route::post('/signup/list', [SignupController::class, 'signup_list'])->name('signup.list');
-    Route::post('/signup/edit', [SignupController::class, 'signup_edit'])->name('signup.edit');
-    Route::post('/signup/store', [SignupController::class, 'signup_store'])->name('signup.store');
-    Route::post('/signup/remove', [SignupController::class, 'signup_remove'])->name('signup.remove');
+        Route::post('/signup/masters', [SignupController::class, 'appoint_masters'])->name('signup.masters');
+        Route::post('/signup/time', [SignupController::class, 'appoint_time'])->name('signup.time');
+        Route::post('/signup/check', [SignupController::class, 'appoint_check'])->name('signup.check');
+        Route::post('/signup/end', [SignupController::class, 'appoint_end'])->name('signup.end');
+        Route::post('/signup/list', [SignupController::class, 'signup_list'])->name('signup.list');
+        Route::post('/signup/edit', [SignupController::class, 'signup_edit'])->name('signup.edit');
+        Route::post('/signup/store', [SignupController::class, 'signup_store'])->name('signup.store');
+        Route::post('/signup/remove', [SignupController::class, 'signup_remove'])->name('signup.remove');
+        Route::post('/signup/appoint_time', [SignupController::class, 'appoint_time'])->name('signup.appoint_time');
+        Route::post('/signup/get_masters', [SignupController::class, 'get_masters'])->name('signup.get_masters');
+    });
 
     // Route::any('/{any?}', 'AppController@show')->where('any', '^((?!admin|api).)*$');
 });

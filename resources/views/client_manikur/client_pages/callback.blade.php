@@ -43,7 +43,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                             <div id="error"><small></small></div>
                             <label class="zapis_usluga">Ваше имя:
                                 <br>
-                                <input type="text" placeholder="Ваше имя" name="name" id="name" maxlength="255" value="{{ old('name') }}" />
+                                <input type="text" placeholder="Не обязательно заполнять" name="name" id="name" maxlength="255" value="{{ old('name') }}" />
                             </label>
                             <br>
                             <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
@@ -60,7 +60,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                             <br>
                             <label class="zapis_usluga">Вопрос:
                                 <br>
-                                <textarea placeholder="Что вас интересует?" name="send"  id="send" maxlength="500" value="{{ old('send') }}"></textarea>
+                                <textarea placeholder="Не обязательно заполнять" name="send"  id="send" maxlength="500" value="{{ old('send') }}"></textarea>
                             </label>
                         </div>
                     </div>

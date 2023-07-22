@@ -55,11 +55,17 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                         <div class="table_cell" style="text-align:right;">Ваш номер:</div>
                         <div class="table_cell">{{session('res')['client_phone']}} </div>
                     </div>
+                    @if (!empty(session('res')['client_password']))
+                    <div class="table_row">
+                        <div class="table_cell" style="text-align:right;">Ваш пароль (сохраните его, если хотите управлять своими записями):</div>
+                        <div class="table_cell">{{session('res')['client_password']}} </div>
+                    </div>
+                    @endif
                 </div>
                 <h3>Спасибо за ваш выбор!</h3>
             </div>
         @elseif (is_string(session('res')))
-            <div class="content"><p>{{session('res')}}</p></div>
+            <div class="content"><p class="error pad">{{session('res')}}</p></div>
         @elseif (session('res') === false)
             <p class="error">
                 Warning!<br>
@@ -107,20 +113,25 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                             <div class="">
                                 <div class="error" id="phone_error"><small></small></div>
                                 <label class="zapis_usluga">
-                                    <p class="pad">Ваше имя:</p>
-                                    <input type="text" placeholder="Ваше имя (одно слово, только буквы)" pattern="^([а-яА-ЯёЁa-zA-Z]+)?$" name="zapis_name" id="zapis_name" maxlength="255" value="{{ old('name') }}" />
+                                    <p class="pad">Ваше имя (не обязательно заполнять):</p>
+                                    <input type="text" title="Ваше имя (одно слово, только буквы)" placeholder="Одно слово, только буквы" pattern="^([а-яА-ЯёЁa-zA-Z]+)?$" name="zapis_name" id="zapis_name" maxlength="255" value="{{ old('name') }}" />
                                 </label>
                                 <br>
                                 <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />
                                 <p class="error" id="tel_mes"></p>
                                 <label class="zapis_usluga">
-                                    <p class="pad">Номер мобильной связи:</p>
+                                    <p class="pad">Номер телефона для связи с вами:</p>
                                     <input type="tel" name="zapis_phone_number"  id="number" class="number"
                                     title="Формат: +7 999 999 99 99" placeholder="+7 ___ ___ __ __"
                                     minlength="6" maxlength="17"
                                     pattern="^(\+?(7|8|38))[ ]{0,1}s?[\(]{0,1}?\d{3}[\)]{0,1}s?[\- ]{0,1}s?\d{1}[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?\d{1}s?[\- ]{0,1}?"
                                     value="{{ old('phone_number') }}"
                                     required />
+                                </label>
+                                <br>
+                                <label class="zapis_usluga display_none" id="zapis_password_label">
+                                    <p class="pad">Введите пароль:</small></p>
+                                    <input type="text" title="Пароль (для управления записями)" placeholder="Пароль" name="client_password" id="client_password" minlength="8" maxlength="255" />
                                 </label>
                             </div>
                         </div>
@@ -188,11 +199,9 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
 
                 <h3 class="back shad rad pad margin_rlb1 display_none" id="timeh3">Выберите время</h3>
                 <div class="choice display_none margin_bottom_1rem" id="time_choice"></div>
-
+                <div class="display_none" id="occupied"></div>
+                <div class="choice display_none" id="zapis_end"></div>
             </form>
-
-            <div class="display_none" id="occupied"></div>
-            <div class="choice display_none" id="zapis_end"></div>
 
             <div class="zapis_usluga margin_bottom_1rem" id="buttons_div">
                 <button class="buttons" id="dismiss_order" disabled>Ваши записи</button>
@@ -306,13 +315,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (name_regex.test(client_name)) {
             res.client_name = true;
         } else {
+            res.client_name = false;
             res.error = '<p class="error pad" >Имя должно состоять только из букв.</p>';
         }
         if (phone_regex.test(client_phone)) {
             res.client_phone = true;
         } else {
+            res.client_phone = false;
             res.error += '<p class="error pad" >Неверно введен номер телефона.</p>';
         }
+
         return res;
     }
 
@@ -320,20 +332,32 @@ $(function() {
     let dismiss_order = $('#dismiss_order');
     if (dismiss_order) {
         dismiss_order.click(function() {
+
+            $('#button_next').hide();
+            $('#button_back').hide();
+            dismiss_order.html('Список записей');
             res = validate_data();
-            if (res.client_name && res.client_phone) {
+
+            let client_password = $('#client_password');
+            if ( client_password.length ) {
+                password = client_password.val();
+            }
+
+            if (res.client_name && res.client_phone && !password ) {
+                let zapis_password_label = $('#zapis_password_label');
+                zapis_password_label.show();
+            }
+
+            if (res.client_name && res.client_phone && password ) {
                 let input_dismiss = '<input type="hidden" name="dismiss_order" value="true" />';
                 $('form#zapis_usluga_form')
                     .attr('action', '{{url()->route("client.signup.list")}}')
                     .append(input_dismiss)
                     .submit();
-            } else {
+            }
+
+            if (res.error) {
                 $('#phone_error').html(res.error).show();
-                $('#button_next').prop('disabled', true);
-                $('#give_a_phone input[name="zapis_name"]').on('input', function(){
-                    $('#button_next').val('services_choice').prop('disabled', false);
-                    $('#dismiss_order').prop('disabled', false).show();
-                });
             }
         });
     }
@@ -537,6 +561,12 @@ $(function() {
                                         <div class="table_row">\
                                             <div class="table_cell text_right">Ваш номер:</div>\
                                             <div class="table_cell text_left">'+client_phone+' </div>\
+                                        </div>\
+                                        <div class="table_row" id="client_password_div">\
+                                            <div class="table_cell text_right">Придумайте пароль <br>для доступа к записям <br>длиной больше 8 символов.</div>\
+                                            <div class="table_cell text_left">\
+                                                <input type="text" title="Пароль (для управления записями)" placeholder="Не обязательно" name="client_password_first" id="client_password_first" minlength="8" maxlength="255" />\
+                                            </div>\
                                         </div>\
                                     </div>');
                 } else {
