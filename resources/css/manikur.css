@@ -16,6 +16,16 @@
   	color-scheme: light dark;
 	--family: 'Liberation Sans', Arial, "Helvetica CY", Helvetica, "Nimbus Sans L", "Roboto", "Noto Sans", sans-serif;
   	--family_title:  'Nautilus Pompilius', cursive;
+	--mono: ui-monospace,
+			Menlo, Monaco,
+			"Cascadia Mono", "Segoe UI Mono",
+			"Roboto Mono",
+			"Oxygen Mono",
+			"Ubuntu Monospace",
+			"Source Code Pro",
+			"Fira Mono",
+			"Droid Sans Mono",
+			"Courier New", monospace;
   	--biggest-fontsize: 2rem;
 	--bigg-fontsize: 1.7rem;
   	--big-fontsize: 1.5rem;
@@ -1603,6 +1613,10 @@ overflow: hidden;
 	background-color: var(--bgcolor-button-disabled);
 }
 
+.logs {
+	font-family: var(--mono);
+	size: var(--small-fontsize);
+}
 
 /* ----------- resolution up to 1368px ----------------- */
 @media screen and (max-width: 1368px) {

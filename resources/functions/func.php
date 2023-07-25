@@ -247,6 +247,21 @@ function replace_string($file, $new_string, int $num_string = 0)
     }
 }
 
+function get_n_lines_from_txt_file($path_to_file, $number_of_lines = 1000)
+{
+    $lines = [];
+    $fp = fopen($path_to_file, 'r');
+    while (!feof($fp)) {
+        $line = fgets($fp);
+        array_push($lines, $line);
+        if (count($lines) > $number_of_lines) {
+            array_shift($lines);
+        }
+    }
+    fclose($fp);
+
+    return $lines;
+}
 /**
  * @param string $path - dir for scan
  * @param string $ext  - extension of files eg 'png' or 'png, webp, jpg'
@@ -268,12 +283,6 @@ function files_in_dir($path, $ext = '')
                 $arr = explode(',', $ext);
                 foreach ($arr as $value) {
                     $extt = mb_strtolower(trim($value));
-                    // $extt = mb_strtolower(ltrim(trim($value), '.'));
-                    /*
-                    if(preg_match("/\.($extt)/", $file)) {
-                      $files[] = $file;
-                    }
-                    */
                     if ($extt === mb_strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
                         $files[] = $file;
                     }

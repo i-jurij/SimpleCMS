@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminHomeController;
+use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CaptchaServiceController;
@@ -106,9 +107,13 @@ Route::prefix('admin')->name('admin.')
                 Route::post('/settings', 'store')->name('settings.store');
             });
 
-        Route::get('/logs', function () {
-            return view('admin_manikur.adm_pages.logs');
-        })->name('logs');
+        Route::controller(LogsController::class)
+            ->prefix('logs')
+            ->name('logs.')
+            ->group(function () {
+                Route::get('/', 'index')->name('list');
+                Route::post('/show', 'show')->name('show');
+            });
     });
     /*
     * ADMIN AND MODER ROUTES
