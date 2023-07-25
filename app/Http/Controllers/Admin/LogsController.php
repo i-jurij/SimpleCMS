@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class LogsController extends Controller
 {
@@ -17,7 +18,8 @@ class LogsController extends Controller
                 $path = storage_path('logs'.DIRECTORY_SEPARATOR.$file);
                 $size = filesize($path);
                 $res[$key]['size'] = human_filesize($size, 2);
-                $res[$key]['file'] = $file;
+                // $res[$key]['file'] = $file;
+                $res[$key]['file'] = Crypt::encryptString($file);
             }
         }
 
@@ -27,7 +29,7 @@ class LogsController extends Controller
     public function show(Request $request)
     {
         if (!empty($request->log_name)) {
-            $log = my_sanitize_string($request->log_name);
+            $log = Crypt::decryptString($request->log_name);
             // $content = file_get_contents(storage_path('logs'.DIRECTORY_SEPARATOR.$log));
             $size = filesize(storage_path('logs'.DIRECTORY_SEPARATOR.$log));
 
@@ -56,9 +58,7 @@ class LogsController extends Controller
                 }
             }
         } else {
-            $res = 'Log has been not shoosed.';
-
-            return back()->with('res', $res);
+            return back();
         }
     }
 }

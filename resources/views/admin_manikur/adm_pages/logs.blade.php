@@ -62,7 +62,7 @@ $robots = 'NOINDEX, NOFOLLOW';
             @foreach ($list as $value)
             <label >
                 <input type="radio" name="log_name" value="{{$value['file']}}" />
-                <span>{{$value['file']}}<br>{{$value['size']}}</span>
+                <span>{{Crypt::decryptString($value['file'])}}<br>{{$value['size']}}</span>
             </label>
             @endforeach
             <p class="pad">

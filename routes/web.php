@@ -111,8 +111,9 @@ Route::prefix('admin')->name('admin.')
             ->prefix('logs')
             ->name('logs.')
             ->group(function () {
-                Route::get('/', 'index')->name('list');
-                Route::post('/show', 'show')->name('show');
+                Route::post('/list', 'show')->name('show');
+                Route::get('/list', 'index')->name('show');
+                Route::get('/list', 'index')->name('list');
             });
     });
     /*
