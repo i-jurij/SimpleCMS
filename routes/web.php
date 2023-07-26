@@ -22,6 +22,7 @@ use App\Http\Controllers\Moder\SignupSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAdminControllers\CallbacksEditController;
 use App\Http\Controllers\UserAdminControllers\SignupController as UserSignupController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -114,6 +115,21 @@ Route::prefix('admin')->name('admin.')
                 Route::post('/list', 'show')->name('show');
                 Route::get('/list', 'index')->name('show');
                 Route::get('/list', 'index')->name('list');
+            });
+
+        Route::prefix('cache')
+            ->name('cache.')
+            ->group(function () {
+                Route::get('/clear', function () {
+                    Artisan::call('cache:clear');
+                    Artisan::call('config:cache');
+                    Artisan::call('view:clear');
+                    Artisan::call('route:clear');
+                    Artisan::call('clear-compiled');
+                    Artisan::call('event:cache');
+
+                    return response('Сброс кэша выполнен!');
+                })->name('clear');
             });
     });
     /*
@@ -269,5 +285,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.DIRECTORY_SEPARATOR.'auth.php';
-require __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'func.php';
-require __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'sanitize_functions.php';
+// load functions files in composer.json
+// require __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'func.php';
+// require __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'resources'.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR.'sanitize_functions.php';

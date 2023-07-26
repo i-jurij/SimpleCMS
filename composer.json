@@ -28,8 +28,13 @@
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
+            "Database\\Seeders\\": "database/seeders/",
+            "Resources\\Functions\\": "resources/functions/"
+        },
+        "files": [
+            "resources/functions/func.php",
+            "resources/functions/sanitize_functions.php"
+          ]
     },
     "autoload-dev": {
         "psr-4": {

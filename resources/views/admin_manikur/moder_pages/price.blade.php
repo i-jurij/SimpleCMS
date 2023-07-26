@@ -45,7 +45,7 @@ $robots = "NOINDEX, NOFOLLOW";
     @endphp
     @foreach ($data['serv'] as $cat_name => $serv_arr)
         @if ($cat_name != 'page_serv')
-            <tr><td colspan="3">{{$cat_name}}'</td></tr>
+            <tr><td colspan="3">{{$cat_name}}</td></tr>
             @foreach ($serv_arr as $serv_name => $cat_serv_price)
                 @php
                     $ar = explode('#', $cat_serv_price);

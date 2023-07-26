@@ -113,8 +113,8 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                             <div class="">
                                 <div class="error" id="phone_error"><small></small></div>
                                 <label class="zapis_usluga">
-                                    <p class="pad">Ваше имя (не обязательно заполнять):</p>
-                                    <input type="text" title="Ваше имя (одно слово, только буквы)" placeholder="Одно слово, только буквы" pattern="^([а-яА-ЯёЁa-zA-Z]+)?$" name="zapis_name" id="zapis_name" maxlength="255" value="{{ old('name') }}" />
+                                    <p class="pad">Ваше имя (одно слово, только буквы):</p>
+                                    <input type="text" title="Ваше имя (одно слово, только буквы)" placeholder="Не обязательно заполнять" pattern="^([а-яА-ЯёЁa-zA-Z]+)?$" name="zapis_name" id="zapis_name" maxlength="255" value="{{ old('name') }}" />
                                 </label>
                                 <br>
                                 <input type="text" placeholder="Ваша фамилия" name="last_name" id="last_name" maxlength="50" />

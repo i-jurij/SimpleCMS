@@ -461,6 +461,10 @@ class SignupController extends Controller
         $request->validate(['client_password' => ['required', Rules\Password::defaults()]]);
 
         $client = Client::find($client_id);
+        if (empty($client->id)) {
+            return back()->withErrors(['nodata' => 'Данных о записях нет.']);
+        }
+
         if (Hash::check($request->client_password, $client->password)) {
             if (Hash::needsRehash($client->password)) {
                 $newHash = Hash::make($request->client_password);
