@@ -126,7 +126,6 @@ Contacts editing:
 ![Alt text](screenshots/015_admin_moder_contacts_edit.jpg "Optional title")     
 Pages creating and editing:     
 ![Alt text](screenshots/020_admin_moder_pages_create_info.jpg "Optional title")
-![Alt text](screenshots/020_admin_moder_pages_create_info.jpg "Optional title")
 ![Alt text](screenshots/021_admin_moder_pages_create.jpg "Optional title")
 ![Alt text](screenshots/022_admin_moder_pages_edit_list.jpg "Optional title")
 ![Alt text](screenshots/023_admin_moder_pages_edit_edit.jpg "Optional title")     
