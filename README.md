@@ -39,7 +39,7 @@ with email - number of phone@com.com (+01112223344@com.com)
 with password - "password"     
 
 
-### Sign Up
+### SIGN UP
 ### Settings:
 ### By moder of organisation:
 `endtime = "17:00"`    
@@ -140,7 +140,7 @@ Service page creating and editing:
 Price editing:   
 ![Alt text](screenshots/030_admin_moder_prices_edit_page_choice.jpg "Optional title")
 ![Alt text](screenshots/031_admin_moder_prices_edit.jpg "Optional title")    
-Abputs page editing:    
+Abouts page editing:    
 ![Alt text](screenshots/040_admin_moder_abouts_articles_add.jpg "Optional title")
 ![Alt text](screenshots/041_admin_moder_abouts_articles_delete.jpg "Optional title")
 ![Alt text](screenshots/042_admin_moder_abouts_articles_postdelete.jpg "Optional title")
