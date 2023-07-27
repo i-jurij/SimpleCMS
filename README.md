@@ -104,11 +104,11 @@ Array of previous entries to the master
 in the array format `{'date': {time: 'duration', ...}, ...)`      
 
 Screenshots:   
-If user status is admin:    
+Admin home if user status is admin:    
 ![Alt text](screenshots/000_admin_page.jpg "Optional title")
-If user status is moder:   
+Admin home if user status is moder:   
 ![Alt text](screenshots/001_admin_moder_page.jpg "Optional title")
-If user status is user (usually this user is master):   
+Admin home if user status is user (usually this user is master):   
 ![Alt text](screenshots/002_admin_user_master_page.jpg "Optional title")     
 Edit users:   
 ![Alt text](screenshots/003_admin_user_change.jpg "Optional title")
