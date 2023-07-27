@@ -23,128 +23,143 @@ An entry will be created in the database.
 ### SERVICE edit
 First create the services, then the masters.
 
-### MASTERS edit
-All masters must have a some service,
-but if you don't need this - the ALL masters should NOT have any services.
-Otherwise, in the logic of order processing errors may occur.
-Logic:
-if each master have at least one service - check appointments times for current master;
-if masters not services - we believe that every master performs any service
-and check appointments times for all masters
-and if at least one master is free - client can sign up.
+### MASTERS edit   
+All masters must have a some service,    
+but if you don't need this - the ALL masters should NOT have any services.    
+Otherwise, in the logic of order processing errors may occur.    
+Logic:   
+if each master have at least one service - check appointments times for current master;    
+if masters not services - we believe that every master performs any service    
+and check appointments times for all masters    
+and if at least one master is free - client can sign up.    
 
-When masters created also user created with status "user"
-with "name" - number of phone (+01112223344)
-with email - number of phone@com.com (+01112223344@com.com)
-with password - "password"
+When masters created also user created with status "user"    
+with "name" - number of phone (+01112223344)    
+with email - number of phone@com.com (+01112223344@com.com)    
+with password - "password"     
 
 
-### SIGN UP
+### Sign Up
 ### Settings:
 ### By moder of organisation:
-`endtime = "17:00"`
-Время, после которого даты начинаются с завтрашней (те запись на сегодня уже недоступна)
-The time after which the dates start from tomorrow (those records are no longer available for today)
+`endtime = "17:00"`    
+Время, после которого даты начинаются с завтрашней (те запись на сегодня уже недоступна)    
+The time after which the dates start from tomorrow (those records are no longer available for today)    
 
-`lehgth_cal = 14`
-Количество отображаемых дней для записи
-The number of days displayed for an appointment
+`lehgth_cal = 14`    
+Количество отображаемых дней для записи    
+The number of days displayed for an appointment    
 
-`tz = "Europe/Simferopol"`
-Часовой пояс
-Timezone
+`tz = "Europe/Simferopol"`    
+Часовой пояс    
+Timezone    
 
-`period = 60`
-Интервал времен для записи (09:00, 10:00, 11:00, ...),
-мб любой, преобразуется кратно 10,, то есть 7 мин -> 10 мин, 23 мин -> 30 мин и тп
-кроме промежутков > 10, но < 15 - преобразуется в 15 минутный промежуток
-Time interval for an appointment, can be any, converted multiple of 10
-but if 10 < $period < 15 then = 15
+`period = 60`    
+Интервал времен для записи (09:00, 10:00, 11:00, ...),    
+мб любой, преобразуется кратно 10,, то есть 7 мин -> 10 мин, 23 мин -> 30 мин и тп    
+кроме промежутков > 10, но < 15 - преобразуется в 15 минутный промежуток    
+Time interval for an appointment, can be any, converted multiple of 10    
+but if 10 < $period < 15 then = 15     
 
-`lunch = ["12:00", 60]`
-Массив c двумя значениями: время начала HH:mm и длительность обеденного перерыва в минутах
-An array with two values: the start time HH:mm and the duration of the lunch break in minutes
+`lunch = ["12:00", 60]`     
+Массив c двумя значениями: время начала HH:mm и длительность обеденного перерыва в минутах    
+An array with two values: the start time HH:mm and the duration of the lunch break in minutes    
 
-`worktime = ['09:00', '19:00']`
-Рабочее время $worktime[0] - начало, $worktime[1] - конец
-Working time $worktime[0] - start, $worktime[1] - end
+`worktime = ['09:00', '19:00']`    
+Рабочее время $worktime[0] - начало, $worktime[1] - конец    
+Working time $worktime[0] - start, $worktime[1] - end    
 
-`org_weekend = {'Сб': '14:00', 'Вс': ''}`
-Постоянно планируемые в организации выходные, ключ - название дня,
-значение - пустое, если целый день выходной,
-или время начала отдыха в 24часовом формате HH:mm
-Weekends that are constantly planned in the organization, the key is the name of the day,
-the value is empty if the whole day is off,
-or the start time of the rest in the 24-hour format HH:mm
+`org_weekend = {'Сб': '14:00', 'Вс': ''}`    
+Постоянно планируемые в организации выходные, ключ - название дня,    
+значение - пустое, если целый день выходной,    
+или время начала отдыха в 24часовом формате HH:mm    
+Weekends that are constantly planned in the organization, the key is the name of the day,    
+the value is empty if the whole day is off,    
+or the start time of the rest in the 24-hour format HH:mm    
 
-`holiday = ['2023-02-23', '2023-03-08', '2023-03-17']` - праздничные дни хоть на 10 лет вперед
+`holiday = ['2023-02-23', '2023-03-08', '2023-03-17']` - праздничные дни хоть на 10 лет вперед    
 
-### DATA related to a specific MASTER:
-`rest_day_time = {'2023-03-15': [], '2023-03-13': ['16:00', '17:00', '18:00'],'2023-03-14': ['10:00', '11:00', '14:00'] }`
-Запланированные выходные дни и часы мастера,
-получены из рабочего графика мастера, если массив значений пуст - выходной целый день.
-Значение равно началу времени отгула, длительность не указывается и будет равна $period,
-те, если период = 60 минут, а отсутствовать мастер будет 2 часа после 17:00
-запись такая `rest_day_time = {'дата YYYY-mm-dd': ['17:00', '18:00']}`
+### DATA related to a specific MASTER:    
+`rest_day_time = {'2023-03-15': [], '2023-03-13': ['16:00', '17:00', '18:00'],'2023-03-14': ['10:00', '11:00', '14:00'] }`    
+Запланированные выходные дни и часы мастера,    
+получены из рабочего графика мастера, если массив значений пуст - выходной целый день.    
+Значение равно началу времени отгула, длительность не указывается и будет равна $period,    
+те, если период = 60 минут, а отсутствовать мастер будет 2 часа после 17:00    
+запись такая `rest_day_time = {'дата YYYY-mm-dd': ['17:00', '18:00']}`    
 
-The scheduled days off and the master's hours,
-are obtained from the master's work schedule, if the array of values is empty - the whole day off.
-The value is equal to the beginning of the time off, the duration is not specified and will be equal to $period,
-those if the period = 60 minutes, and the master will be absent 2 hours after 17:00
-the entry is `rest_day_time = {'date YYYY-mm-dd' => ['17:00', '18:00']}`
+The scheduled days off and the master's hours,    
+are obtained from the master's work schedule, if the array of values is empty - the whole day off.    
+The value is equal to the beginning of the time off, the duration is not specified and will be equal to $period,    
+those if the period = 60 minutes, and the master will be absent 2 hours after 17:00      
+the entry is `rest_day_time = {'date YYYY-mm-dd' => ['17:00', '18:00']}`    
 
-`exist_app_date_time_arr`
-Объект предыдущих записей к мастеру
-в формате `{'date': {time: 'duration', ...}, ...)`,
-где date - datetime (часы и минуты 00:00)
-а time - datetime (с ненулевым временем): 'duration' - длительность услуги в минутах,
-длительность можно не указывать (null or ''), тогда она считается равной $period
+`exist_app_date_time_arr`    
+Объект предыдущих записей к мастеру    
+в формате `{'date': {time: 'duration', ...}, ...)`,     
+где date - datetime (часы и минуты 00:00)    
+а time - datetime (с ненулевым временем): 'duration' - длительность услуги в минутах,     
+длительность можно не указывать (null or ''), тогда она считается равной $period     
 
-Array of previous entries to the master
-in the array format `{'date': {time: 'duration', ...}, ...)`
+Array of previous entries to the master     
+in the array format `{'date': {time: 'duration', ...}, ...)`      
 
-Screenshots:
+Screenshots:   
+If user status is admin:    
 ![Alt text](screenshots/000_admin_page.jpg "Optional title")
+If user status is moder:   
 ![Alt text](screenshots/001_admin_moder_page.jpg "Optional title")
-![Alt text](screenshots/002_admin_user_master_page.jpg "Optional title")
+If user status is user (usually this user is master):   
+![Alt text](screenshots/002_admin_user_master_page.jpg "Optional title")     
+Edit users:   
 ![Alt text](screenshots/003_admin_user_change.jpg "Optional title")
-![Alt text](screenshots/004_admin_user_delete.jpg "Optional title")
-![Alt text](screenshots/005_admin_signup_settings.jpg "Optional title")
-![Alt text](screenshots/006_admin_logs.jpg "Optional title")
+![Alt text](screenshots/004_admin_user_delete.jpg "Optional title")    
+Sign up settings:    
+![Alt text](screenshots/005_admin_signup_settings.jpg "Optional title")      
+Logs:    
+![Alt text](screenshots/006_admin_logs.jpg "Optional title")    
+Contacts editing:   
 ![Alt text](screenshots/010_admin_moder_contacts.jpg "Optional title")
 ![Alt text](screenshots/011_admin_moder_contacts_list.jpg "Optional title")
 ![Alt text](screenshots/012_admin_moder_contacts_create.jpg "Optional title")
 ![Alt text](screenshots/013_admin_moder_contacts_delete.jpg "Optional title")
 ![Alt text](screenshots/014_admin_moder_contacts_edit.jpg "Optional title")
-![Alt text](screenshots/015_admin_moder_contacts_edit.jpg "Optional title")
+![Alt text](screenshots/015_admin_moder_contacts_edit.jpg "Optional title")     
+Pages creating and editing:     
 ![Alt text](screenshots/020_admin_moder_pages_create_info.jpg "Optional title")
 ![Alt text](screenshots/020_admin_moder_pages_create_info.jpg "Optional title")
 ![Alt text](screenshots/021_admin_moder_pages_create.jpg "Optional title")
 ![Alt text](screenshots/022_admin_moder_pages_edit_list.jpg "Optional title")
-![Alt text](screenshots/023_admin_moder_pages_edit_edit.jpg "Optional title")
+![Alt text](screenshots/023_admin_moder_pages_edit_edit.jpg "Optional title")     
+Service page creating and editing:    
 ![Alt text](screenshots/024_admin_moder_services_pages_edit_list.jpg "Optional title")
 ![Alt text](screenshots/025_admin_moder_services_pages_edit_edit.jpg "Optional title")
 ![Alt text](screenshots/026_admin_moder_services_edit_page_choice.jpg "Optional title")
 ![Alt text](screenshots/027_admin_moder_services_edit_category_add.jpg "Optional title")
 ![Alt text](screenshots/028_admin_moder_services_edit_category_delete.jpg "Optional title")
 ![Alt text](screenshots/028_admin_moder_services_edit_services_add.jpg "Optional title")
-![Alt text](screenshots/029_admin_moder_services_edit_services_delete.jpg "Optional title")
+![Alt text](screenshots/029_admin_moder_services_edit_services_delete.jpg "Optional title")    
+Price editing:   
 ![Alt text](screenshots/030_admin_moder_prices_edit_page_choice.jpg "Optional title")
-![Alt text](screenshots/031_admin_moder_prices_edit.jpg "Optional title")
+![Alt text](screenshots/031_admin_moder_prices_edit.jpg "Optional title")    
+Abputs page editing:    
 ![Alt text](screenshots/040_admin_moder_abouts_articles_add.jpg "Optional title")
 ![Alt text](screenshots/041_admin_moder_abouts_articles_delete.jpg "Optional title")
 ![Alt text](screenshots/042_admin_moder_abouts_articles_postdelete.jpg "Optional title")
-![Alt text](screenshots/043_admin_moder_abouts_articles_edit.jpg "Optional title")
+![Alt text](screenshots/043_admin_moder_abouts_articles_edit.jpg "Optional title")     
+Gallery editing:    
 ![Alt text](screenshots/050_admin_moder_gallery_edit.jpg "Optional title")
 ![Alt text](screenshots/051_admin_moder_gallery_add.jpg "Optional title")
 ![Alt text](screenshots/052_admin_moder_gallery_remove.jpg "Optional title")
-![Alt text](screenshots/053_admin_moder_gallery_albumlink_edit.jpg "Optional title")
-![Alt text](screenshots/060_admin_moder_map_edit.jpg "Optional title")
+![Alt text](screenshots/053_admin_moder_gallery_albumlink_edit.jpg "Optional title")     
+Map editing:      
+![Alt text](screenshots/060_admin_moder_map_edit.jpg "Optional title")     
+Masters editing:    
 ![Alt text](screenshots/070_admin_moder_masters_edit_list.jpg "Optional title")
 ![Alt text](screenshots/071_admin_moder_masters_edit_edit.jpg "Optional title")
 ![Alt text](screenshots/072_admin_moder_masters_create.jpg "Optional title")
 ![Alt text](screenshots/073_admin_moder_masters_schedule_choice_master.jpg "Optional title")
-![Alt text](screenshots/074_admin_moder_masters_schedule_edit.jpg "Optional title")
+![Alt text](screenshots/074_admin_moder_masters_schedule_edit.jpg "Optional title")     
+Signup list and editing:     
 ![Alt text](screenshots/080_admin_moder_signup_by_date.jpg "Optional title")
 ![Alt text](screenshots/081_admin_moder_signup_by_master.jpg "Optional title")
 ![Alt text](screenshots/082_admin_moder_signup_by_client_choice.jpg "Optional title")
@@ -153,11 +168,14 @@ Screenshots:
 ![Alt text](screenshots/085_admin_moder_signup_edit_time.jpg "Optional title")
 ![Alt text](screenshots/086_admin_moder_signup_edit_master.jpg "Optional title")
 ![Alt text](screenshots/087_admin_moder_signup_past.jpg "Optional title")
-![Alt text](screenshots/088_admin_moder_signup_future.jpg "Optional title")
+![Alt text](screenshots/088_admin_moder_signup_future.jpg "Optional title")       
+Callbacks:    
 ![Alt text](screenshots/090_admin_moder_callback_need.jpg "Optional title")
-![Alt text](screenshots/091_admin_moder_callback_complete.jpg "Optional title")
+![Alt text](screenshots/091_admin_moder_callback_complete.jpg "Optional title")     
+Admin home for master:   
 ![Alt text](screenshots/100_admin_master_page.jpg "Optional title")
 ![Alt text](screenshots/101_admin_master_signup.jpg "Optional title")
+Client pages:     
 ![Alt text](screenshots/200_client_home_page.jpg "Optional title")
 ![Alt text](screenshots/201_client_callback.jpg "Optional title")
 ![Alt text](screenshots/202_client_signup_start.jpg "Optional title")
