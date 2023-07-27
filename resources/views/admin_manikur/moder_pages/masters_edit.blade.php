@@ -102,9 +102,6 @@ $filesize = 1;
     @endif
 </div>
 
-
-@stop
-
 <script type="module">
 document.addEventListener('DOMContentLoaded', function () {
     $('form#master_edit_form').on('change', function(){
@@ -170,3 +167,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 }, false);
 </script>
+@stop

@@ -465,6 +465,10 @@ class SignupController extends Controller
             return back()->withErrors(['nodata' => 'Данных о записях нет.']);
         }
 
+        if (empty($client->password)) {
+            return back()->withErrors(['password' => 'У вас нет сохраненного пароля для доступа к записям.']);
+        }
+
         if (Hash::check($request->client_password, $client->password)) {
             if (Hash::needsRehash($client->password)) {
                 $newHash = Hash::make($request->client_password);

@@ -15,6 +15,7 @@ $robots = 'NOINDEX, NOFOLLOW';
     </p>
 </div>
 
+<div>
 <form action="{{ route('admin.contacts.store') }}" method="post" class="content">
     @csrf
     <div class="form-recall-main ">
@@ -33,5 +34,5 @@ $robots = 'NOINDEX, NOFOLLOW';
 
     </div>
 </form>
-
+</div>
 @stop
