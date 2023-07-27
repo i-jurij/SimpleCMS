@@ -20,7 +20,7 @@ $robots = "NOINDEX, NOFOLLOW";
                     @endphp
                     <p class="margin_rlb1">
                     <a href="{{url()->route('admin.master_signup.list')}}?prev={{$prev}}" class="back shad rad pad_tb05_rl1 display_inline_block">< </a>
-                    <span class="back shad rad pad_tb05_rl1 display_inline_block" style="width:15rem;">{{date('l d M Y', strtotime($date))}}</span>
+                    <span class="back shad rad pad_tb05_rl1 display_inline_block" style="width:17rem;">{{date('l d M Y', strtotime($date))}}</span>
                     <a href="{{url()->route('admin.master_signup.list')}}?next={{$next}}" class="back shad rad pad_tb05_rl1 display_inline_block"> ></a>
                     </p>
                 @endif

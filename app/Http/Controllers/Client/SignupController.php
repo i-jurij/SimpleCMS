@@ -333,7 +333,8 @@ class SignupController extends Controller
                             $client->password = $newHash;
                             $client->save();
                         }
-                        if (empty($client->name && !empty($client_name))) {
+                        if (empty($client_check->name && !empty($client_name))) {
+                            $client = $client_check;
                             $client->name = $client_name;
                             $client->save();
                         }

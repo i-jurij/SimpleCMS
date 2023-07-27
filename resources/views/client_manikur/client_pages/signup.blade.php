@@ -57,7 +57,7 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                     </div>
                     @if (!empty(session('res')['client_password']))
                     <div class="table_row">
-                        <div class="table_cell" style="text-align:right;">Ваш пароль (сохраните его, если хотите управлять своими записями):</div>
+                        <div class="table_cell" style="text-align:right;">Ваш пароль (запомните его, если хотите управлять своими записями):</div>
                         <div class="table_cell">{{session('res')['client_password']}} </div>
                     </div>
                     @endif
