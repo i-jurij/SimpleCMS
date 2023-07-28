@@ -64,8 +64,6 @@ class SignupController extends Controller
             }
         }
 
-        // $thisdata['masters'] = Master::whereNull('data_uvoln')->get()->toArray();
-
         return view('client_manikur.client_pages.signup', ['page_data' => $page_data, 'content' => $content, 'data' => $thisdata]);
     }
 
