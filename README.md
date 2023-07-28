@@ -19,6 +19,15 @@ SimpleCMS
 email - +01112223344@com.com,     
 пароль - "password". Пароль каждый пользователь может изменить.     
 
+Возможно создавать страницы с нуля, при этом есть три возможности:    
+simple page "yes"- одиночная страница, без вложенных страниц, содержимое страницы хранится в колонке "content" таблицы "pages",   
+представление создавать не нужно,    
+simple page "no"- страница, для которой будут созданы контроллер, модель, представление,   
+к примеру "Персональные данные" - это simple page = "yes", а "Перезвоните мне" и "О нас" - simple page = 'no'.    
+service page "yes" - страница с услугами, создавать лучше из отдельного меню в админке, там же есть пункты для добавления     
+категорий услуг и самих услуг.
+Но проще просто вносить изменения в имеющиеся страницы.    
+
 ### PAGES edit
 /admin/page/create - creating client page:
 
@@ -29,7 +38,7 @@ single_page = 'no' - if you need to have controller and model and migration and 
 
 service_page = 'yes' - if you need to create page with services CRUD (resource controler)
 As models for service page - model Pages, model Categories, model Services
-As view - resources/other/service_page.blade.php
+As view - resources/client_manikur/client_pages/service_page.blade.php
 
 After creating service page you can add categories and services to page.
 Also admin panel has items for creating and editing categories and services.
