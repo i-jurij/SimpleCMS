@@ -139,6 +139,7 @@ class SignupController extends Controller
 
     protected function getServMas(Collection $collection)
     {
+        $res = [];
         foreach ($collection as $key => $value) {
             $service_data = $value->service;
             if (!empty($service_data)) {
@@ -178,13 +179,14 @@ class SignupController extends Controller
                 'client' => $client,
             ];
         }
-
-        foreach ($res as $masters) {
-            foreach ($masters as $master => $signup) {
-                usort($signup, function ($a, $b) {
-                    return strtotime($a['start_dt']) - strtotime($b['start_dt']);
-                });
-                $res[$master] = $signup;
+        if (!empty($res)) {
+            foreach ($res as $masters) {
+                foreach ($masters as $master => $signup) {
+                    usort($signup, function ($a, $b) {
+                        return strtotime($a['start_dt']) - strtotime($b['start_dt']);
+                    });
+                    $res[$master] = $signup;
+                }
             }
         }
 
