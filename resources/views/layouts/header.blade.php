@@ -1,4 +1,6 @@
 
-<header class="he stickyheader flex">
-    @include('layouts.contacts')
+<header class="he stickyheader">
+    <div class="he_inner_div flex">
+        @include('layouts.contacts')
+    </div>
 </header>

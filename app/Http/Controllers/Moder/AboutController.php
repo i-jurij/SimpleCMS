@@ -43,7 +43,7 @@ class AboutController extends Controller
                 if ($request->file('image_file')[$k]->isValid()) {
                     $this->filename = mb_strtolower(sanitize(translit_to_lat($request->title[$k])));
                     $img = $this->uploadFile($image);
-                    if ((bool) $img) {
+                    if ($img !== false) {
                         $res[$k]['img'] = 'The about image for "'.$request->title[$k].'" has been uploaded.';
                     }
 
