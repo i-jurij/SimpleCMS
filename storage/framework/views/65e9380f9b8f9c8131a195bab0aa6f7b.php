@@ -1,0 +1,173 @@
+<?php
+$title = 'Masters create form';
+$page_meta_description = 'admins page, Masters create form';
+$page_meta_keywords = 'Masters create form';
+$robots = 'NOINDEX, NOFOLLOW';
+$filesize = 1;
+?>
+
+
+
+<?php $__env->startSection('content'); ?>
+
+<div class="content">
+    <form action="<?php echo e(url()->route('admin.masters.store')); ?>" method="post"  enctype="multipart/form-data" id="master_create_form">
+    <?php echo csrf_field(); ?>
+        <div class="form-recall-main">
+            <div class="pers">Add masters data. Добавить данные мастера:</div>
+            <div class="">
+                <div id="error"><small></small></div>
+                <div class="master_create">
+                    <div class="pad">
+                        <label class="input-file">
+                            <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo e($filesize*1024000); ?>" />
+                            <input type="file" id="f0" name="image_file" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" />
+                            <span >Photo of master. Фото мастера. ( < <?php echo e($filesize); ?>Мб )</span>
+                            <p id="fileSizef0" ></p>
+                        </label>
+                    </div>
+
+                    <div class="pad">
+                        <input type="text" placeholder="Name Имя" name="master_name" id="master_name" maxlength="30" required></input>
+                        <br>
+                        <input type="text" placeholder="Second name Отчество" name="sec_name" id="sec_name" maxlength="30"></input>
+                        <br>
+                        <input type="text" placeholder="Last name Фамилия" name="master_fam" id="master_fam" maxlength="30" required></input>
+                        <br>
+
+                        <input type="tel" name="master_phone_number"  id="master_number" class="number" title="+7 999 999 99 99" minlength="6" maxlength="17"
+                                placeholder="+7 ___ ___ __ __" pattern="(\+?7|8)?\s?[\(]{0,1}?\d{3}[\)]{0,1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?\d{1}\s?[-]{0,1}?" required>
+                        </input>
+                        <br>
+                    </div>
+
+                    <div class="shoose_services pad">
+                        <p class="">Specialization Специализация:</p>
+                        <ul>
+                            <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
+                                    list($page_id, $page_title) = explode('#', $key);
+                                ?>
+                                <li class="pad display_inline_block text_left margin_top_1rem pad" style="position: relative; vertical-align: top;">
+                                <label class="buttons" for="p<?php echo e($page_id); ?>"><input type="checkbox" id="p<?php echo e($page_id); ?>" class="pagess"> <?php echo e($page_title); ?>: all все</label>
+
+                                <label class="buttons clarify"><input type="button" id="add<?php echo e($page_id); ?>" /> Clarify Уточнить</label>
+                                    <ul class="display_none" id="padd<?php echo e($page_id); ?>">
+                                        <?php $__currentLoopData = $service; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ke => $cats): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
+                                                list($cat_id, $cat_name) = explode('#', $ke);
+                                                if ($cat_name === 'page_serv') $cat_name = 'Other services';
+                                            ?>
+
+                                            <li class="margin_top_1rem pad"><label class="buttons"><input type="checkbox" class="pp<?php echo e($page_id); ?>" id="c<?php echo e($cat_id); ?>" > <?php echo e($cat_name); ?></label></li>
+                                            <ul>
+                                                <?php $__currentLoopData = $cats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $serv): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li class="margin_rl1 pad"><label class="buttons"><input type="checkbox" class="pp<?php echo e($page_id); ?> cc<?php echo e($cat_id); ?>" name="serv[]" value="<?php echo e($k); ?>"> <?php echo e($serv); ?></label></li>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </ul>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    </ul>
+                                </li>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </ul>
+                    </div>
+
+                    <div class="pad">
+                        Hired date. Дата принятия на работу
+                        <br>
+                        <label>
+                            <input type="date" name="hired" id="hired" min="2023-01-01" max="2050-12-31"></input>
+                        </label>
+                        <br>
+
+                        Dismissed date. Дата увольнения
+                        <br>
+                        <label>
+                            <input type="date" name="dismissed" id="dismissed"  min="2023-01-01" max="2050-12-31"></input>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="margin_top_1rem">
+                <button class="buttons" type="submit" id="upload" form="master_create_form">Добавить</button>
+                <button class="buttons" type="reset" onclick="reset()" form="master_create_form">Очистить</button>
+            </div>
+            <br class="clear" />
+        </div>
+	</form>
+</div>
+
+
+<script type="module">
+document.addEventListener('DOMContentLoaded', function () {
+    $('form#master_create_form').on('change', function(){
+    let f = $("[type='file']");
+    if (f.length > 0) {
+        f.each(function(){
+            let file = this.files[0];
+            let size = <?php echo $filesize; ?>*1024*1024; //1MB
+            if (file) {
+                $(this).next().html(file.name);
+            }
+
+            $('#fileSize'+this.id).html('');
+            if (file && file.size > size) {
+                $('#fileSize'+this.id).css("color","red").html('ERROR! Image size > <?php echo $filesize; ?>MB');
+            } else {
+                //$('#fileSize').html(file.name+' - '+file.size/1024+' KB');
+            }
+        });
+    }
+  });
+
+  $('#master_create_form').on('reset', function(e) {
+        setTimeout(function() {
+            $("[type='file']").each(function(){
+                let file = 'Photo of master. Фото мастера. ( < <?php echo e($filesize); ?>Мб )';
+                $(this).next().html(file);
+                $('#fileSize'+this.id).html('');
+            });
+        },200);
+    });
+
+
+
+    let check = document.querySelector('.shoose_services');
+
+    check.onclick = function(el) {
+        let el_id = el.target.id;
+        let check_state = el.target.checked;
+
+        let page_checkboxed = document.querySelectorAll('.p'+el_id);
+        for(var i=0; i<page_checkboxed.length; i++) {
+            if (check_state == true) {
+                page_checkboxed[i].checked = true;
+            } else {
+                page_checkboxed[i].checked = false;
+            }
+        }
+
+        let cat_checboxed = document.querySelectorAll('.c'+el_id);
+        for(var i=0; i<cat_checboxed.length; i++) {
+            if (check_state == true) {
+                cat_checboxed[i].checked = true;
+            } else {
+                cat_checboxed[i].checked = false;
+            }
+        }
+    }
+
+    let clarify = $('.clarify');
+    clarify.on('click', function(el) {
+        let el_id = el.target.id;
+        $('#p'+el_id).toggle();
+    });
+
+
+}, false);
+</script>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts/index_admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/resources/views/admin_manikur/moder_pages/masters_create_form.blade.php ENDPATH**/ ?>
