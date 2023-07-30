@@ -46,7 +46,7 @@ Route::name('client.')
     Route::get('/', [ClientHomeController::class, 'index'])->name('home');
 
     Route::get('/{page_alias?}', [ClientHomeController::class, 'page'])
-    ->where('page_alias', '^((?!login|register|dashboard|admin|api|reload_captcha).)*$');
+    ->where('page_alias', '^((?!login|register|dashboard|admin|api|reload_captcha|profile).)*$');
 
     Route::middleware('throttle:15,1')->group(function () {
         Route::post('/callback/store', [CallbackController::class, 'store'])->name('callback.store');
