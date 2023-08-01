@@ -407,6 +407,9 @@ class ServiceEditController extends Controller
 
     protected function del_empty_cat_dir()
     {
+        if (del_empty_dir(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'categories'.DIRECTORY_SEPARATOR.$this->page_id))) {
+            $this->data['res'][] = 'Пустой каталог "storage/app/public/images/categories/'.$this->page_id.'" удален.';
+        }
         if (del_empty_dir(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'services'.DIRECTORY_SEPARATOR.$this->page_id.DIRECTORY_SEPARATOR.$this->cat_id))) {
             $this->data['res'][] = 'Пустой каталог "storage/app/public/images/services/'.$this->page_id.'/'.$this->cat_id.'" удален.';
         }
