@@ -476,13 +476,30 @@ function find_by_filename($path, $filename)
         return false;
     }
 }
+function dir_is_empty($dir)
+{
+    $handle = opendir($dir);
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry != '.' && $entry != '..') {
+            closedir($handle);
+
+            return false;
+        }
+    }
+    closedir($handle);
+
+    return true;
+}
+
 function del_empty_dir($dir)
 {
     if (file_exists($dir) && is_dir($dir) && [] === array_diff(scandir($dir), ['.', '..'])) {
-        if (rmdir($dir)) {
-            return true;
-        } else {
-            return false;
+        if (dir_is_empty($dir)) {
+            if (rmdir($dir)) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }
