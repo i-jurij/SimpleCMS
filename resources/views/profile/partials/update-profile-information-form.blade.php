@@ -48,11 +48,13 @@
         </div>
 
         <!-- Status -->
-        <div class="mt-4">
-            <x-input-label for="status" :value="__('Status')" />
-            <x-text-input id="status" class="block mt-1 w-full" type="text" name="status" :value="old('status', $user->status)" required />
-            <x-input-error :messages="$errors->get('status')" class="mt-2" />
-        </div>
+        @if (Auth::user()->status === 'admin')
+            <div class="mt-4">
+                <x-input-label for="status" :value="__('Status')" />
+                <x-text-input id="status" class="block mt-1 w-full" type="text" name="status" :value="old('status', $user->status)" required />
+                <x-input-error :messages="$errors->get('status')" class="mt-2" />
+            </div>
+        @endif
 
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
