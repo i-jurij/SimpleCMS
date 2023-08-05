@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use App\MyClasses\Upload\UploadFile;
@@ -379,6 +380,7 @@ class ServiceEditController extends Controller
     {
         try {
             Service::find($this->serv_id)->masters()->detach();
+            Order::where('service_id', $this->serv_id)->delete();
             Service::destroy($this->serv_id);
             $this->data['res'][] = 'Данные услуги "'.$this->serv_name.'" удалены из базы.';
         } catch (\Throwable $th) {
@@ -391,6 +393,7 @@ class ServiceEditController extends Controller
         $sql_serv = Service::where('category_id', $this->cat_id)->select('id')->get();
         $sql_serv->each(function ($serv) {
             $serv->masters()->detach();
+            Order::where('service_id', $serv->id)->delete();
             $serv->destroy($serv->id);
         });
 
