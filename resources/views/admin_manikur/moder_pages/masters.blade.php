@@ -145,7 +145,7 @@ $robots = 'NOINDEX, NOFOLLOW';
                         @endif
                     <tr>
                         <td>{{$key + 1}}</td>
-                        <td><img src="{{asset('storage'.DIRECTORY_SEPARATOR.$img)}}" alt="Photo  {{$master['master_fam']}}" /></td>
+                        <td><img src="{{asset('storage'.DIRECTORY_SEPARATOR.$img)}}" alt="Photo  {{$master_dism['master_fam']}}" /></td>
                         <td>{{$master_dism['master_name']}}<br> {{$master_dism['sec_name']}}<br> {{$master_dism['master_fam']}}</td>
                         <td>{{$master_dism['master_phone_number']}}</td>
                         <td>
