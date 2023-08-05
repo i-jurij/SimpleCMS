@@ -17,12 +17,15 @@ class MastersController extends Controller
 
     public function index(Master $masters)
     {
+        $services = [];
         $m = $this->all_masters($masters);
 
         // services for each masters
         foreach ($m as $mm) {
-            foreach ($mm as $master) {
-                $services[$master['id']] = $this->services_for_master($masters, $master['id']);
+            if (!empty($mm) && is_array($mm)) {
+                foreach ($mm as $master) {
+                    $services[$master['id']] = $this->services_for_master($masters, $master['id']);
+                }
             }
         }
 
