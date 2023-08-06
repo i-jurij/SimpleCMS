@@ -4,12 +4,23 @@ namespace App\Http\Controllers\Moder;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 
 class GalleryController extends Controller
 {
     use \App\Traits\DeleteFile;
-    use \App\Traits\Upload;
+    public string $disk;
+    /**
+     * @param $this->folder - path to directory into laravel disk
+     */
+    public string $folder;
+    /**
+     * @param $this->filename - name of file without extension
+     */
+    public string $filename;
+    public string $extension;
 
     public function index()
     {
@@ -46,7 +57,11 @@ class GalleryController extends Controller
                 foreach ($request->file('gallery_add') as $k => $image) {
                     if ($image->isValid()) {
                         $this->filename = pathinfo(mb_strtolower(sanitize(translit_to_lat($image->getClientOriginalName()))), PATHINFO_FILENAME);
-                        if ((bool) $this->uploadFile($image)) {
+                        $this->extension = $image->extension();
+
+                        $img = Image::make($image);
+                        $img->insert(Storage::get('public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'watermark.png'), 'bottom-right');
+                        if (Storage::put('public'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'gallery'.DIRECTORY_SEPARATOR.$this->filename.'.'.$this->extension, $img->encode())) {
                             $res .= 'Image '.$image->getClientOriginalName().' was uploaded.<br>';
                         } else {
                             $res .= 'Image '.$image->getClientOriginalName().' have been NOT uploaded.<br>';
