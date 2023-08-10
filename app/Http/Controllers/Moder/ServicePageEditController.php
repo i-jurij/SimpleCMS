@@ -46,4 +46,12 @@ class ServicePageEditController extends Controller
 
         return view('admin_manikur.moder_pages.service_edit', ['data' => $data]);
     }
+
+    public function content(Request $request)
+    {
+        $content = new ContentEditController();
+        $data = $content->index($request) ?? null;
+
+        return view('admin_manikur.moder_pages.content_edit', ['data' => $data]);
+    }
 }

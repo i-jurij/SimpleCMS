@@ -9,10 +9,12 @@ use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use webd\odt2html\ODT2HTML;
 
 // class $classname.Controller extends Controller
 class ServicePageController extends Controller
 {
+    use \App\Traits\FileFind;
     // url can be /page_alias
     // /page_alias/category/id
     // /page_alias/service/id
@@ -99,9 +101,12 @@ class ServicePageController extends Controller
                 if (!empty($id) && $path_array[1] === 'category') {
                     $this_show_method_data['cat'] = ServiceCategory::find($id)->toArray();
                     $this_show_method_data['serv'] = Service::where('category_id', $id)->get()->toArray();
+                    // odt content file find
+                    $this_show_method_data['content'] = $this->get_odt_content_for_service($id);
                 }
                 if (!empty($id) && $path_array[1] === 'service') {
                     $this_show_method_data['serv'] = Service::find($id)->toArray();
+                    $this_show_method_data['content'] = $this->get_odt_content_for_service($id);
                 }
             } else {
                 $this_show_method_data = ['No "category" or "service" in path of url.'];
@@ -111,6 +116,7 @@ class ServicePageController extends Controller
                 if (preg_match('/\A\d{1,5}\z/', $path_array[3])) {
                     $id = $path_array[3];
                     $this_show_method_data['serv'] = Service::find($id)->with('category')->toArray();
+                    $this_show_method_data['content'] = $this->get_odt_content_for_service($id);
                 } else {
                     $this_show_method_data = ['No id in path of url.'];
                 }
@@ -120,5 +126,16 @@ class ServicePageController extends Controller
         }
 
         return $this_show_method_data;
+    }
+
+    protected function get_odt_content_for_service($service_id)
+    {
+        if ($content_file = $this->find_by_filename(storage_path('app'.DIRECTORY_SEPARATOR.'public'.DIRECTORY_SEPARATOR.'services_content'), 'Content_'.$service_id)) {
+            $odt2html = new ODT2HTML($content_file);
+
+            return $odt2html->parse();
+        } else {
+            return false;
+        }
     }
 }

@@ -58,7 +58,7 @@ $fmt = new IntlDateFormatter(
                                     </tr>
                                 </table>
                                 <p class="margin_top_1rem">
-                                    <label ><input type="checkbox" name="id[]" value="{{$cb->id}}" /> Перезвонили</label>
+                                    <label class="shad pad"><input type="checkbox" name="id[]" value="{{$cb->id}}" /> Перезвонили</label>
                                 </p>
                             </div>
                     </article>

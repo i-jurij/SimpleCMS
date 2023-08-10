@@ -90,6 +90,14 @@ if (isset($page_data) && is_array($page_data) && !empty($page_data[0])) {
                      <span>от {{$serv['price']}} руб.</span>
                 </div>
             </article>
+            <br>
+            @if (!empty($this_show_method_data['content']))
+                <article class="back shad rad pad margin_rlb1">
+                    <div class="persinfo ">
+                        {!!$this_show_method_data['content']!!}
+                    </div>
+                </article>
+            @endif
         @endif
 
     @else

@@ -31,31 +31,34 @@ trait DeleteFile
 
     public static function deleteFile(string $path2file): string
     {
-        $mes = '';
-        if (is_string($path2file)) {
+        if (!is_string($path2file)) {
             // $path2file = realpath($path2file);
-            if (file_exists($path2file)) {
-                if (is_writable($path2file)) {
-                    if (is_file($path2file)) {
-                        if (unlink($path2file)) {
-                            $mes .= 'File '.$path2file.' was removed.';
-                        } else {
-                            $mes .= 'ERROR! Not unlink "'.$path2file.'".';
-                        }
-                    } else {
-                        $mes .= 'ERROR! The "'.$path2file.'" is not file.';
-                    }
-                } else {
-                    $mes .= 'ERROR! File "'.$path2file.'" is not writable.';
-                }
-            } else {
-                $mes .= 'WARNING! File "'.$path2file.'" is not exists.';
-            }
-        } else {
-            $mes .= 'ERROR! Input for $this->delFile($path2file) must be sring.';
+            return 'ERROR! Input for $this->delFile($path2file) must be sring.';
+        }
+        if (!file_exists($path2file)) {
+            return 'WARNING! File "'.$path2file.'" is not exists.';
         }
 
-        return $mes;
+        if (!is_writable($path2file)) {
+            return 'ERROR! File "'.$path2file.'" is not writable.';
+        }
+
+        if (!is_file($path2file)) {
+            return 'ERROR! The "'.$path2file.'" is not file.';
+        }
+
+        if (!unlink($path2file)) {
+            return 'ERROR! Not unlink "'.$path2file.'".';
+        }
+
+        return 'File '.$path2file.' was removed.';
+    }
+
+    public static function del_file(string $path2file): void
+    {
+        if (file_exists($path2file) && is_writable($path2file) && is_file($path2file)) {
+            unlink($path2file);
+        }
     }
 
     public function del_empty_dir($dir)
