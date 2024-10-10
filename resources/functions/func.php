@@ -34,7 +34,7 @@ function mb_str_replace($search, $replace, $string)
     return str_replace($search, $replace, $unicodeString);
 }
 
-function mb_ucfirst($str)
+function my_mb_ucfirst($str)
 {
     $fc = mb_strtoupper(mb_substr($str, 0, 1));
 
@@ -58,13 +58,13 @@ function sanitize($filename)
     $filename = str_replace(array_map('chr', range(0, 31)), '', $filename);
     // remove dangerous characters for file names
     $chars = ['?', '[', ']', '/', '\\', '=', '<', '>', ':', ';', ',', "'", '"', '&', '’', '%20',
-                   '+', '$', '#', '*', '(', ')', '|', '~', '`', '!', '{', '}', '%', '+', '^', chr(0)];
+        '+', '$', '#', '*', '(', ')', '|', '~', '`', '!', '{', '}', '%', '+', '^', chr(0)];
     $filename = str_replace($chars, '_', $filename);
     // remove break/tabs/return carriage
     $filename = preg_replace('/[\r\n\t -]+/', '_', $filename);
     // convert some special letters
     $convert = ['Þ' => 'TH', 'þ' => 'th', 'Ð' => 'DH', 'ð' => 'dh', 'ß' => 'ss',
-                     'Œ' => 'OE', 'œ' => 'oe', 'Æ' => 'AE', 'æ' => 'ae', 'µ' => 'u'];
+        'Œ' => 'OE', 'œ' => 'oe', 'Æ' => 'AE', 'æ' => 'ae', 'µ' => 'u'];
     $filename = strtr($filename, $convert);
     // remove foreign accents by converting to HTML entities, and then remove the code
     $filename = html_entity_decode($filename, ENT_QUOTES, 'utf-8');
@@ -198,8 +198,6 @@ function delete_file(string $path2file): string
 /**
  * replaces all Cyrillic letters with Latin.
  *
- * @param string $var
- *
  * @return string
  */
 function translit_ostslav_to_lat($textcyr)
@@ -214,8 +212,6 @@ function translit_ostslav_to_lat($textcyr)
 }
 /**
  * replaces all letters with Latin ASCII.
- *
- * @param string $var
  *
  * @return string
  */

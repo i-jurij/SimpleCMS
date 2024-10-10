@@ -7,7 +7,7 @@ function panel(array $variable)
     foreach ($variable as $key => $value) {
         if (is_array($value) && !empty($value)) {
             $class = 'back shad rad pad mar display_inline_block';
-            $p = '<p class="pad"><b>'.mb_ucfirst(str_replace('_', ' ', $key)).'</b></p>';
+            $p = '<p class="pad"><b>'.my_mb_ucfirst(str_replace('_', ' ', $key)).'</b></p>';
             if ($key == 'admin') {
                 $key = '';
                 $p = '';
@@ -19,7 +19,7 @@ function panel(array $variable)
         }
         // all pages
         if (is_string($value) && !empty($value) && ($key !== 'admin' && $value !== 'admin.home')) {
-            $res .= '<a href="'.url()->route($value).'" class="buttons">'.mb_ucfirst(str_replace('_', ' ', $key)).'</a>';
+            $res .= '<a href="'.url()->route($value).'" class="buttons">'.my_mb_ucfirst(str_replace('_', ' ', $key)).'</a>';
         }
     }
 

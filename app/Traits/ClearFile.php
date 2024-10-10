@@ -10,7 +10,7 @@ trait ClearFile
      *
      * @return bool
      */
-    public static function clearFile($path_to_file, $keep_num_lines = 0)
+    public static function clearFile($path_to_file, $keep_num_lines = 0): bool
     {
         // clear log file if filetime > 1 week, but leave the last seven lines
         if (file_exists($path_to_file)) {
@@ -32,7 +32,7 @@ trait ClearFile
      *
      * @return bool
      */
-    public static function clearAllFilesInDir($log_folder, $keep_num_lines = 0)
+    public static function clearAllFilesInDir($log_folder, $keep_num_lines = 0): bool
     {
         // clear log file if filetime > 1 week, but leave the last seven lines
         if (file_exists($log_folder)) {

@@ -19,8 +19,8 @@ class Service extends Model
 
     public function getNameAttribute($value)
     {
-        if (function_exists('mb_ucfirst')) {
-            return mb_ucfirst($value);
+        if (function_exists('my_mb_ucfirst')) {
+            return my_mb_ucfirst($value);
         } else {
             return $value;
         }

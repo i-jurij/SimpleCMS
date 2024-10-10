@@ -34,7 +34,7 @@ class ClientHomeController extends Controller
             if ($page_data[0]['single_page'] === 'no' || $page_data[0]['service_page'] === 'yes') {
                 if ($page_data[0]['single_page'] === 'no') {
                     $path = 'App\\Http\\Controllers\\Client\\';
-                    $class = $path.mb_ucfirst($page_alias).'Controller';
+                    $class = $path.my_mb_ucfirst($page_alias).'Controller';
                     if (class_exists($class)) {
                         if (method_exists($class, 'index')) {
                             /*

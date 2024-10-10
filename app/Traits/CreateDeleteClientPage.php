@@ -24,8 +24,8 @@ trait CreateDeleteClientPage
     public function delContrModMigrView($page_alias): string
     {
         $mes = '';
-        if (function_exists('mb_ucfirst')) {
-            $classname = mb_ucfirst($page_alias);
+        if (function_exists('my_mb_ucfirst')) {
+            $classname = my_mb_ucfirst($page_alias);
         }
         $migrations_dir = app_path().DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'database'.DIRECTORY_SEPARATOR.'migrations';
         // $controller = app_path().DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.$classname.'Controller.php';
@@ -62,9 +62,9 @@ trait CreateDeleteClientPage
                     }
                 }
             } elseif ($this->deleteFile($path)) {
-                $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been deleted.<br>';
+                $mes .= my_mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been deleted.<br>';
             } else {
-                $mes .= mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been NOT deleted.<br>'.(string) $this->delFile($path).'<br>';
+                $mes .= my_mb_ucfirst($key).' for page <b>"'.$page_alias.'"</b> has been NOT deleted.<br>'.(string) $this->delFile($path).'<br>';
             }
         }
 
@@ -131,8 +131,8 @@ trait CreateDeleteClientPage
 
     public function createNoSinglePage($page_alias): bool
     {
-        if (function_exists('mb_ucfirst')) {
-            $classname = mb_ucfirst($page_alias);
+        if (function_exists('my_mb_ucfirst')) {
+            $classname = my_mb_ucfirst($page_alias);
         }
         // $artisan = Artisan::call('make:model', ['name' => $classname, '--controller' => true, '--migration' => true]);
         $artisan = Artisan::call('make:model', ['name' => $classname, '--migration' => true]);
