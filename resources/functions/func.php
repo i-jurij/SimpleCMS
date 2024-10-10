@@ -526,7 +526,7 @@ function en_month_to_rus($month)
     return $ru_month;
 }
 
-function mb_lcfirst($str)
+function my_mb_lcfirst($str)
 {
     $fc = mb_strtolower(mb_substr($str, 0, 1));
 
