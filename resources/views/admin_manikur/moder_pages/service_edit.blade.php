@@ -8,10 +8,10 @@ $robots = 'NOINDEX, NOFOLLOW';
 @extends('layouts/index_admin')
 @section('content')
 
-    <div class="content">
+<div class="content">
     <form action="<?php echo url()->route('admin.service_page.go'); ?>" method="post" enctype="multipart/form-data" class="" id="change_page_form">
-    @csrf
-<?php
+        @csrf
+        <?php
 $dn = '';
 if (!empty($data['res'])) {
     if (is_array($data['res'])) {
@@ -176,15 +176,19 @@ if (!empty($data['res'])) {
     }
 } else {
     // вывод списка страниц
-    if (isset($data['service_page'])) {
+    if (!empty($data['service_page'])) {
         echo '<div class="form_radio_btn margin_bottom_1rem" style="width:85%;">
                     <p class="margin_bottom_1rem">Выберите страницу для редактирования:</p>';
-        foreach ($data['service_page'] as $value) {
-            if ($value['service_page'] === 'yes') {
-                echo '  <label>
-                    <input type="radio" name="page_for_edit" value="'.$value['id'].'#'.$value['title'].'" required />
-                    <span>'.$value['title'].'</span>
-                </label>';
+        if (is_string($data['service_page'])) {
+            echo '<p class="shad rad pad">'.$data['service_page'].'</p>';
+        } elseif (is_array($data['service_page'])) {
+            foreach ($data['service_page'] as $value) {
+                if ($value['service_page'] === 'yes') {
+                    echo '  <label>
+                        <input type="radio" name="page_for_edit" value="'.$value['id'].'#'.$value['title'].'" required />
+                        <span>'.$value['title'].'</span>
+                    </label>';
+                }
             }
         }
         echo '</div>';
@@ -211,7 +215,7 @@ if (!empty($data['res'])) {
 }
 // include_once APPROOT.DS."view".DS."js_back.html";
 ?>
-        <div class="margintb1 <?php echo $dn; ?>" id="form_buttons" >
+        <div class="margintb1 <?php echo $dn; ?>" id="form_buttons">
             <button type="submit" name="submit" class="buttons" form="change_page_form" />Далее</button>
             <input type="reset" class="buttons" form="change_page_form" value="Сбросить" />
         </div>
@@ -220,131 +224,130 @@ if (!empty($data['res'])) {
 
 
 <script type="text/javascript">
+    function add(el) {
+        let shoose = $(el).prop("value");
+        var id = parseInt($("div#" + shoose + "_add").find(".about_form:last").attr("id").slice(4)) + 1;
 
-function add(el) {
-    let shoose = $(el).prop("value");
-    var id = parseInt($("div#"+shoose+"_add").find(".about_form:last").attr("id").slice(4))+1;
+        let file = '';
+        let name = '';
+        let desc = '';
+        let price = '';
+        let duration = '';
 
-    let file = '';
-    let name = '';
-    let desc = '';
-    let price = '';
-    let duration = '';
-
-    desc = '<label class="textarea"><p>Описание '+name+' (до 500 символов)</p>\
+        desc = '<label class="textarea"><p>Описание ' + name + ' (до 500 символов)</p>\
                     <p>\
-                        <textarea name="'+shoose+'_desc[]" placeholder="Описание '+name+'" maxlength="500"></textarea>\
+                        <textarea name="' + shoose + '_desc[]" placeholder="Описание ' + name + '" maxlength="500"></textarea>\
                     </p>\
-                </label>' ;
-
-    if (shoose == "cats") {
-        name = "категории";
-        file = '<label class="input-file">\
-                    <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />\
-                    <input type="file" id="f'+shoose+id+'" name="'+shoose+'_img[]" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" required/>\
-                    <span >Изображение '+name+' весом до 3Мб</span>\
-                    <p id="fileSizef'+shoose+id+'"></p>\
                 </label>';
-    } else if (shoose == "serv") {
-        file = '<label class="input-file">\
-                    <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />\
-                    <input type="file" id="f'+shoose+id+'" name="'+shoose+'_img[]" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" required/>\
-                    <span >Изображение '+name+' весом до 3Мб</span>\
-                    <p id="fileSizef'+shoose+id+'"></p>\
-                </label>';
-        name = "услуги";
 
-        price = '   <label ><p>Прайс (цифры, до 10 символов)</p>\
+        if (shoose == "cats") {
+            name = "категории";
+            file = '<label class="input-file">\
+                    <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />\
+                    <input type="file" id="f' + shoose + id + '" name="' + shoose + '_img[]" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" required/>\
+                    <span >Изображение ' + name + ' весом до 3Мб</span>\
+                    <p id="fileSizef' + shoose + id + '"></p>\
+                </label>';
+        } else if (shoose == "serv") {
+            file = '<label class="input-file">\
+                    <input type="hidden" name="MAX_FILE_SIZE" value="3145728" />\
+                    <input type="file" id="f' + shoose + id + '" name="' + shoose + '_img[]" accept=".jpg,.jpeg,.png, image/jpeg, image/pjpeg, image/png" required/>\
+                    <span >Изображение ' + name + ' весом до 3Мб</span>\
+                    <p id="fileSizef' + shoose + id + '"></p>\
+                </label>';
+            name = "услуги";
+
+            price = '   <label ><p>Прайс (цифры, до 10 символов)</p>\
                         <p>\
                             <input type="number" name="price[]" placeholder="10000" min="0" max="1000000" step="0.1" title="Только цифры" required />\
                         </p>\
                     </label>';
-        duration = '   <label ><p>Длительность в минутах (2-3 цифры)</p>\
+            duration = '   <label ><p>Длительность в минутах (2-3 цифры)</p>\
                         <p>\
                             <input type="number" name="duration[]" placeholder="60" min="10" max="480" step="5" title="Только цифры" required />\
                         </p>\
                     </label>';
-        if ($('#cats_view').text() == 'Скрыть категории') {
-            // file = '';
-            // desc = '';
+            if ($('#cats_view').text() == 'Скрыть категории') {
+                // file = '';
+                // desc = '';
+            }
         }
-    }
-    // add fields for input
-    $("div#"+shoose+'_add').append('<div class="about_form back shad rad pad mar display_inline_block display_none" id="'+shoose+id+'">\
-        '+file+'\
-        <label ><p>Введите название '+name+' (до 100 символов)</p>\
+        // add fields for input
+        $("div#" + shoose + '_add').append('<div class="about_form back shad rad pad mar display_inline_block display_none" id="' + shoose + id + '">\
+        ' + file + '\
+        <label ><p>Введите название ' + name + ' (до 100 символов)</p>\
             <p>\
-                <input type="text" name="'+shoose+'_name[]" placeholder="Название '+name+'" maxlength="100" required />\
+                <input type="text" name="' + shoose + '_name[]" placeholder="Название ' + name + '" maxlength="100" required />\
             </p>\
         </label>\
-        '+desc+'\
-        '+price+'\
-        '+duration+'\
+        ' + desc + '\
+        ' + price + '\
+        ' + duration + '\
     </div>');
-};
+    };
 
-document.addEventListener('DOMContentLoaded', function () {
-    $(function(){
-        const TDEL = $('#cats_view');
-        if (TDEL) {
-            TDEL.on('click', function(e) {
-                $('#cats_list').toggle();
-                if (TDEL.text() == 'Показать категории' ) {
-                    TDEL.text('Скрыть категории');
-                    //$('.input-file').hide();
-                    //$('.textarea').hide();
-                } else {
-                    TDEL.text('Показать категории');
-                    //$('.input-file').show();
-                    //$('.textarea').show();
-                }
-            });
-        }
-
-        $('form#change_page_form').on('change', function(){
-            $("[type='file']").each(function(){
-                let files = this.files;
-                if (files.length > 0) {
-                    let file = this.files[0];
-                    let size = 3*1024*1024; //3MB
-                    $(this).next().html(file.name);
-                    if (file.size > size) {
-                        $('#fileSize'+this.id).css("color","red").html('ERROR! Image size > 3MB');
+    document.addEventListener('DOMContentLoaded', function() {
+        $(function() {
+            const TDEL = $('#cats_view');
+            if (TDEL) {
+                TDEL.on('click', function(e) {
+                    $('#cats_list').toggle();
+                    if (TDEL.text() == 'Показать категории') {
+                        TDEL.text('Скрыть категории');
+                        //$('.input-file').hide();
+                        //$('.textarea').hide();
                     } else {
-                        //$('#fileSize'+this.id).css("color","").html(file.name+' - '+Math.round(file.size/1000)+' KB');
-                        $('#fileSize'+this.id).html('');
+                        TDEL.text('Показать категории');
+                        //$('.input-file').show();
+                        //$('.textarea').show();
+                    }
+                });
+            }
+
+            $('form#change_page_form').on('change', function() {
+                $("[type='file']").each(function() {
+                    let files = this.files;
+                    if (files.length > 0) {
+                        let file = this.files[0];
+                        let size = 3 * 1024 * 1024; //3MB
+                        $(this).next().html(file.name);
+                        if (file.size > size) {
+                            $('#fileSize' + this.id).css("color", "red").html('ERROR! Image size > 3MB');
+                        } else {
+                            //$('#fileSize'+this.id).css("color","").html(file.name+' - '+Math.round(file.size/1000)+' KB');
+                            $('#fileSize' + this.id).html('');
+                        }
+                    }
+                });
+            });
+
+            $('form#change_page_form').on('reset', function() {
+                //$('form#about_edit').get(0).reset();
+                $('.about_form').each(function(i) {
+                    $('.about_form').slice(1).remove();
+                });
+                $("[type='file']").each(function() {
+                    let file = 'Выберите фото весом до 3Мб';
+                    $(this).next().html(file);
+                    $('#fileSize' + this.id).html('');
+                });
+            });
+
+            $('button[type="submit"]').on('click', function(e) {
+                //$('form#about_edit').get(0).reset();
+                let inp = $('input[name="serv_del[]"]:checkbox').length;
+                if (inp > 0) {
+                    var count = $('input[name="serv_del[]"]:checkbox:checked').length;
+                    if (count > 0) {
+                        $('#change_page_form').submit();
+                    } else {
+                        e.preventDefault();
                     }
                 }
             });
-        });
 
-        $('form#change_page_form').on('reset', function(){
-            //$('form#about_edit').get(0).reset();
-            $('.about_form').each(function (i) {
-                $('.about_form').slice(1).remove();
-            });
-            $("[type='file']").each(function(){
-                let file = 'Выберите фото весом до 3Мб';
-                $(this).next().html(file);
-                $('#fileSize'+this.id).html('');
-            });
-        });
-
-        $('button[type="submit"]').on('click', function(e){
-            //$('form#about_edit').get(0).reset();
-            let inp = $('input[name="serv_del[]"]:checkbox').length;
-            if (inp > 0 ) {
-                var count = $('input[name="serv_del[]"]:checkbox:checked').length;
-                if ( count > 0 ) {
-                    $('#change_page_form').submit();
-                } else {
-                    e.preventDefault();
-                }
-            }
-        });
-
-    })
-}, false);
+        })
+    }, false);
 
 </script>
 

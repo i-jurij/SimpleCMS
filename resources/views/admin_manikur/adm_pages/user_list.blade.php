@@ -8,63 +8,64 @@ $robots = 'NOINDEX, NOFOLLOW';
 @extends('layouts/index_admin')
 @section('content')
 
-    <div class="content margintb1 ">
-        <div>
-            @if (Auth::user()['status']==='admin')
+<div class="content margintb1 ">
+    <div>
+        @if (Auth::user()['status']==='admin')
 
-            <p>
-                WARNING!!!<br />
-                You need to leave at least one user with the admin status.
-            </p>
+        <p>
+            WARNING!!!<br />
+            You need to leave at least one user with the admin status.
+        </p>
 
-            @php
-            $labelclass = '';
-            $divclass = "";
-            if (\Request::getRequestUri() === "/admin/user/remove") {
-                $res_route = route('admin.user.remove');
-                $labelclass = "checkbox-btn";
-                $type = "checkbox";
-            } elseif (\Request::getRequestUri() === "/admin/user/change") {
-                $res_route = route('admin.user.show');
-                $divclass = "form_radio_btn";
-                $type = "radio";
-            }
-            @endphp
-            <form method="post" action="{{ $res_route }}" id="users_shoose" class="pad form_del_ch">
+        @php
+        $labelclass = '';
+        $divclass = "";
+        if (str_contains(\Request::getRequestUri(), "/admin/user/remove")) {
+        $res_route = route('admin.user.remove');
+        $labelclass = "checkbox-btn";
+        $type = "checkbox";
+        } elseif (str_contains(\Request::getRequestUri(), "/admin/user/change")) {
+        $res_route = route('admin.user.show');
+        $divclass = "form_radio_btn";
+        $type = "radio";
+        }
+        @endphp
+
+        <form method="post" action="{{ $res_route }}" id="users_shoose" class="pad form_del_ch">
             @csrf
-                <div class="form-element margintb1 text_left {{$divclass}}">
-                    @foreach ($content as $user)
-                        <label class="{{$labelclass}}">
-                            <input type = "{{$type}}" id ="user_{{$user->id}}" value="{{$user->id}}" name="user_id[]" />
-                                <span>
-                                    <table class="text_left">
-                                    <tr>
-                                        <td>Name: </td>
-                                        <td>{{$user->name}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Email: </td>
-                                        <td>{{$user->email}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Status: </td>
-                                        <td>{{$user->status}}</td>
-                                    </tr>
-                                    </table>
-                                </span>
-                            </label>
-                    @endforeach
-                </div>
-                <div class="form-element" id="paginator">{!! $content->render() !!}</div>
-                <div class="form-element mar">
-                    <button type="submit" form="users_shoose" class="buttons" id="del_ch">Submit</button>
-                    <button type="reset" form="users_shoose" class="buttons">Reset</button>
-                </div>
-            </form>
-            @else
-            You are not authorized.
-            @endif
-        </div>
+            <div class="form-element margintb1 {{$divclass}}">
+                @foreach ($content as $user)
+                <label class="{{$labelclass}}">
+                    <input type="{{$type}}" id="user_{{$user->id}}" value="{{$user->id}}" name="user_id[]" />
+                    <span>
+                        <table class="text_left">
+                            <tr>
+                                <td>Name: </td>
+                                <td>{{$user->name}}</td>
+                            </tr>
+                            <tr>
+                                <td>Email: </td>
+                                <td>{{$user->email}}</td>
+                            </tr>
+                            <tr>
+                                <td>Status: </td>
+                                <td>{{$user->status}}</td>
+                            </tr>
+                        </table>
+                    </span>
+                </label>
+                @endforeach
+            </div>
+            <div class="form-element" id="paginator">{!! $content->render() !!}</div>
+            <div class="form-element mar">
+                <button type="submit" form="users_shoose" class="buttons" id="del_ch">Submit</button>
+                <button type="reset" form="users_shoose" class="buttons">Reset</button>
+            </div>
+        </form>
+        @else
+        You are not authorized.
+        @endif
     </div>
+</div>
 
 @stop

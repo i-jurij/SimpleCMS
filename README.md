@@ -28,6 +28,48 @@ service page "yes" - страница с услугами, создавать л
 для добавления категорий услуг и самих услуг.    
 Но проще просто вносить изменения в имеющиеся страницы, создавая только страницы услуг и внося расценки.
 
+
+## Start
+Directory Permissions   
+Laravel will need to write to the bootstrap/cache and storage directories, so you should ensure the web server process owner has permission to write to these directories.   
+
+You need to call 
+```php artisan key:generate```
+is following a clone of a pre-created Laravel project.
+
+Install php > 8.1.   
+Install sql (mysql, mariadb).   
+Run php and sql service.   
+Configure your DB in application into "app_root_dir/config/database.php": type, user, password etc.  
+Configure your DB user and her privilegies in phpmyadmin eg. 
+Run terminal (console). 
+Cd into applications root directory.   
+Execute in console:   
+```composer install```  
+```npm install```  
+```php artisan storage:link```
+Then: 
+if you have DB dump - restore DB from dump and   
+```php artisan serve```   
+else   
+```php artisan migrate```   
+Create user with admin rights with status "admin" (in phpmyadmin eg) then   
+```php artisan serve``` 
+
+For css and js load:   
+for development or localhost```npm run dev```   
+for deploy ```npm run build``` then ```git pull``` on server into site root dir.   
+
+## Deploy to production  
+```php artisan optimize```
+or   
+```php artisan optimize:clear```
+Then   
+```php artisan config:cache```  
+Detail: https://laravel.com/docs/10.x/deployment   
+
+
+## Work
 ### PAGES edit
 /admin/page/create - creating client page:
 

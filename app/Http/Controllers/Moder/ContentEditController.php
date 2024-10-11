@@ -42,6 +42,7 @@ class ContentEditController extends Controller
 
     protected function start()
     {
+        $thisdata = [];
         $data['service_page'] = Page::where('publish', 'yes')
             ->where('service_page', 'yes')
             ->select('id', 'title', 'img')
