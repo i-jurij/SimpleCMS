@@ -237,6 +237,7 @@ class MastersController extends Controller
 
     public function all_services()
     {
+        $data = [];
         // get data from table services (id, page_id, categories_id, name)
         // and from service-categories and pages (with service_page === 'yes')
         // than in view we can display list of pages -> categories-> services and choose what you need
