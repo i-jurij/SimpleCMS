@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"  class="bg_gray_gradient">
 
 <head>
   <meta charset="utf-8">
@@ -32,7 +32,7 @@
                     -->
                     <p class="content " id="page_title">{{$title}}</p>
                     @if(session()->has('errors') || $errors->any())
-                        <div class="zapis_usluga back shad pad margin_rlb1 alert alert-danger error fade in">
+                        <div class="zapis_usluga back shad p-1 mb-1 mx-1 alert alert-danger error fade in">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                             <h4>Following errors occurred:</h4>
                             <ul>
