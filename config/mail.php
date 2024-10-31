@@ -108,7 +108,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'jurijlunjov@yandex.ru'),
+        'address' => env('MAIL_FROM_ADDRESS', 'admin@SimpleCMS.ru'),
         'name' => env('MAIL_FROM_NAME', 'SimpleCMS'),
     ],
 
